@@ -25,6 +25,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
             public const string ORGANIZATIONS = "organisations";
             public const string ORGANIZATION = $"organisations/{OBJECT_ID}";
 
+            public const string PARKING_LOCATIONS = "parking-locations";
+            public const string PARKING_LOCATION = $"parking-locations/{OBJECT_ID}";
+
             public const string AUTH = "auth";
         }
 

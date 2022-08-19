@@ -22,7 +22,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="surveyAreaId"></param>
         /// <returns></returns>
         public Task<SurveyArea> GetSurveyAreaAsync(string surveyAreaId)
-            => GetObjectAsync<SurveyArea>(new RequestConfig(Configuration.Routes.SURVEY_AREAS, surveyAreaId));
+            => GetObjectAsync<SurveyArea>(new RequestConfig(Configuration.Routes.SURVEY_AREA, surveyAreaId));
 
         /// <summary>
         /// Creates a survey area
@@ -30,7 +30,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="surveyArea"></param>
         /// <returns></returns>
         public Task<SurveyArea> CreateSurveyAreaAsync(SurveyArea surveyArea)
-            => CreateObjectAsync(new RequestConfig<SurveyArea>(Configuration.Routes.SURVEY_AREA, @object: surveyArea));
+            => CreateObjectAsync(new RequestConfig<SurveyArea>(Configuration.Routes.SURVEY_AREAS, @object: surveyArea));
 
         /// <summary>
         /// Updates a survey area
@@ -46,7 +46,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="surveyAreaId"></param>
         /// <returns></returns>
-        public Task<SurveyArea> DeleteSurveyAreaAsync(string surveyAreaId)
-            => GetObjectAsync<SurveyArea>(new RequestConfig(Configuration.Routes.SURVEY_AREAS, surveyAreaId));
+        public Task DeleteSurveyAreaAsync(string surveyAreaId)
+            => DeleteObjectAsync(new RequestConfig(Configuration.Routes.SURVEY_AREA, surveyAreaId));
     }
 }
