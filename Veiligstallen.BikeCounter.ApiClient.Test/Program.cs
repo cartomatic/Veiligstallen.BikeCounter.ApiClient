@@ -1,8 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Drawing.Text;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Veiligstallen.BikeCounter.ApiClient;
+using Veiligstallen.BikeCounter.ApiClient.DataModel;
+using Veiligstallen.BikeCounter.ApiClient.DataModel.Converters;
 
 Console.WriteLine("VeiligStallen BikeCounter ApiClient Test :: v1");
 
@@ -12,6 +15,9 @@ var cfg = Cartomatic.Utils.NetCoreConfig.GetNetCoreConfig("credentials") //also 
     .Get<Configuration>();
 
 var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass);
+
+
+//TestGeomSerialization();
 
 
 Console.Write("Cleaning up test env... ");
@@ -41,4 +47,31 @@ if (orgs.Any())
     Console.Write($"Done!{rn}");
     Console.WriteLine($"Organization: {JsonConvert.SerializeObject(org)}");
     Console.WriteLine();
+}
+
+
+
+void TestGeomSerialization()
+{
+    Console.Write("Testing geometry serialization... ");
+
+    var dataFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testGeoms.json");
+    var data = File.ReadAllText(dataFile);
+    
+    var geoms = JsonConvert.DeserializeObject<List<TestObjectWithGeom>>(data);
+
+    foreach (var geom in geoms)
+    {
+        Console.WriteLine(JsonConvert.SerializeObject(geom, Formatting.Indented));
+        Console.WriteLine();
+    }
+
+    Console.WriteLine("Geometry serialization tests finished");
+    Console.WriteLine();
+}
+
+class TestObjectWithGeom
+{
+    [JsonConverter(typeof(GeometryConverter))]
+    public Geometry Location { get; set; }
 }

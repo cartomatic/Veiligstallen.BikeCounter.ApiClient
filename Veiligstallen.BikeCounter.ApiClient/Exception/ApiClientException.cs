@@ -39,7 +39,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Exception
             HttpStatusCode = response.StatusCode;
             HttpStatusCodeDescription = response.StatusDescription;
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (
+                response.StatusCode == HttpStatusCode.BadRequest 
+                || (int)response.StatusCode == 422) //unprocessable entity
             {
                 try
                 {

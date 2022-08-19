@@ -14,33 +14,15 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of organizations
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Organization>> GetOrganizationsAsync()
-        {
-            var authHdr = GetAuthorizationHeaderValue(_user, _pass);
-
-            var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<List<Organization>>(_cfg.Endpoint,
-                Configuration.Routes.ORGANIZATIONS, Method.GET, authToken: authHdr);
-
-            EnsureValidResponse(apiOut.Response);
-
-            return apiOut.Output ?? new List<Organization>();
-        }
+        public Task<IEnumerable<Organization>> GetOrganizationsAsync()
+            => GetObjectsAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATIONS));
 
         /// <summary>
         /// Gets organization by id
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        public async Task<Organization> GetOrganizationAsync(string organizationId)
-        {
-            var authHdr = GetAuthorizationHeaderValue(_user, _pass);
-
-            var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<Organization>(_cfg.Endpoint,
-                $"{Configuration.Routes.ORGANIZATIONS}/{organizationId}", Method.GET, authToken: authHdr);
-
-            EnsureValidResponse(apiOut.Response);
-
-            return apiOut.Output;
-        }
+        public Task<Organization> GetOrganizationAsync(string organizationId)
+            => GetObjectAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATION, organizationId));
     }
 }

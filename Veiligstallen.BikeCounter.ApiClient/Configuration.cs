@@ -10,11 +10,21 @@ namespace Veiligstallen.BikeCounter.ApiClient
     {
         public class Routes
         {
+            public const string OBJECT_ID = "{objectId}";
+            public const string PARENT_ID = "{parentId}";
+
             //Note: looks like the api likes the trailing slashes because of some reason
             public const string SECTIONS = "sections";
+            public const string SECTION = $"sections/{OBJECT_ID}";
+
             public const string PARKING_FACILTIES = "parking-facilities";
-            public const string SURVEY_AREASS = "survey-areas";
+
+            public const string SURVEY_AREAS = "survey-areas";
+            public const string SURVEY_AREA = $"survey-areas/{OBJECT_ID}";
+
             public const string ORGANIZATIONS = "organisations";
+            public const string ORGANIZATION = $"organisations/{OBJECT_ID}";
+
             public const string AUTH = "auth";
         }
 

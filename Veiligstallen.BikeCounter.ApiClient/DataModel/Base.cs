@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
-    public class Organization: Base
+    public abstract class Base
     {
-        public string Name { get; set; }
-        public string[] Roles { get; set; }
+        public string Id { get; set; }
     }
 }
