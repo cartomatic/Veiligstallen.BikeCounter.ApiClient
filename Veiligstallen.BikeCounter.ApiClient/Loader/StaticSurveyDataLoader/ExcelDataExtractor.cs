@@ -32,6 +32,14 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string PARKING_LOCATION_COL_XTRAINFO = "parkinglocation_xtrainfo";
         private const string PARKING_LOCATION_COL_FEATURETYPE = "parkinglocation_locationFeatureType";
 
+        private const string SECTION_COL_LOCALID = "section_localId";
+        private const string SECTION_COL_NAME = "section_name";
+        private const string SECTION_COL_VALIDFROM = "section_validFrom";
+        private const string SECTION_COL_VALIDTHROUGH = "section_validThrough";
+        private const string SECTION_COL_LEVEL = "section_level";
+        private const string SECTION_COL_PARKINGSYSTEMTYPE = "section_parkingSystemType";
+        private const string SECTION_COL_PARKINGLOCATIONLOCALID = "parkinglocation_localId";
+
         private const string AUTHORITY = "prorail";
 
         private DataSet _excelDataSet;
@@ -88,6 +96,16 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 }
             );
 
+            ValidateColumns(
+                _excelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC],
+                new[]
+                {
+                    SECTION_COL_LOCALID, SECTION_COL_NAME, SECTION_COL_VALIDFROM,
+                    SECTION_COL_VALIDTHROUGH, SECTION_COL_LEVEL, SECTION_COL_PARKINGSYSTEMTYPE,
+                    SECTION_COL_PARKINGLOCATIONLOCALID
+                }
+            );
+
         }
 
         /// <summary>
@@ -107,7 +125,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
-        /// Extracts surveys data
+        /// Extracts surveys data from xlsx
         /// </summary>
         /// <returns></returns>
         private List<SurveyArea> ExtractSurveyAreas()
@@ -135,6 +153,39 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+
+        /// <summary>
+        /// Extracts sections from xlsx
+        /// </summary>
+        /// <returns></returns>
+        private List<Section> ExtractSections()
+        {
+            var output = new List<Section>();
+
+            foreach (DataRow r in _excelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC].Rows)
+            {
+                var s = new Section
+                {
+                    Authority = AUTHORITY,
+                    LocalId = ExtractFieldValue<string>(r, SECTION_COL_LOCALID),
+                    Name = ExtractFieldValue<string>(r, SECTION_COL_NAME),
+                    ValidFrom = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDFROM),
+                    ValidThrough = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDTHROUGH),
+                    Level = (int)ExtractFieldValue<double>(r, SECTION_COL_LEVEL),
+                    ParkingSystemType = ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
+                    ParkingLocationLocalId = ExtractFieldValue<string>(r, SECTION_COL_PARKINGLOCATIONLOCALID),
+                };
+
+                output.Add(s);
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Extracts parking locations from xlsx
+        /// </summary>
+        /// <returns></returns>
         private List<ParkingLocation> ExtractParkingLocations()
         {
             var output = new List<ParkingLocation>();

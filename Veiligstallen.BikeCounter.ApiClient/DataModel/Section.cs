@@ -6,28 +6,27 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel.Converters;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
-    public class SurveyArea : Base
+    public class Section : Base
     {
-
         /// <summary>
         /// Object's local id
         /// </summary>
         public string LocalId { get; set; }
 
         /// <summary>
-        /// Local id of a parent
+        /// Parking location's local id
         /// </summary>
-        public string ParentLocalId { get; set; }
+        public string ParkingLocationLocalId { get; set; }
 
         /// <summary>
-        /// Name of survey area
+        /// Parking location system id
+        /// </summary>
+        public string ParkingLocation { get; set; }
+
+        /// <summary>
+        /// Name of a section
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// System id of a parent
-        /// </summary>
-        public string Parent { get; set; }
 
         /// <summary>
         /// Date valid from
@@ -45,14 +44,14 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public string Authority { get; set; }
 
         /// <summary>
-        /// Extra information
+        /// Level
         /// </summary>
-        public string XtraInfo { get; set; }
+        public int Level { get; set; }
 
         /// <summary>
-        /// Type of survey area
+        /// Parking system type: r = rek, o = etagerek onder, b = etagerek boven, n = nietje, x = geen voorziening
         /// </summary>
-        public string SurveyAreaType { get; set; }
+        public string ParkingSystemType { get; set; }
 
         /// <summary>
         /// Geometry representation

@@ -14,9 +14,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     {
         private const string SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
         private const string SHP_PARKINGLOCATION_COL_NAME = "Locatie";
+        private const string SHP_SECTION_COL_NAME = "localid";
 
         /// <summary>
-        /// Extracts survey area geometries and updates survey areas
+        /// Extracts survey area geometries from a shapefile and updates survey areas
         /// </summary>
         /// <param name="surveyAreas"></param>
         private void ExtractSurveyAreasGeoms(List<SurveyArea> surveyAreas)
@@ -34,6 +35,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        /// <summary>
+        /// Extracts parking location geometries from a shapefile and updates parking locations
+        /// </summary>
+        /// <param name="parkingLocations"></param>
         private void ExtractParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
         {
             using var shpReader = PrepareShapeFileReader(FILENAME_PARKING_LOCATION, SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
@@ -46,6 +51,25 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     continue;
 
                 parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+            }
+        }
+
+        /// <summary>
+        /// Extracts section geometries from a shapefile and updates sections
+        /// </summary>
+        /// <param name="sections"></param>
+        private void ExtractSectionsGeoms(List<Section> sections)
+        {
+            using var shpReader = PrepareShapeFileReader(FILENAME_SECTIONS, SHP_SECTION_COL_NAME, out var idColIdx);
+
+            while (shpReader.Read())
+            {
+                var sectionLocalId = shpReader.GetString(idColIdx);
+                var section = sections.FirstOrDefault(s => s.LocalId == sectionLocalId);
+                if (section == null)
+                    continue;
+
+                section.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }
         }
 

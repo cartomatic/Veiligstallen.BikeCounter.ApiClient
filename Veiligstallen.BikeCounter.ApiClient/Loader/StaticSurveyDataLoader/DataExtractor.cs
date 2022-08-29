@@ -10,6 +10,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     {
         private List<ParkingLocation> _parkingLocations;
         private List<SurveyArea> _surveyAreas;
+        private List<Section> _sections;
 
         private async Task ExtractParkingLocationsAsync()
         {
@@ -20,13 +21,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private async Task ExtractSurveyAreasAsync()
         {
             _surveyAreas = ExtractSurveyAreas();
-
             ExtractSurveyAreasGeoms(_surveyAreas);
         }
 
-        
 
-        
+        private async Task ExtractSectionsAsync()
+        {
+            _sections = ExtractSections();
+            ExtractSectionsGeoms(_sections);
+        }
 
         private void DisposeExtractedData()
         {

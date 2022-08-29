@@ -48,6 +48,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             await ExtractParkingLocationsAsync();
             Notify("Parking locations extracted!");
 
+            Notify("Extracting sections...");
+            await ExtractSectionsAsync();
+            Notify("Sections extracted!");
+            
+
 
         }
 
