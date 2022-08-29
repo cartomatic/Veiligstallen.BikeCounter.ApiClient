@@ -9,6 +9,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     public partial class StaticSurveyDataLoader
     {
         private List<ParkingLocation> _parkingLocations;
+        private List<SurveyArea> _surveyAreas;
 
         private async Task ExtractParkingLocationsAsync()
         {
@@ -16,15 +17,25 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             ExtractParkingLocationsGeoms(_parkingLocations);
         }
 
-        private async Task UploadParkingLocationsAsync()
+        private async Task ExtractSurveyAreasAsync()
         {
+            _surveyAreas = ExtractSurveyAreas();
 
+            ExtractSurveyAreasGeoms(_surveyAreas);
         }
 
-        private void DisposeParkingLocations()
+        
+
+        
+
+        private void DisposeExtractedData()
         {
+            _surveyAreas?.Clear();
+            _surveyAreas = null;
+
             _parkingLocations?.Clear();
             _parkingLocations = null;
         }
+
     }
 }

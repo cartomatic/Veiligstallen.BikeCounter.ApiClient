@@ -91,8 +91,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             _msngr = null;
             DisposeExcel();
-            DisposeSurveyAreas();
-            DisposeParkingLocations();
+            DisposeExtractedData();
         }
     }
 }
