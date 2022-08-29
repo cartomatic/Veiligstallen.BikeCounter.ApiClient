@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Policy;
 using System.Text;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Math.EC.Multiplier;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
@@ -15,6 +16,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public const string TYPE_POLYGON = "Polygon";
         public const string TYPE_MULTI_POLYGON = "MultiPolygon";
 
+        [JsonProperty("type")]
         public abstract string Type { get; }
     }
 
@@ -24,9 +26,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+        [JsonProperty("coordinates")]
         public double[] Coordinates { get; set; }
 
         /// <inheritdoc />
+        [JsonProperty("type")]
         public override string Type => TYPE_POINT;
     }
     public class MultiPoint : Geometry
@@ -35,9 +39,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+
+        [JsonProperty("coordinates")]
         public double[][] Coordinates { get; set; }
 
         /// <inheritdoc />
+        [JsonProperty("type")]
         public override string Type => TYPE_MULTI_POINT;
     }
 
@@ -47,9 +54,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+
+        [JsonProperty("coordinates")]
         public double[][] Coordinates { get; set; }
 
         /// <inheritdoc />
+        [JsonProperty("type")]
         public override string Type => TYPE_LINE_STRING;
     }
 
@@ -59,8 +69,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+
+        [JsonProperty("coordinates")]
         public double[][][] Coordinates { get; set; }
+        
         /// <inheritdoc />
+        [JsonProperty("type")] 
         public override string Type => TYPE_MULTI_LINE_STRING;
     }
 
@@ -70,8 +84,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+
+        [JsonProperty("coordinates")]
         public double[][][] Coordinates { get; set; }
         /// <inheritdoc />
+
+        [JsonProperty("type")] 
         public override string Type => TYPE_POLYGON;
     }
 
@@ -81,8 +99,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         {
             Coordinates = coordinates;
         }
+
+        [JsonProperty("coordinates")]
         public double[][][][] Coordinates { get; set; }
         /// <inheritdoc />
+        [JsonProperty("type")]
         public override string Type => TYPE_MULTI_POLYGON;
     }
 }

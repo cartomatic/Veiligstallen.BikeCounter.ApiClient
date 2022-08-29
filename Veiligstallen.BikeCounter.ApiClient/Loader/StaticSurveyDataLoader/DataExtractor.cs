@@ -6,7 +6,7 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    public partial class StaticSurveyDataLoader
+    internal partial class StaticSurveyDataLoader
     {
         private List<ParkingLocation> _parkingLocations;
         private List<SurveyArea> _surveyAreas;
@@ -23,7 +23,6 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _surveyAreas = ExtractSurveyAreas();
             ExtractSurveyAreasGeoms(_surveyAreas);
         }
-
 
         private async Task ExtractSectionsAsync()
         {

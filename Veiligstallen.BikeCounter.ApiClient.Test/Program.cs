@@ -17,51 +17,64 @@ var cfg = Cartomatic.Utils.NetCoreConfig.GetNetCoreConfig("credentials") //also 
 var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass);
 
 
+await CleanTestEnvAsync();
+
+//await TestAuthAsync();
+
 //TestGeomSerialization();
-await TestStaticDataLoader();
 
-return;
+//await TestOrgApisAsync();
 
-Console.Write("Cleaning up test env... ");
-var envCleanedUp = await service.ResetEnvironmentAsync();
-Console.Write($"Done!{rn}");
-Console.WriteLine($"Test env cleaned up: {envCleanedUp}");
-Console.WriteLine();
+await TestStaticDataLoaderAsync();
 
 
-Console.Write("Obtaining system roles... ");
-var authOutput = await service.AuthenticateAsync();
-Console.Write($"Done!{rn}");
-Console.WriteLine($"System roles: {JsonConvert.SerializeObject(authOutput)}");
-Console.WriteLine();
 
-
-Console.Write("Getting organizations... ");
-var orgs = await service.GetOrganizationsAsync();
-Console.Write($"Done!{rn}");
-Console.WriteLine($"Organizations: {JsonConvert.SerializeObject(orgs)}");
-Console.WriteLine();
-
-if (orgs.Any())
+async Task TestOrgApisAsync()
 {
-    Console.Write($"Getting organization {orgs.First().Id}... ");
-    var org = await service.GetOrganizationAsync(orgs.First().Id);
+    Console.Write("Getting organizations... ");
+    var orgs = await service.GetOrganizationsAsync();
     Console.Write($"Done!{rn}");
-    Console.WriteLine($"Organization: {JsonConvert.SerializeObject(org)}");
+    Console.WriteLine($"Organizations: {JsonConvert.SerializeObject(orgs)}");
+    Console.WriteLine();
+
+    if (orgs.Any())
+    {
+        Console.Write($"Getting organization {orgs.First().Id}... ");
+        var org = await service.GetOrganizationAsync(orgs.First().Id);
+        Console.Write($"Done!{rn}");
+        Console.WriteLine($"Organization: {JsonConvert.SerializeObject(org)}");
+        Console.WriteLine();
+    }
+}
+
+async Task TestAuthAsync()
+{
+    Console.Write("Obtaining system roles... ");
+    var authOutput = await service.AuthenticateAsync();
+    Console.Write($"Done!{rn}");
+    Console.WriteLine($"System roles: {JsonConvert.SerializeObject(authOutput)}");
     Console.WriteLine();
 }
 
+async Task CleanTestEnvAsync()
+{
+    Console.Write("Cleaning up test env... ");
+    var envCleanedUp = await service.ResetEnvironmentAsync();
+    Console.Write($"Done!{rn}");
+    Console.WriteLine($"Test env cleaned up: {envCleanedUp}");
+    Console.WriteLine();
+}
 
-async Task TestStaticDataLoader()
+async Task TestStaticDataLoaderAsync()
 {
     var dir = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload";
-    var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir);
-
+    
     Console.WriteLine("Loading data...");
 
     try
     {
-        await staticDataLoader.ExtractDataAsync((sender, msg) => { Console.WriteLine(msg); });
+        await service.ExtractAndUploadData(dir, (sender, msg) => { Console.WriteLine(msg); });
+
     }
     catch (Exception ex)
     {

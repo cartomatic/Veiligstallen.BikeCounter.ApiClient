@@ -10,7 +10,7 @@ using Geometry = Veiligstallen.BikeCounter.ApiClient.DataModel.Geometry;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    public partial class StaticSurveyDataLoader
+    internal partial class StaticSurveyDataLoader
     {
         private const string SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
         private const string SHP_PARKINGLOCATION_COL_NAME = "Locatie";

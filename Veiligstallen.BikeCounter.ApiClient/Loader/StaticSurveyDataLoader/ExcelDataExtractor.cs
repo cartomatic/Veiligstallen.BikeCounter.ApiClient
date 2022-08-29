@@ -11,7 +11,7 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    public partial class StaticSurveyDataLoader
+    internal partial class StaticSurveyDataLoader
     {
         private const string EXCEL_SHEET_SURVEY_AREA_STATIC = "SurveyArea";
         private const string EXCEL_SHEET_PARKING_LOCATION_STATIC = "ParkingLocation_static";
@@ -140,7 +140,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     LocalId = ExtractFieldValue<string>(r, SURVEY_AREA_COL_LOCALID),
                     ParentLocalId = ExtractFieldValue<string>(r, SURVEY_AREA_COL_PARENTLOCALID),
                     Name = ExtractFieldValue<string>(r, SURVEY_AREA_COL_NAME),
-                    XtraInfo = ExtractFieldValue<string>(r, SURVEY_AREA_COL_XTRAINFO),
+                    ExtraInfo = ExtractFieldValue<string>(r, SURVEY_AREA_COL_XTRAINFO),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, SURVEY_AREA_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, SURVEY_AREA_COL_VALIDTHROUGH),
                     SurveyAreaType = ExtractFieldValue<string>(r, SURVEY_AREA_COL_TYPE)

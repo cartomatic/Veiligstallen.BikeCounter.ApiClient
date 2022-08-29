@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    public partial class StaticSurveyDataLoader
+    internal partial class StaticSurveyDataLoader
     {
     }
 }

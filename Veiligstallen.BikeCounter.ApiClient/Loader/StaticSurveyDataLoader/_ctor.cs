@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MimeKit.Cryptography;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    public partial class StaticSurveyDataLoader : IDisposable
+    internal partial class StaticSurveyDataLoader : IDisposable
     {
         private const string FILENAME_EXCEL = "Static";
         private const string FILENAME_PARKING_LOCATION = "ParkingLocation";
@@ -15,6 +16,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private readonly string _dir;
         private EventHandler<string> _msngr;
+        private bool _dataExtracted;
 
         public StaticSurveyDataLoader(string dir)
         {
@@ -22,11 +24,22 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
+        /// Extracts data from excel file & shp files and uploads it to crow wpi
+        /// </summary>
+        /// <param name="msngr"></param>
+        /// <returns></returns>
+        public async Task ExtractAndUploadData(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        {
+            await ExtractDataAsync(msngr);
+            await UploadDataAsync(apiClient, msngr);
+        }
+
+        /// <summary>
         /// Extracts data from excel file & shp files
         /// </summary>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        public async Task ExtractDataAsync(EventHandler<string> msngr = null)
+        private async Task ExtractDataAsync(EventHandler<string> msngr = null)
         {
             _msngr = msngr;
 
@@ -51,8 +64,32 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Extracting sections...");
             await ExtractSectionsAsync();
             Notify("Sections extracted!");
-            
 
+            _dataExtracted = true;
+        }
+
+        /// <summary>
+        /// Uploads data to crow api
+        /// </summary>
+        /// <param name="msngr"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        private async Task UploadDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        {
+            if (!_dataExtracted)
+                throw new InvalidOperationException("Data needs to be xtracted before uploading!");
+
+            Notify("Uploading survey areas...");
+            await UploadSurveyAreasAsync(apiClient);
+            Notify("Survey areas uploaded!");
+
+            Notify("Uploading parking locations...");
+            await UploadParkingLocationsAsync(apiClient);
+            Notify("Parking locations uploaded!");
+
+            Notify("Uploadin sections...");
+            await UploadSSectionsAsync(apiClient);
+            Notify("Sections uploaded!");
 
         }
 
