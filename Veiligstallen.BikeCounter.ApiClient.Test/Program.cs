@@ -18,7 +18,9 @@ var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass
 
 
 //TestGeomSerialization();
+await TestStaticDataLoader();
 
+return;
 
 Console.Write("Cleaning up test env... ");
 var envCleanedUp = await service.ResetEnvironmentAsync();
@@ -49,6 +51,28 @@ if (orgs.Any())
     Console.WriteLine();
 }
 
+
+async Task TestStaticDataLoader()
+{
+    var dir = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload";
+    var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir);
+
+    Console.WriteLine("Loading data...");
+
+    try
+    {
+        await staticDataLoader.LoadAsync((sender, msg) => { Console.WriteLine(msg); });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("BOOM!");
+        Console.WriteLine(ex.Message);
+    }
+    
+
+    Console.WriteLine();
+
+}
 
 
 void TestGeomSerialization()
