@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 using Geometry = Veiligstallen.BikeCounter.ApiClient.DataModel.Geometry;
 
@@ -12,6 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     public partial class StaticSurveyDataLoader
     {
         private const string SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
+        private const string SHP_PARKINGLOCATION_COL_NAME = "Locatie";
 
         /// <summary>
         /// Extracts survey area geometries and updates survey areas
@@ -19,28 +21,60 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="surveyAreas"></param>
         private void ExtractSurveyAreasGeoms(List<SurveyArea> surveyAreas)
         {
-            var fName = Path.Combine(_dir, $"{FILENAME_SURVEY_AREA}.shp");
-            using var shpReader = new NetTopologySuite.IO.ShapefileDataReader(fName, new GeometryFactory());
+            using var shpReader = PrepareShapeFileReader(FILENAME_SURVEY_AREA, SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
             
-            var dBaseHdr = shpReader.DbaseHeader;
-            var dBaseFieldsToRead = dBaseHdr.Fields.Select((fld, idx) => (idx + 1, fld)).ToList(); //geom idx is 0, hence need to bump up
-
-            if (dBaseFieldsToRead.All(f => f.fld.Name != SHP_SURVEYAREA_COL_SURVEYAREAID))
-                throw new System.Exception(
-                    $"Missing a required column: {SHP_SURVEYAREA_COL_SURVEYAREAID} in {fName}");
-
-            var surveyAreaFld =
-                dBaseFieldsToRead.FirstOrDefault(f => f.fld.Name == SHP_SURVEYAREA_COL_SURVEYAREAID);
-
             while (shpReader.Read())
             {
-                var surveyAreaLocalId = shpReader.GetString(surveyAreaFld.Item1);
+                var surveyAreaLocalId = shpReader.GetString(idColIdx);
                 var surveyArea = surveyAreas.FirstOrDefault(sa => sa.LocalId == surveyAreaLocalId);
                 if(surveyArea == null)
                     continue;
 
                 surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }
+        }
+
+        private void ExtractParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
+        {
+            using var shpReader = PrepareShapeFileReader(FILENAME_PARKING_LOCATION, SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
+
+            while (shpReader.Read())
+            {
+                var parkingLocationName = shpReader.GetInt32(idColIdx);
+                var parkingLocation = parkingLocations.FirstOrDefault(pl => int.Parse(pl.Name) == parkingLocationName);
+                if (parkingLocation == null)
+                    continue;
+
+                parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+            }
+        }
+
+        /// <summary>
+        /// Prepares an shp reader for given shp file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="idColName"></param>
+        /// <param name="idColIdx"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        private ShapefileDataReader PrepareShapeFileReader(string fileName, string idColName, out int idColIdx)
+        {
+            var fName = Path.Combine(_dir, $"{fileName}.shp");
+            var shpReader = new NetTopologySuite.IO.ShapefileDataReader(fName, new GeometryFactory());
+
+            var dBaseHdr = shpReader.DbaseHeader;
+            var dBaseFieldsToRead = dBaseHdr.Fields.Select((fld, idx) => (idx + 1, fld)).ToList(); //geom idx is 0, hence need to bump up
+
+            if (dBaseFieldsToRead.All(f => f.fld.Name != idColName))
+                throw new System.Exception(
+                    $"Missing a required column: {idColName} in {fName}");
+
+            var surveyAreaFld =
+                dBaseFieldsToRead.FirstOrDefault(f => f.fld.Name == idColName);
+
+            idColIdx = surveyAreaFld.Item1;
+
+            return shpReader;
         }
 
         /// <summary>

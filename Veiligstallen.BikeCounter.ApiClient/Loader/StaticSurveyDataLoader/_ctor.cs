@@ -21,7 +21,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _dir = dir;
         }
 
-        public async Task LoadAsync(EventHandler<string> msngr = null)
+        /// <summary>
+        /// Extracts data from excel file & shp files
+        /// </summary>
+        /// <param name="msngr"></param>
+        /// <returns></returns>
+        public async Task ExtractDataAsync(EventHandler<string> msngr = null)
         {
             _msngr = msngr;
 
@@ -35,9 +40,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             LoadExcelData();
             Notify("Excel ok!");
 
-            Notify("Loading survey areas...");
-            await LoadSurveyAreasAsync();
-            Notify("Survey areas loaded!");
+            Notify("Extracting survey areas...");
+            await ExtractSurveyAreasAsync();
+            Notify("Survey areas extracted!");
+
+            Notify("Extracting parking locations...");
+            await ExtractParkingLocationsAsync();
+            Notify("Parking locations extracted!");
 
 
         }
@@ -83,6 +92,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _msngr = null;
             DisposeExcel();
             DisposeSurveyAreas();
+            DisposeParkingLocations();
         }
     }
 }

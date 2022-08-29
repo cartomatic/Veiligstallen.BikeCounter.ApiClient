@@ -10,14 +10,16 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     {
         private List<SurveyArea> _surveyAreas;
 
-        private async Task LoadSurveyAreasAsync()
+        private async Task ExtractSurveyAreasAsync()
         {
             _surveyAreas = ExtractSurveyAreas();
 
             ExtractSurveyAreasGeoms(_surveyAreas);
+        }
 
+        private async Task UploadSurveyAreasAsync()
+        {
 
-            //upload - parents first, then children
         }
 
 

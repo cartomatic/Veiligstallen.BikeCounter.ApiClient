@@ -25,6 +25,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string SURVEY_AREA_COL_TYPE = "surveyarea_surveyAreaType";
         private const string SURVEY_AREA_COL_XTRAINFO = "surveyarea_xtrainfo";
 
+        private const string PARKING_LOCATION_COL_LOCALID = "parkinglocation_localId";
+        private const string PARKING_LOCATION_COL_VALIDFROM = "parkinglocation_validFrom";
+        private const string PARKING_LOCATION_COL_VALIDTHROUGH = "parkinglocation_validThrough";
+        private const string PARKING_LOCATION_COL_NAME = "parkinglocation_name";
+        private const string PARKING_LOCATION_COL_XTRAINFO = "parkinglocation_xtrainfo";
+        private const string PARKING_LOCATION_COL_FEATURETYPE = "parkinglocation_locationFeatureType";
+
         private const string AUTHORITY = "prorail";
 
         private DataSet _excelDataSet;
@@ -69,6 +76,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     SURVEY_AREA_COL_LOCALID, SURVEY_AREA_COL_PARENTLOCALID, SURVEY_AREA_COL_NAME,
                     SURVEY_AREA_COL_XTRAINFO, SURVEY_AREA_COL_VALIDFROM, SURVEY_AREA_COL_VALIDTHROUGH,
                     SURVEY_AREA_COL_TYPE
+                }
+            );
+
+            ValidateColumns(
+                _excelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC],
+                new[]
+                {
+                    PARKING_LOCATION_COL_NAME, PARKING_LOCATION_COL_FEATURETYPE, PARKING_LOCATION_COL_LOCALID,
+                    PARKING_LOCATION_COL_VALIDFROM, PARKING_LOCATION_COL_VALIDTHROUGH, PARKING_LOCATION_COL_XTRAINFO
                 }
             );
 
@@ -119,6 +135,29 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+        private List<ParkingLocation> ExtractParkingLocations()
+        {
+            var output = new List<ParkingLocation>();
+
+            foreach (DataRow r in _excelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC].Rows)
+            {
+                var pl = new ParkingLocation
+                {
+                    Authority = AUTHORITY,
+                    LocalId = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_LOCALID),
+                    Name = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_NAME),
+                    XtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
+                    ValidFrom = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDFROM),
+                    ValidThrough = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDTHROUGH),
+                    Features = ExtractParkingLocationSurveyAreaTypes(r)
+                };
+                
+                output.Add(pl);
+            }
+
+            return output;
+        }
+
         /// <summary>
         /// Extracts field value
         /// </summary>
@@ -132,6 +171,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 return default;
 
             return (T)r[colName];
+        }
+
+        private SurveyAreaType[] ExtractParkingLocationSurveyAreaTypes(DataRow r)
+        {
+            var output = new List<SurveyAreaType>();
+
+            var stringValues = (ExtractFieldValue<string>(r, PARKING_LOCATION_COL_FEATURETYPE)?? string.Empty).Trim().Split(' ');
+            foreach (var stringValue in stringValues)
+            {
+                if (Enum.TryParse(stringValue, true, out SurveyAreaType enumValue))
+                    output.Add(enumValue);
+            }
+
+            return output.ToArray();
         }
 
 

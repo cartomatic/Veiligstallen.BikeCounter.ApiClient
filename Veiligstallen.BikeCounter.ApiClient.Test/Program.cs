@@ -61,7 +61,7 @@ async Task TestStaticDataLoader()
 
     try
     {
-        await staticDataLoader.LoadAsync((sender, msg) => { Console.WriteLine(msg); });
+        await staticDataLoader.ExtractDataAsync((sender, msg) => { Console.WriteLine(msg); });
     }
     catch (Exception ex)
     {

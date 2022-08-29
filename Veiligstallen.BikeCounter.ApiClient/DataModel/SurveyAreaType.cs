@@ -4,7 +4,14 @@ using System.Text;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
-    public class SurveyAreaType
+    public enum SurveyAreaType
     {
+        lockerService,
+        personnelSupervision,
+        electronicAccess,
+        indoor,
+        outdoor,
+        surfaceParking,
+        unguarded
     }
 }
