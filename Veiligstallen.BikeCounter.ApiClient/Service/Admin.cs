@@ -21,7 +21,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             //basically a reset means wiping out all the data by calling 3 endpoints one by one
             var r1 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.SECTIONS, Method.DELETE, authToken: authHdr);
-            var r2 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.PARKING_FACILTIES, Method.DELETE, authToken: authHdr);
+            //var r2 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.PARKING_FACILTIES, Method.DELETE, authToken: authHdr);
+            var r2 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.PARKING_LOCATIONS, Method.DELETE, authToken: authHdr);
             var r3 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.SURVEY_AREAS, Method.DELETE, authToken: authHdr);
 
             //not found is a test for the time being

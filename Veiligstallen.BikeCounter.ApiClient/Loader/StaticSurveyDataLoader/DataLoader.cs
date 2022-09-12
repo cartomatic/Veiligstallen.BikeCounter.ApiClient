@@ -19,6 +19,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //need to upload parents first and then children so can assign parent ids 
             foreach (var rawParent in _surveyAreas.Where(sa => string.IsNullOrWhiteSpace(sa.ParentLocalId)).ToArray())
             {
+                Notify($"Uploading parent survey area: {rawParent.LocalId}...");
                 var parent = await apiClient.CreateSurveyAreaAsync(rawParent);
                 rawParent.Id = parent.Id;
             }
@@ -30,21 +31,40 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if(parent == null)
                     continue;
 
-                rawChild.Parent = parent.Id;
+                Notify($"Uploading child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
 
+                rawChild.Parent = parent.Id;
                 var child = await apiClient.CreateSurveyAreaAsync(rawChild);
             }
         }
 
         private async Task UploadParkingLocationsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
-            
+            foreach (var parkingLocation in _parkingLocations.Where(pl => pl.GeoLocation != null))
+            {
+                Notify($"Uploading parking location: {parkingLocation.LocalId}...");
+
+                var pl = await apiClient.CreateParkingLocationAsync(parkingLocation);
+                parkingLocation.Id = pl.Id;
+            }
         }
 
 
-        private async Task UploadSSectionsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
+        private async Task UploadSectionsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
+            foreach (var section in _sections)
+            {
+                var parkingLocation = _parkingLocations.FirstOrDefault(pl =>
+                    pl.LocalId == section.ParkingLocationLocalId && pl.Authority == section.Authority && !string.IsNullOrWhiteSpace(pl.Id));
 
+                if(parkingLocation == null)
+                    continue;
+
+                Notify($"Uploading section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
+
+                section.ParkingLocation = parkingLocation.Id;
+                var s = await apiClient.CreateSectionAsync(section);
+            }
         }
 
     }

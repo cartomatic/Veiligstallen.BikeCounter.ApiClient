@@ -87,8 +87,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             await UploadParkingLocationsAsync(apiClient);
             Notify("Parking locations uploaded!");
 
-            Notify("Uploadin sections...");
-            await UploadSSectionsAsync(apiClient);
+            Notify("Uploading sections...");
+            await UploadSectionsAsync(apiClient);
             Notify("Sections uploaded!");
 
         }

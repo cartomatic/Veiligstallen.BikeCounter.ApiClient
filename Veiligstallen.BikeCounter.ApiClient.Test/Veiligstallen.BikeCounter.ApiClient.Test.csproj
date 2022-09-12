@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="cartomatic.utils" Version="1.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Veiligstallen.BikeCounter.ApiClient\Veiligstallen.BikeCounter.ApiClient.csproj" />
   </ItemGroup>
 
