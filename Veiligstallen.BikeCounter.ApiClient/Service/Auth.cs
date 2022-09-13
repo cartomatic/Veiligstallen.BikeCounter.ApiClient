@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
+using SQLitePCL;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient
 {
     public partial class Service
     {
+        private string GetAuthorizationHeaderValue()
+            => GetAuthorizationHeaderValue(_user, _pass, _authHeader);
 
         /// <summary>
         /// Gets roles 
@@ -16,7 +19,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         public async Task<AuthOutput> AuthenticateAsync()
         {
-            var authHdr = GetAuthorizationHeaderValue(_user, _pass);
+            var authHdr = GetAuthorizationHeaderValue();
 
             var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<AuthOutput>(_cfg.Endpoint,
                 Configuration.Routes.AUTH, Method.GET, authToken: authHdr);
@@ -26,6 +29,17 @@ namespace Veiligstallen.BikeCounter.ApiClient
             return apiOut.Output;
         }
 
+        /// <summary>
+        /// Gets authorization header value
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="pass"></param>
+        /// <param name="authHeader"></param>
+        /// <returns></returns>
+        private static string GetAuthorizationHeaderValue(string user, string pass, string authHeader)
+            => string.IsNullOrWhiteSpace(authHeader)
+                ? GetAuthorizationHeaderValue(user, pass)
+                : GetAuthorizationHeaderValue(authHeader);
 
         /// <summary>
         /// Gets auth hdr value

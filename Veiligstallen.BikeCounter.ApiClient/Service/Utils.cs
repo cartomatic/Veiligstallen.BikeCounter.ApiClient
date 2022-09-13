@@ -87,7 +87,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 _cfg.Endpoint,
                 PrepareRoute(cfg),
                 Method.GET,
-                authToken: GetAuthorizationHeaderValue(_user, _pass)
+                authToken: GetAuthorizationHeaderValue()
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -107,7 +107,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 _cfg.Endpoint,
                 PrepareRoute(cfg),
                 Method.GET,
-                authToken: GetAuthorizationHeaderValue(_user, _pass)
+                authToken: GetAuthorizationHeaderValue()
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -129,7 +129,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 PrepareRoute(cfg),
                 Method.POST,
                 data: cfg.Object,
-                authToken: GetAuthorizationHeaderValue(_user, _pass)
+                authToken: GetAuthorizationHeaderValue()
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -152,7 +152,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 PrepareRoute(cfg),
                 Method.PUT,
                 data: cfg.Object,
-                authToken: GetAuthorizationHeaderValue(_user, _pass)
+                authToken: GetAuthorizationHeaderValue()
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -173,7 +173,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 _cfg.Endpoint,
                 PrepareRoute(cfg),
                 Method.DELETE,
-                authToken: GetAuthorizationHeaderValue(_user, _pass)
+                authToken: GetAuthorizationHeaderValue()
             );
 
             EnsureValidResponse(apiOut);

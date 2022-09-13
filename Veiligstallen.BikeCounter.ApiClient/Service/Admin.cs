@@ -17,7 +17,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <remarks>This is a convenience method for working with the test environment; API will not support it in the production</remarks>
         public async Task<bool> ResetEnvironmentAsync()
         {
-            var authHdr = GetAuthorizationHeaderValue(_user, _pass);
+            var authHdr = GetAuthorizationHeaderValue();
 
             //basically a reset means wiping out all the data by calling 3 endpoints one by one
             var r1 = await Cartomatic.Utils.RestApi.RestApiCall(_cfg.Endpoint, Configuration.Routes.SECTIONS, Method.DELETE, authToken: authHdr);

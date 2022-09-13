@@ -10,6 +10,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         private readonly Configuration _cfg;
         private readonly string _user;
         private readonly string _pass;
+        private readonly string _authHeader;
 
         public Service()
         {
@@ -23,6 +24,12 @@ namespace Veiligstallen.BikeCounter.ApiClient
         {
             _user = user;
             _pass = pass;
+        }
+
+        public Service(string authHeader)
+            : this()
+        {
+            _authHeader = authHeader;
         }
     }
 }
