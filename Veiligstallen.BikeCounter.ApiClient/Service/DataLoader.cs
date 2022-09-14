@@ -13,7 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="dir"></param>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        public async Task ExtractAndUploadData(string dir, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadStaticDataAsync(string dir, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir);
             await staticDataLoader.ExtractAndUploadData(this, msngr);

@@ -73,8 +73,7 @@ async Task TestStaticDataLoaderAsync()
 
     try
     {
-        await service.ExtractAndUploadData(dir, (sender, msg) => { Console.WriteLine(msg); });
-
+        await service.ExtractAndUploadStaticDataAsync(dir, (sender, msg) => { Console.WriteLine(msg); });
     }
     catch (Exception ex)
     {
