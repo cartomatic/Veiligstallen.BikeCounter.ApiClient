@@ -13,7 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of surveys
         /// </summary>
         /// <returns></returns>
-        public Task<IEnumerable<Survey>> GetSurveyAsync()
+        public Task<IEnumerable<Survey>> GetSurveysAsync()
             => GetObjectsAsync<Survey>(new RequestConfig(Configuration.Routes.SURVEYS));
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="surveyId"></param>
         /// <returns></returns>
         public Task<Survey> UpdateSurveyAsync(Survey survey, string surveyId = null)
-            => CreateObjectAsync(new RequestConfig<Survey>(Configuration.Routes.SURVEY, surveyId ?? survey.Id, @object: survey));
+            => UpdateObjectAsync(new RequestConfig<Survey>(Configuration.Routes.SURVEY, surveyId ?? survey.Id, @object: survey));
 
         /// <summary>
         /// Deletes a survey

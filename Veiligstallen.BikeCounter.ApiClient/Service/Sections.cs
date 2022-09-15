@@ -21,7 +21,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="sectionId"></param>
         /// <returns></returns>
-        public Task<Section> GetSectionsAsync(string sectionId)
+        public Task<Section> GetSectionAsync(string sectionId)
             => GetObjectAsync<Section>(new RequestConfig(Configuration.Routes.SECTION, sectionId));
 
         /// <summary>
