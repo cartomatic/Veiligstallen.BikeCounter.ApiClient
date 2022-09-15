@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using RestSharp;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Exception
@@ -30,8 +31,35 @@ namespace Veiligstallen.BikeCounter.ApiClient.Exception
 
         }
 
+        private class RemoteApiExceptionDetails
+        {
+            public string Message { get; set; }
+            public bool? Error { get; set; }
+        }
+
         private static string GetRestResponseErrorMessage(IRestResponse response)
-            => $"{(response.ErrorMessage ?? $"{response.StatusCode}: {response.StatusDescription}")}";
+        {
+            var errorMessage = string.Empty;
+            try
+            {
+                var remoteApiExceptionDetails =
+                    JsonConvert.DeserializeObject<RemoteApiExceptionDetails>(response.Content);
+
+                errorMessage = remoteApiExceptionDetails?.Message;
+            }
+            catch
+            {
+                //ignore
+            }
+
+            if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+            {
+                errorMessage =
+                    $"{errorMessage}{(string.IsNullOrWhiteSpace(errorMessage) ? response.ErrorMessage : $" ({response.ErrorMessage})")}";
+            }
+
+            return $"{(int)response.StatusCode}: {response.StatusDescription}; {errorMessage}";
+        }
 
         public ApiClientException(IRestResponse response)
             : this(GetRestResponseErrorMessage(response))

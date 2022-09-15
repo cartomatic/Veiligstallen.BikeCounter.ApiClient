@@ -31,6 +31,12 @@ namespace Veiligstallen.BikeCounter.ApiClient
             public const string PARKING_LOCATIONS = "parking-locations";
             public const string PARKING_LOCATION = $"parking-locations/{OBJECT_ID}";
 
+            public const string CANONICAL_VEHICLE_CATEGORIES = "canonical-vehicle-categories";
+            public const string CANONICAL_VEHICLE_CATEGORY = $"canonical-vehicle-categories/{OBJECT_ID}";
+
+            public const string CANONICAL_VEHICLES = $"canonical-vehicle-categories/{PARENT_ID}/canonical-vehicles";
+            public const string CANONICAL_VEHICLE = $"canonical-vehicle-categories/{PARENT_ID}/canonical-vehicles/{OBJECT_ID}";
+
             public const string AUTH = "auth";
         }
 
