@@ -26,7 +26,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private static Dictionary<FlatFileSeparator, string> EXTENSIONS = new()
         {
             {FlatFileSeparator.Tab, "tsv"},
-            {FlatFileSeparator.Semicolon, ";"}
+            {FlatFileSeparator.Semicolon, "csv"}
         };
 
 
