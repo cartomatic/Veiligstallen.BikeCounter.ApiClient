@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Veiligstallen.BikeCounter.ApiClient.Loader;
 
 namespace Veiligstallen.BikeCounter.ApiClient
 {
@@ -16,7 +17,25 @@ namespace Veiligstallen.BikeCounter.ApiClient
         public async Task ExtractAndUploadStaticDataAsync(string dir, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir);
-            await staticDataLoader.ExtractAndUploadData(this, msngr);
+            await staticDataLoader.ExtractAndUploadDataAsync(this, msngr);
+        }
+
+        public async Task ExtractAndUploadSurveyAreasFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSurveyAreasFlatAsync(this, fName, separator, header, msngr);
+        }
+
+        public async Task ExtractAndUploadParkingLocationsFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadParkingLocationsFlatAsync(this, fName, separator, header, msngr);
+        }
+
+        public async Task ExtractAndUploadSectionsFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSectionsFlatAsync(this, fName, separator, header, msngr);
         }
     }
 }

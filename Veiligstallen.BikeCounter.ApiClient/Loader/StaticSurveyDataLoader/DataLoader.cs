@@ -28,8 +28,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             foreach (var rawChild in _surveyAreas.Where(sa => !string.IsNullOrWhiteSpace(sa.ParentLocalId)).ToArray())
             {
                 var parent = _surveyAreas.FirstOrDefault(sa => sa.LocalId == rawChild.ParentLocalId);
-                if(parent == null)
+                if (parent == null)
+                {
+                    Notify($"Could not find parent: {rawChild.ParentLocalId} for child survey area: {rawChild.LocalId}; skipping ...");
                     continue;
+                }
 
                 Notify($"Uploading child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
 
@@ -54,11 +57,23 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             foreach (var section in _sections)
             {
-                var parkingLocation = _parkingLocations.FirstOrDefault(pl =>
-                    pl.LocalId == section.ParkingLocationLocalId && pl.Authority == section.Authority && !string.IsNullOrWhiteSpace(pl.Id));
+                ParkingLocation parkingLocation = null;
+                if (_parkingLocations != null)
+                {
+                    parkingLocation = _parkingLocations.FirstOrDefault(pl =>
+                        pl.LocalId == section.ParkingLocationLocalId && pl.Authority == section.Authority && !string.IsNullOrWhiteSpace(pl.Id));
+                }
+                else
+                {
+                    //TODO - need to query API!
 
-                if(parkingLocation == null)
+                }
+                
+                if (parkingLocation == null)
+                {
+                    Notify($"Could not find parking location: {section.ParkingLocationLocalId} for section: section: {section.LocalId}; skipping...");
                     continue;
+                }
 
                 Notify($"Uploading section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
 

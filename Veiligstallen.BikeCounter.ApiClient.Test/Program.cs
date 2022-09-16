@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Veiligstallen.BikeCounter.ApiClient;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 using Veiligstallen.BikeCounter.ApiClient.DataModel.Converters;
+using Veiligstallen.BikeCounter.ApiClient.Loader;
 
 Console.WriteLine("VeiligStallen BikeCounter ApiClient Test :: v1");
 
@@ -16,18 +17,19 @@ var cfg = Cartomatic.Utils.NetCoreConfig.GetNetCoreConfig("credentials") //also 
 
 var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass);
 
-
-await PrepareFlatDemoFiles();
-
-await CleanTestEnvAsync();
-
 //await TestAuthAsync();
 
 //TestGeomSerialization();
 
 //await TestOrgApisAsync();
 
-await TestStaticDataLoaderAsync();
+
+await CleanTestEnvAsync();
+
+//await PrepareFlatDemoFiles();
+await LoadFlatDemoFiles();
+
+//await TestStaticDataLoaderAsync();
 
 
 
@@ -75,6 +77,32 @@ async Task PrepareFlatDemoFiles()
     await dataLoader.ExtractDataAsync();
 
     dataLoader.ExportFlatFiles(dir);
+}
+
+async Task LoadFlatDemoFiles()
+{
+    var surveyAreas = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload\survey_areas.tsv";
+    var parkingLocations = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload\parking_locations.tsv";
+    var sections = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload\sections.tsv";
+
+    Console.WriteLine("Loading data...");
+
+    try
+    {
+        await service.ExtractAndUploadSurveyAreasFlatAsync(surveyAreas, FlatFileSeparator.Tab, true, (sender, msg) => { Console.WriteLine(msg); });
+
+        await service.ExtractAndUploadParkingLocationsFlatAsync(parkingLocations, FlatFileSeparator.Tab, true, (sender, msg) => { Console.WriteLine(msg); });
+
+        await service.ExtractAndUploadSectionsFlatAsync(sections, FlatFileSeparator.Tab, true, (sender, msg) => { Console.WriteLine(msg); });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("BOOM!");
+        Console.WriteLine(ex.Message);
+    }
+
+
+    Console.WriteLine();
 }
 
 async Task TestStaticDataLoaderAsync()

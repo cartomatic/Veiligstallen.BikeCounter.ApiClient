@@ -38,6 +38,5 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _parkingLocations?.Clear();
             _parkingLocations = null;
         }
-
     }
 }

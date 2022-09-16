@@ -20,6 +20,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private EventHandler<string> _msngr;
         private bool _dataExtracted;
 
+        public StaticSurveyDataLoader()
+        {
+        }
+
         public StaticSurveyDataLoader(string dir, bool extractWkt = false)
         {
             _extractWkt = extractWkt;
@@ -31,11 +35,50 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        public async Task ExtractAndUploadData(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
         {
             await ExtractDataAsync(msngr);
             await UploadDataAsync(apiClient, msngr);
         }
+
+        public async Task ExtractAndUploadSurveyAreasFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+            Notify("Extracting survey areas...");
+            await ExtractSurveyAreasFlatAsync(fName, separator, header);
+            Notify("Survey areas extracted!");
+
+            Notify("Uploading survey areas...");
+            await UploadSurveyAreasAsync(service);
+            Notify("Survey areas uploaded!");
+        }
+
+        public async Task ExtractAndUploadParkingLocationsFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting parking locations...");
+            await ExtractParkingLocationsFlatAsync(fName, separator, header);
+            Notify("Parking locations extracted!");
+
+            Notify("Uploading parking locations...");
+            await UploadParkingLocationsAsync(service);
+            Notify("Parking locations uploaded!");
+        }
+
+        public async Task ExtractAndUploadSectionsFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting sections...");
+            await ExtractSectionsFlatAsync(fName, separator, header);
+            Notify("Sections extracted!");
+
+            Notify("Uploading sections...");
+            await UploadSectionsAsync(service);
+            Notify("Sections uploaded!");
+        }
+
 
         /// <summary>
         /// Extracts data from excel file & shp files
