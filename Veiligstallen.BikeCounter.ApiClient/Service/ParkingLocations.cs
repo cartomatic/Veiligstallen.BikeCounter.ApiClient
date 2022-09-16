@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
@@ -48,5 +49,31 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         public Task DeleteParkingLocationAsync(string parkingLocationId)
             => DeleteObjectAsync(new RequestConfig(Configuration.Routes.PARKING_LOCATION, parkingLocationId));
+
+
+        /// <summary>
+        /// Gets a parking location by authority and local id
+        /// </summary>
+        /// <param name="authority"></param>
+        /// <param name="localId"></param>
+        /// <returns></returns>
+        public async Task<ParkingLocation> GetParkingLocationAsync(string authority, string localId)
+        {
+            var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<ParkingLocation[]>(
+                _cfg.Endpoint,
+                Configuration.Routes.PARKING_LOCATIONS,
+                Method.GET,
+                authToken: GetAuthorizationHeaderValue(),
+                queryParams: new Dictionary<string, object>
+                {
+                    {nameof(authority), authority},
+                    {nameof(localId), localId}
+                }
+            );
+
+            return apiOut.Response.IsSuccessful
+                ? apiOut.Output?.FirstOrDefault()
+                : null;
+        }
     }
 }

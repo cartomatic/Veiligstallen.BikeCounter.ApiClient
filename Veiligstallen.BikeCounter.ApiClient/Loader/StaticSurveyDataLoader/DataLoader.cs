@@ -65,10 +65,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 }
                 else
                 {
-                    //TODO - need to query API!
-
+                    parkingLocation =
+                        await apiClient.GetParkingLocationAsync(section.Authority, section.ParkingLocationLocalId);
                 }
-                
+
                 if (parkingLocation == null)
                 {
                     Notify($"Could not find parking location: {section.ParkingLocationLocalId} for section: section: {section.LocalId}; skipping...");
