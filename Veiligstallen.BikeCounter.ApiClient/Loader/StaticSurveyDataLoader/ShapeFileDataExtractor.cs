@@ -22,7 +22,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="surveyAreas"></param>
         private void ExtractSurveyAreasGeoms(List<SurveyArea> surveyAreas)
         {
-            using var shpReader = PrepareShapeFileReader(FILENAME_SURVEY_AREA, SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(FILENAME_SURVEY_AREAS, SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
             
             while (shpReader.Read())
             {
@@ -31,6 +31,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if(surveyArea == null)
                     continue;
 
+                if(_extractWkt)
+                    surveyArea.GeomWkt = shpReader.Geometry.ToText();
+                
                 surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }
         }
@@ -41,7 +44,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="parkingLocations"></param>
         private void ExtractParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
         {
-            using var shpReader = PrepareShapeFileReader(FILENAME_PARKING_LOCATION, SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(FILENAME_PARKING_LOCATIONS, SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
 
             while (shpReader.Read())
             {
@@ -49,6 +52,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var parkingLocation = parkingLocations.FirstOrDefault(pl => int.Parse(pl.Name) == parkingLocationName);
                 if (parkingLocation == null)
                     continue;
+
+                if (_extractWkt)
+                    parkingLocation.GeomWkt = shpReader.Geometry.ToText();
 
                 parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }
@@ -68,6 +74,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var section = sections.FirstOrDefault(s => s.LocalId == sectionLocalId);
                 if (section == null)
                     continue;
+
+                if (_extractWkt)
+                    section.GeomWkt = shpReader.Geometry.ToText();
 
                 section.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }

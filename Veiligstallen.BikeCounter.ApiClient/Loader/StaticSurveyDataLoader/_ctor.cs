@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,16 +11,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     internal partial class StaticSurveyDataLoader : IDisposable
     {
         private const string FILENAME_EXCEL = "Static";
-        private const string FILENAME_PARKING_LOCATION = "ParkingLocation";
+        private const string FILENAME_PARKING_LOCATIONS = "ParkingLocation";
         private const string FILENAME_SECTIONS = "Sections";
-        private const string FILENAME_SURVEY_AREA = "SurveyArea";
+        private const string FILENAME_SURVEY_AREAS = "SurveyArea";
 
         private readonly string _dir;
+        private readonly bool _extractWkt;
         private EventHandler<string> _msngr;
         private bool _dataExtracted;
 
-        public StaticSurveyDataLoader(string dir)
+        public StaticSurveyDataLoader(string dir, bool extractWkt = false)
         {
+            _extractWkt = extractWkt;
             _dir = dir;
         }
 
@@ -39,7 +42,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        private async Task ExtractDataAsync(EventHandler<string> msngr = null)
+        protected internal async Task ExtractDataAsync(EventHandler<string> msngr = null)
         {
             _msngr = msngr;
 
@@ -115,9 +118,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             {
                 fileNames.AddRange(new[]
                 {
-                    $"{FILENAME_PARKING_LOCATION}.{ext}",
+                    $"{FILENAME_PARKING_LOCATIONS}.{ext}",
                     $"{FILENAME_SECTIONS}.{ext}",
-                    $"{FILENAME_SURVEY_AREA}.{ext}"
+                    $"{FILENAME_SURVEY_AREAS}.{ext}"
                 });
             }
 

@@ -17,6 +17,8 @@ var cfg = Cartomatic.Utils.NetCoreConfig.GetNetCoreConfig("credentials") //also 
 var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass);
 
 
+await PrepareFlatDemoFiles();
+
 await CleanTestEnvAsync();
 
 //await TestAuthAsync();
@@ -63,6 +65,16 @@ async Task CleanTestEnvAsync()
     Console.Write($"Done!{rn}");
     Console.WriteLine($"Test env cleaned up: {envCleanedUp}");
     Console.WriteLine();
+}
+
+async Task PrepareFlatDemoFiles()
+{
+    var dir = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload";
+    var dataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir, extractWkt: true);
+
+    await dataLoader.ExtractDataAsync();
+
+    dataLoader.ExportFlatFiles(dir);
 }
 
 async Task TestStaticDataLoaderAsync()

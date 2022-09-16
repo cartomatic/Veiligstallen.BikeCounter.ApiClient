@@ -50,6 +50,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public Geometry GeoLocation { get; set; }
 
         /// <summary>
+        /// Geometry wkt
+        /// </summary>
+        public string GeomWkt { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public Vehicle Allows { get; set; }
