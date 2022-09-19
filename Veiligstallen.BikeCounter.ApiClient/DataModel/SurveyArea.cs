@@ -73,6 +73,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// <summary>
         /// Geometry wkt
         /// </summary>
+        [JsonIgnore]
         public string GeomWkt { get; set; }
     }
 }
