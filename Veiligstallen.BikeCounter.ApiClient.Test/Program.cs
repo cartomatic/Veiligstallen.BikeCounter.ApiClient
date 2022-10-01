@@ -17,7 +17,7 @@ var cfg = Cartomatic.Utils.NetCoreConfig.GetNetCoreConfig("credentials") //also 
 
 var service = new Veiligstallen.BikeCounter.ApiClient.Service(cfg.User, cfg.Pass);
 
-//await TestAuthAsync();
+await TestAuthAsync();
 
 //TestGeomSerialization();
 
