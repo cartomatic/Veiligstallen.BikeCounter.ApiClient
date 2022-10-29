@@ -14,7 +14,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of parking locations
         /// </summary>
         /// <returns></returns>
-        public Task<IEnumerable<ParkingLocation>> GetParkingLocationsAsync()
+        public Task<(IEnumerable<ParkingLocation> data, int total)> GetParkingLocationsAsync()
             => GetObjectsAsync<ParkingLocation>(new RequestConfig(Configuration.Routes.PARKING_LOCATIONS));
 
         /// <summary>

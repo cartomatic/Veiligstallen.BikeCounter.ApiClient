@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -90,7 +91,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <typeparam name="T"></typeparam>
         /// <param name="cfg"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<T>> GetObjectsAsync<T>(RequestConfig cfg)
+        private async Task<(IEnumerable<T> data, int total)> GetObjectsAsync<T>(RequestConfig cfg)
         {
             var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<List<T>>(
                 _cfg.Endpoint,
@@ -102,7 +103,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             EnsureValidResponse(apiOut.Response);
 
-            return apiOut.Output ?? new List<T>();
+            var data = apiOut.Output ?? new List<T>();
+            var total = -1; //data.Count;
+            var totalHdr = apiOut.Response.Headers.FirstOrDefault(x => x.Name == "total");
+            if (totalHdr != null && int.TryParse(totalHdr.Value.ToString(), out var parsedTotal))
+                total = parsedTotal;
+
+            return (data, total);
         }
 
         /// <summary>

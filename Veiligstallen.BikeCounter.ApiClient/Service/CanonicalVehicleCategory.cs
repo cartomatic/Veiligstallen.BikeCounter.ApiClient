@@ -13,7 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of canonical vehicle categories
         /// </summary>
         /// <returns></returns>
-        public Task<IEnumerable<CanonicalVehicleCategory>> GetCanonicalVehicleCategoriesAsync()
+        public Task<(IEnumerable<CanonicalVehicleCategory> data, int total)> GetCanonicalVehicleCategoriesAsync()
             => GetObjectsAsync<CanonicalVehicleCategory>(new RequestConfig(Configuration.Routes.CANONICAL_VEHICLE_CATEGORIES));
 
         /// <summary>

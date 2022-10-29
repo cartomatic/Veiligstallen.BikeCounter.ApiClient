@@ -13,7 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of survey areas
         /// </summary>
         /// <returns></returns>
-        public Task<IEnumerable<SurveyArea>> GetSurveyAreasAsync()
+        public Task<(IEnumerable<SurveyArea> data, int total)> GetSurveyAreasAsync()
             => GetObjectsAsync<SurveyArea>(new RequestConfig(Configuration.Routes.SURVEY_AREAS));
 
         /// <summary>

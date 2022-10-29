@@ -14,7 +14,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="canonicalVehicleCategoryId"></param>
         /// <returns></returns>
-        public Task<IEnumerable<CanonicalVehicle>> GetCanonicalVehiclesAsync(string canonicalVehicleCategoryId)
+        public Task<(IEnumerable<CanonicalVehicle> data, int total)> GetCanonicalVehiclesAsync(string canonicalVehicleCategoryId)
             => GetObjectsAsync<CanonicalVehicle>(new RequestConfig(Configuration.Routes.CANONICAL_VEHICLES, parentId: canonicalVehicleCategoryId));
 
         /// <summary>

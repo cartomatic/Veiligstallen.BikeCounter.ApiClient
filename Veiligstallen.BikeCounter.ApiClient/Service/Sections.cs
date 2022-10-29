@@ -13,7 +13,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of sections
         /// </summary>
         /// <returns></returns>
-        public Task<IEnumerable<Section>> GetSectionsAsync()
+        public Task<(IEnumerable<Section> data, int total)> GetSectionsAsync()
             => GetObjectsAsync<Section>(new RequestConfig(Configuration.Routes.SECTIONS));
 
         /// <summary>

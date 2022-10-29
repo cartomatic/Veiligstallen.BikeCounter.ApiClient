@@ -17,7 +17,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="offset"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Organization>> GetOrganizationsAsync(string orderBy, string? order = null, int? offset = null, int? limit = null)
+        public Task<(IEnumerable<Organization> data, int total)> GetOrganizationsAsync(string orderBy, string? order = null, int? offset = null, int? limit = null)
             => GetObjectsAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATIONS)
             {
                 OrderBy = orderBy ?? RequestConfig.DFLT_ORDER_BY,
