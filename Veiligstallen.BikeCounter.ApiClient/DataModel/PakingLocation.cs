@@ -48,7 +48,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Extra information
         /// </summary>
         [JsonProperty("xtraInfo")]
-        public string XtraInfo { get; set; }
+        public string ExtraInfo { get; set; }
 
         /// <summary>
         /// Geometry representation

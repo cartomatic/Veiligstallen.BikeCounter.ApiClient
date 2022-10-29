@@ -197,7 +197,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Authority = AUTHORITY,
                     LocalId = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_LOCALID),
                     Name = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_NAME),
-                    XtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
+                    ExtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDTHROUGH),
                     Features = ExtractParkingLocationSurveyAreaTypes(r)

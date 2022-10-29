@@ -105,7 +105,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 nameof(ParkingLocation.ValidFrom),
                 nameof(ParkingLocation.ValidThrough),
                 nameof(ParkingLocation.Authority),
-                nameof(ParkingLocation.XtraInfo),
+                nameof(ParkingLocation.ExtraInfo),
                 $"{nameof(ParkingLocation.Allows)}_{nameof(ParkingLocation.Allows.Type)}",
                 nameof(ParkingLocation.Features),
                 nameof(ParkingLocation.GeomWkt)
@@ -120,7 +120,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     SerializeDate(parkingLocation.ValidFrom),
                     SerializeDate(parkingLocation.ValidThrough),
                     parkingLocation.Authority,
-                    parkingLocation.XtraInfo,
+                    parkingLocation.ExtraInfo,
                     SerializeParkingLocationAllowsType(parkingLocation.Allows?.Type),
                     SerializeParkingLocationFeature(parkingLocation.Features),
                     parkingLocation.GeomWkt
@@ -199,7 +199,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             => t.HasValue ? $"{t}" : string.Empty;
 
         private bool TryParseParkingLocationAllowsType(string s, out VehicleType vehicleType)
-            => Enum.TryParse<VehicleType>(s, out vehicleType);
+        {
+            vehicleType = VehicleType.unknown;
+            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, out vehicleType);
+        }
 
         private void DumpLine(string fName, FlatFileSeparator separator, string[] data)
         {
@@ -227,7 +230,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private async Task ExtractSurveyAreasFlatAsync(string fName, FlatFileSeparator separator, bool header)
         {
-            //flat files always uploaded 1 by 1, so need to reset collections!
+            //flat objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
 
             _surveyAreas = new List<SurveyArea>();
@@ -279,9 +282,16 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        private async Task ExtractSurveyAreasShpAsync(string fName)
+        {
+            //shp objects always uploaded 1 by 1, so need to reset collections!
+            ResetCollections();
+            _surveyAreas = ExtractSurveyAreasShpInternalAsync(fName);
+        }
+        
         private async Task ExtractParkingLocationsFlatAsync(string fName, FlatFileSeparator separator, bool header)
         {
-            //flat files always uploaded 1 by 1, so need to reset collections!
+            //flat objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
 
             _parkingLocations = new List<ParkingLocation>();
@@ -313,8 +323,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ParseDate(data[2]),
                     ValidThrough = ParseDate(data[3]),
                     Authority = data[4],
-                    XtraInfo = data[5],
-                    Allows = !string.IsNullOrWhiteSpace(data[6]) && TryParseParkingLocationAllowsType(data[6], out var vehicleType)
+                    ExtraInfo = data[5],
+                    Allows = TryParseParkingLocationAllowsType(data[6], out var vehicleType)
                         ? new Vehicle
                         {
                             Type = vehicleType
@@ -338,9 +348,16 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        private async Task ExtractParkingLocationsShpAsync(string fName)
+        {
+            //shp objects always uploaded 1 by 1, so need to reset collections!
+            ResetCollections();
+            _parkingLocations = ExtractParkingLocationsShpInternalAsync(fName);
+        }
+        
         private async Task ExtractSectionsFlatAsync(string fName, FlatFileSeparator separator, bool header)
         {
-            //flat files always uploaded 1 by 1, so need to reset collections!
+            //flat objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
 
             _sections = new List<Section>();
@@ -390,6 +407,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 _sections.Add(section);
             }
+        }
+
+        private async Task ExtractSectionsShpAsync(string fName)
+        {
+            //shp objects always uploaded 1 by 1, so need to reset collections!
+            ResetCollections();
+            _sections = ExtractSectionsShpInternalAsync(fName);
         }
     }
 }

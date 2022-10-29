@@ -37,5 +37,24 @@ namespace Veiligstallen.BikeCounter.ApiClient
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
             await staticDataLoader.ExtractAndUploadSectionsFlatAsync(this, fName, separator, header, msngr);
         }
+
+        public async Task ExtractAndUploadSurveyAreasShpAsync(string fName, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSurveyAreasShpAsync(this, fName, msngr);
+        }
+
+        public async Task ExtractAndUploadParkingLocationsShpAsync(string fName, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadParkingLocationsShpAsync(this, fName, msngr);
+        }
+
+        public async Task ExtractAndUploadSectionsShpAsync(string fName, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSectionsShpAsync(this, fName, msngr);
+        }
+
     }
 }

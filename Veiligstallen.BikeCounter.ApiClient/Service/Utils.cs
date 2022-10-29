@@ -17,6 +17,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
     {
         private class RequestConfig
         {
+            public const string DFLT_ORDER_BY = "id";
+            public const string DFLT_ORDER = "ASC";
+            public const int DFLT_OFFSET = 0;
+            public const int DFLT_LIMIT = 25;
+
             public RequestConfig(string route, string? objectId = null, string? parentId = null)
             {
                 Route = route;
@@ -26,6 +31,10 @@ namespace Veiligstallen.BikeCounter.ApiClient
             public string Route { get; set; }
             public string? ObjectId { get; set; }
             public string? ParentId { get; set; }
+            public string? OrderBy { get; set; }
+            public string? OrderDirection { get; set; }
+            public int? Offset { get; set; }
+            public int? Limit { get; set; }
         }
         private class RequestConfig<T> : RequestConfig
             where T: class
@@ -87,12 +96,52 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 _cfg.Endpoint,
                 PrepareRoute(cfg),
                 Method.GET,
-                authToken: GetAuthorizationHeaderValue()
+                authToken: GetAuthorizationHeaderValue(),
+                queryParams: PrepareQueryParams(cfg)
             );
 
             EnsureValidResponse(apiOut.Response);
 
             return apiOut.Output ?? new List<T>();
+        }
+
+        /// <summary>
+        /// Prepares additional query params
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <returns></returns>
+        private Dictionary<string, object> PrepareQueryParams(RequestConfig cfg)
+        {
+            var queryParams = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(cfg.OrderBy))
+            {
+                queryParams.Add(CameliseCase(nameof(RequestConfig.OrderBy)), cfg.OrderBy);
+                queryParams.Add(CameliseCase(nameof(RequestConfig.OrderDirection)), cfg.OrderDirection ?? RequestConfig.DFLT_ORDER);
+            }
+
+            if (cfg.Offset.HasValue)
+                queryParams.Add(CameliseCase(nameof(RequestConfig.Offset)), cfg.Offset);
+
+            if (cfg.Limit.HasValue)
+                queryParams.Add(CameliseCase(nameof(RequestConfig.Limit)), cfg.Limit);
+
+            return queryParams;
+        }
+
+        /// <summary>
+        /// Camelizes string cases
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private string CameliseCase(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            var trimmed = input.Trim();
+
+            return $"{trimmed.Substring(0, 1).ToLower()}{trimmed.Substring(1)}";
         }
 
         /// <summary>

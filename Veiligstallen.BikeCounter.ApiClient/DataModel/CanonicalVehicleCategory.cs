@@ -7,8 +7,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
     public class CanonicalVehicleCategory : Base
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        //Name not there anymore as of 20221028
+        //[JsonProperty("name")]
+        //public string Name { get; set; }
 
         [JsonProperty("authority")]
         public string Authority { get; set; }

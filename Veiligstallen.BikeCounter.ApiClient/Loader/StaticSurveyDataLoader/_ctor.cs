@@ -80,6 +80,45 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
+        public async Task ExtractAndUploadSurveyAreasShpAsync(Service service, string fName, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+            Notify("Extracting survey areas...");
+            await ExtractSurveyAreasShpAsync(fName);
+            Notify("Survey areas extracted!");
+
+            Notify("Uploading survey areas...");
+            await UploadSurveyAreasAsync(service);
+            Notify("Survey areas uploaded!");
+        }
+
+        public async Task ExtractAndUploadParkingLocationsShpAsync(Service service, string fName, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting parking locations...");
+            await ExtractParkingLocationsShpAsync(fName);
+            Notify("Parking locations extracted!");
+
+            Notify("Uploading parking locations...");
+            await UploadParkingLocationsAsync(service);
+            Notify("Parking locations uploaded!");
+        }
+
+        public async Task ExtractAndUploadSectionsShpAsync(Service service, string fName, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting sections...");
+            await ExtractSectionsShpAsync(fName);
+            Notify("Sections extracted!");
+
+            Notify("Uploading sections...");
+            await UploadSectionsAsync(service);
+            Notify("Sections uploaded!");
+        }
+
+
         /// <summary>
         /// Extracts data from excel file & shp files
         /// </summary>

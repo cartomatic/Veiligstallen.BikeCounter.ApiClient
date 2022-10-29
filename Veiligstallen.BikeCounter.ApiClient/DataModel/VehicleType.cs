@@ -6,6 +6,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
     public enum VehicleType
     {
+        unknown = -1,
+
         /// <summary>
         /// fiets
         /// </summary>
