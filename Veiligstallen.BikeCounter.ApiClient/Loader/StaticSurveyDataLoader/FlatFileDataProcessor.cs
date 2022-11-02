@@ -70,7 +70,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 nameof(SurveyArea.ValidFrom),
                 nameof(SurveyArea.ValidThrough),
                 nameof(SurveyArea.Authority),
-                nameof(SurveyArea.ExtraInfo),
+                nameof(SurveyArea.XtraInfo),
                 nameof(SurveyArea.SurveyAreaType),
                 nameof(SurveyArea.GeomWkt)
 
@@ -86,7 +86,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     SerializeDate(surveyArea.ValidFrom),
                     SerializeDate(surveyArea.ValidThrough),
                     surveyArea.Authority,
-                    surveyArea.ExtraInfo,
+                    surveyArea.XtraInfo,
                     surveyArea.SurveyAreaType,
                     surveyArea.GeomWkt
                 });
@@ -105,7 +105,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 nameof(ParkingLocation.ValidFrom),
                 nameof(ParkingLocation.ValidThrough),
                 nameof(ParkingLocation.Authority),
-                nameof(ParkingLocation.ExtraInfo),
+                nameof(ParkingLocation.XtraInfo),
                 $"{nameof(ParkingLocation.Allows)}_{nameof(ParkingLocation.Allows.Type)}",
                 nameof(ParkingLocation.Features),
                 nameof(ParkingLocation.GeomWkt)
@@ -120,7 +120,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     SerializeDate(parkingLocation.ValidFrom),
                     SerializeDate(parkingLocation.ValidThrough),
                     parkingLocation.Authority,
-                    parkingLocation.ExtraInfo,
+                    parkingLocation.XtraInfo,
                     SerializeParkingLocationAllowsType(parkingLocation.Allows?.Type),
                     SerializeParkingLocationFeature(parkingLocation.Features),
                     parkingLocation.GeomWkt
@@ -263,7 +263,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ParseDate(data[3]),
                     ValidThrough = ParseDate(data[4]),
                     Authority = data[5],
-                    ExtraInfo = data[6],
+                    XtraInfo = data[6],
                     SurveyAreaType = data[7]
                 };
 
@@ -323,7 +323,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ParseDate(data[2]),
                     ValidThrough = ParseDate(data[3]),
                     Authority = data[4],
-                    ExtraInfo = data[5],
+                    XtraInfo = data[5],
                     Allows = TryParseParkingLocationAllowsType(data[6], out var vehicleType)
                         ? new Vehicle
                         {

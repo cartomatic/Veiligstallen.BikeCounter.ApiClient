@@ -140,7 +140,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     LocalId = ExtractFieldValue<string>(r, SURVEY_AREA_COL_LOCALID),
                     ParentLocalId = ExtractFieldValue<string>(r, SURVEY_AREA_COL_PARENTLOCALID),
                     Name = ExtractFieldValue<string>(r, SURVEY_AREA_COL_NAME),
-                    ExtraInfo = ExtractFieldValue<string>(r, SURVEY_AREA_COL_XTRAINFO),
+                    XtraInfo = ExtractFieldValue<string>(r, SURVEY_AREA_COL_XTRAINFO),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, SURVEY_AREA_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, SURVEY_AREA_COL_VALIDTHROUGH),
                     SurveyAreaType = ExtractFieldValue<string>(r, SURVEY_AREA_COL_TYPE)
@@ -197,7 +197,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Authority = AUTHORITY,
                     LocalId = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_LOCALID),
                     Name = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_NAME),
-                    ExtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
+                    XtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDTHROUGH),
                     Features = ExtractParkingLocationSurveyAreaTypes(r)

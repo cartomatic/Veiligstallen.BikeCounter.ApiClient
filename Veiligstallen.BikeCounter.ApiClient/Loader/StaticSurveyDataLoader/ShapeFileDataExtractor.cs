@@ -122,7 +122,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ParseDateTime(ExtractString(shpReader, colMap[SHP_FROM])),
                     ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
-                    ExtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
+                    XtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
                     SurveyAreaType = ExtractString(shpReader, colMap[SHP_SURVEY_AREA_TYPE])
                 };
 
@@ -162,7 +162,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ParseDateTime(ExtractString(shpReader, colMap[SHP_FROM])),
                     ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
-                    ExtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
+                    XtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
                     Allows = TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ALLOWS_TYPE]), out var vehicleType)
                         ? new Vehicle
                         {

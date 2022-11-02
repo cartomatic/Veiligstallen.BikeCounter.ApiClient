@@ -18,11 +18,6 @@ namespace Veiligstallen.BikeCounter.ApiClient
     {
         private class RequestConfig
         {
-            public const string DFLT_ORDER_BY = "id";
-            public const string DFLT_ORDER = "ASC";
-            public const int DFLT_OFFSET = 0;
-            public const int DFLT_LIMIT = 25;
-
             public RequestConfig(string route, string? objectId = null, string? parentId = null, Dictionary<string, string> queryParams = null)
             {
                 Route = route;
@@ -46,6 +41,12 @@ namespace Veiligstallen.BikeCounter.ApiClient
             {
                 Object = @object;
             }
+        }
+
+        private class Sort
+        {
+            public string Property { get; set; }
+            public string Direction { get; set; }
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
         private static string[] _reservedQueryParams =
         {
-            "start", "limit", "_dc", "page"
+            "start", "limit", "_dc", "page", "sort"
         };
 
         /// <summary>
@@ -124,9 +125,24 @@ namespace Veiligstallen.BikeCounter.ApiClient
         {
             var queryParams = new Dictionary<string, object>();
 
-            //TODO - ordering based on extjs order param
             var inParams = cfg.QueryParams ?? new Dictionary<string, string>();
             
+            //sorting
+            if (inParams.ContainsKey("sort"))
+            {
+                var sorts = JsonConvert.DeserializeObject<Sort[]>(inParams["sort"]);
+
+                if (sorts != null && sorts.Any())
+                {
+                    var sort = sorts.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Property));
+                    if (sort != null)
+                    {
+                        queryParams.Add("orderBy", sort.Property);
+                        queryParams.Add("orderDirection", string.IsNullOrWhiteSpace(sort.Direction) ? "ASC" : sort.Direction);
+                    }
+                }
+            }
+
             //paging
             if(inParams.ContainsKey("start") && int.TryParse(inParams["start"], out var offset))
                 queryParams.Add(nameof(offset), offset);
