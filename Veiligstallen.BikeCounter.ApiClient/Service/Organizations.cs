@@ -13,17 +13,14 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of organizations
         /// </summary>
         /// <param name="orderBy"></param>
-        /// <param name="order"></param>
+        /// <param name="orderDirection"></param>
         /// <param name="offset"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public Task<(IEnumerable<Organization> data, int total)> GetOrganizationsAsync(string orderBy, string? order = null, int? offset = null, int? limit = null)
+        public Task<(IEnumerable<Organization> data, int total)> GetOrganizationsAsync(Dictionary<string, string> queryParams)
             => GetObjectsAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATIONS)
             {
-                OrderBy = orderBy ?? RequestConfig.DFLT_ORDER_BY,
-                //OrderDirection = order ?? RequestConfig.DFLT_ORDER,
-                Offset = offset ?? RequestConfig.DFLT_OFFSET,
-                Limit = limit ?? RequestConfig.DFLT_LIMIT
+                QueryParams = queryParams
             });
 
         /// <summary>

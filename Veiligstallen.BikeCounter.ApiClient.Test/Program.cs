@@ -2,6 +2,8 @@
 
 using System.Drawing.Text;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Veiligstallen.BikeCounter.ApiClient;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;

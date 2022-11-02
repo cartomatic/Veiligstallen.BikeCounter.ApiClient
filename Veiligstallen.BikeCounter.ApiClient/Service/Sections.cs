@@ -13,8 +13,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// Gets a list of sections
         /// </summary>
         /// <returns></returns>
-        public Task<(IEnumerable<Section> data, int total)> GetSectionsAsync()
-            => GetObjectsAsync<Section>(new RequestConfig(Configuration.Routes.SECTIONS));
+        public Task<(IEnumerable<Section> data, int total)> GetSectionsAsync(Dictionary<string, string> queryParams)
+            => GetObjectsAsync<Section>(new RequestConfig(Configuration.Routes.SECTIONS){QueryParams = queryParams});
 
         /// <summary>
         /// Gets a section by id

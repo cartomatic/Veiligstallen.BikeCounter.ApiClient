@@ -23,19 +23,17 @@ namespace Veiligstallen.BikeCounter.ApiClient
             public const int DFLT_OFFSET = 0;
             public const int DFLT_LIMIT = 25;
 
-            public RequestConfig(string route, string? objectId = null, string? parentId = null)
+            public RequestConfig(string route, string? objectId = null, string? parentId = null, Dictionary<string, string> queryParams = null)
             {
                 Route = route;
                 ObjectId = objectId;
                 ParentId = parentId;
+                QueryParams = queryParams;
             }
             public string Route { get; set; }
             public string? ObjectId { get; set; }
             public string? ParentId { get; set; }
-            public string? OrderBy { get; set; }
-            public string? OrderDirection { get; set; }
-            public int? Offset { get; set; }
-            public int? Limit { get; set; }
+            public Dictionary<string, string> QueryParams { get; set; }
         }
         private class RequestConfig<T> : RequestConfig
             where T: class
@@ -104,13 +102,18 @@ namespace Veiligstallen.BikeCounter.ApiClient
             EnsureValidResponse(apiOut.Response);
 
             var data = apiOut.Output ?? new List<T>();
-            var total = -1; //data.Count;
-            var totalHdr = apiOut.Response.Headers.FirstOrDefault(x => x.Name == "total");
+            var total = -1;
+            var totalHdr = apiOut.Response.Headers.FirstOrDefault(x => x.Name == "X-Total-Count");
             if (totalHdr != null && int.TryParse(totalHdr.Value.ToString(), out var parsedTotal))
                 total = parsedTotal;
 
             return (data, total);
         }
+
+        private static string[] _reservedQueryParams =
+        {
+            "start", "limit", "_dc", "page"
+        };
 
         /// <summary>
         /// Prepares additional query params
@@ -121,17 +124,22 @@ namespace Veiligstallen.BikeCounter.ApiClient
         {
             var queryParams = new Dictionary<string, object>();
 
-            if (!string.IsNullOrEmpty(cfg.OrderBy))
+            //TODO - ordering based on extjs order param
+            var inParams = cfg.QueryParams ?? new Dictionary<string, string>();
+            
+            //paging
+            if(inParams.ContainsKey("start") && int.TryParse(inParams["start"], out var offset))
+                queryParams.Add(nameof(offset), offset);
+
+            if (inParams.ContainsKey("limit") && int.TryParse(inParams["limit"], out var limit))
+                queryParams.Add(nameof(limit), limit);
+
+            //remaining query params
+            foreach (var inParamsKey in inParams.Keys)
             {
-                queryParams.Add(CameliseCase(nameof(RequestConfig.OrderBy)), cfg.OrderBy);
-                queryParams.Add(CameliseCase(nameof(RequestConfig.OrderDirection)), cfg.OrderDirection ?? RequestConfig.DFLT_ORDER);
+                if(!_reservedQueryParams.Contains(inParamsKey))
+                    queryParams.Add(inParamsKey, inParams[inParamsKey]);
             }
-
-            if (cfg.Offset.HasValue)
-                queryParams.Add(CameliseCase(nameof(RequestConfig.Offset)), cfg.Offset);
-
-            if (cfg.Limit.HasValue)
-                queryParams.Add(CameliseCase(nameof(RequestConfig.Limit)), cfg.Limit);
 
             return queryParams;
         }
