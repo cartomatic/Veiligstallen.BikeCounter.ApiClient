@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using RestSharp;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
@@ -69,6 +71,18 @@ namespace Veiligstallen.BikeCounter.ApiClient
             );
 
             EnsureValidResponse(apiOut);
+        }
+
+        public async Task<Guid> PrepareSurveyCountingSheetAsync(string surveyId, string outDir)
+        {
+            var downloadId = Guid.NewGuid();
+
+            //TODO - download all the stuff and assemble a separated output!
+
+
+            File.WriteAllText(Path.Combine(outDir, $"{downloadId}"), $"temp content {surveyId}");
+
+            return downloadId;
         }
     }
 }
