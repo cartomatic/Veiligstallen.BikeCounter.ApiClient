@@ -56,5 +56,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
             await staticDataLoader.ExtractAndUploadSectionsShpAsync(this, fName, msngr);
         }
 
+        public async Task LinkSurveyAreasToSurveysFlatAsync(string fName, FlatFileSeparator separator, bool header, string surveyId, bool appendData, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.LinkSurveyAreasToSurveysFlatAsync(this, fName, separator, header, surveyId, appendData, msngr);
+        }
+
     }
 }

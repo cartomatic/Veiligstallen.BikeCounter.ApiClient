@@ -41,6 +41,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        /// <summary>
+        /// Uploads parking locations
+        /// </summary>
+        /// <param name="apiClient"></param>
+        /// <returns></returns>
         private async Task UploadParkingLocationsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
             foreach (var parkingLocation in _parkingLocations.Where(pl => pl.GeoLocation != null))
@@ -52,7 +57,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
-
+        /// <summary>
+        /// Uploads sections
+        /// </summary>
+        /// <param name="apiClient"></param>
+        /// <returns></returns>
         private async Task UploadSectionsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
             foreach (var section in _sections)
@@ -80,6 +89,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 section.ParkingLocation = parkingLocation.Id;
                 var s = await apiClient.CreateSectionAsync(section);
             }
+        }
+
+        /// <summary>
+        /// Links survey areas to survey
+        /// </summary>
+        /// <param name="apiClient"></param>
+        /// <param name="surveyId"></param>
+        /// <param name="appendData"></param>
+        /// <param name="surveyAreasIds"></param>
+        /// <returns></returns>
+        private async Task LinkSurveyAreasToSurveyAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, string surveyId, IEnumerable<string> surveyAreasIds, bool appendData)
+        {
+            await apiClient.LinkSurveyAreasAsync(surveyId, surveyAreasIds, appendData);
         }
 
     }

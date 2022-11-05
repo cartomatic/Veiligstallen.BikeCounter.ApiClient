@@ -24,6 +24,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             public const string SURVEYS = "surveys";
             public const string SURVEY = $"surveys/{OBJECT_ID}";
+            public const string SURVEY_SURVEY_AREAS = $"surveys/{OBJECT_ID}/survey-areas";
 
             public const string ORGANIZATIONS = "organisations";
             public const string ORGANIZATION = $"organisations/{OBJECT_ID}";

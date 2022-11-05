@@ -48,5 +48,27 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         public Task DeleteSurveyAsync(string surveyId)
             => DeleteObjectAsync(new RequestConfig(Configuration.Routes.SURVEY, surveyId));
+
+        /// <summary>
+        /// Connects survey area ids to a survey by either overwriting or appending
+        /// </summary>
+        /// <param name="surveyId"></param>
+        /// <param name="surveyAreasIds"></param>
+        /// <param name="appendData"></param>
+        /// <returns></returns>
+        public async Task LinkSurveyAreasAsync(string surveyId, IEnumerable<string> surveyAreasIds, bool appendData)
+        {
+            var cfg = new RequestConfig(Configuration.Routes.SURVEY_SURVEY_AREAS, surveyId);
+
+            var apiOut = await Cartomatic.Utils.RestApi.RestApiCall(
+                _cfg.Endpoint,
+                PrepareRoute(cfg),
+                appendData ? Method.PUT : Method.POST,
+                authToken: GetAuthorizationHeaderValue(),
+                data: surveyAreasIds
+            );
+
+            EnsureValidResponse(apiOut);
+        }
     }
 }

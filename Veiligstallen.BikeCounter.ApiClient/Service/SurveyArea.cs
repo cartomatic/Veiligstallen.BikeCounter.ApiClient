@@ -80,7 +80,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 {
                     nameof(SurveyArea.Id),
                     nameof(SurveyArea.LocalId),
-                    nameof(SurveyArea.ParentLocalId),
+                    //nameof(SurveyArea.ParentLocalId),
                     nameof(SurveyArea.Name),
                     nameof(SurveyArea.Parent),
                     nameof(SurveyArea.ValidFrom),
@@ -101,7 +101,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                     {
                         surveyArea.Id,
                         surveyArea.LocalId,
-                        surveyArea.ParentLocalId,
+                        //surveyArea.ParentLocalId,
                         surveyArea.Name,
                         surveyArea.Parent,
                         surveyArea.ValidFrom?.ToString("O"),

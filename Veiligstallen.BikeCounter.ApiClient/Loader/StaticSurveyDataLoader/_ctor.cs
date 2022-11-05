@@ -79,6 +79,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Sections uploaded!");
         }
 
+        public async Task LinkSurveyAreasToSurveysFlatAsync(Service service, string fName, FlatFileSeparator separator,
+            bool header, string surveyId, bool appendData, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting survey areas ids...");
+            var surveyAreasIds = await ExtractSurveyAreasIdsFlatAsync(fName, separator, header);
+            Notify("Survey areas ids!");
+
+            Notify($"Linking survey areas to survey {surveyId}...");
+            await LinkSurveyAreasToSurveyAsync(service, surveyId, surveyAreasIds, appendData);
+            Notify("Survey areas linked!");
+        }
+
 
         public async Task ExtractAndUploadSurveyAreasShpAsync(Service service, string fName, EventHandler<string> msngr)
         {
@@ -117,6 +131,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             await UploadSectionsAsync(service);
             Notify("Sections uploaded!");
         }
+        
 
 
         /// <summary>

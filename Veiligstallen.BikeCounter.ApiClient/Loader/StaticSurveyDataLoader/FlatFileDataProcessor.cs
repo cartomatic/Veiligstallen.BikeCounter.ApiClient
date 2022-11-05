@@ -409,6 +409,39 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatAsync(string fName, FlatFileSeparator separator, bool header)
+        {
+            var sectionAreaIds = new List<string>();
+
+            var hdrRead = false;
+            var lineCnt = 0;
+            foreach (var line in File.ReadLines(fName))
+            {
+                lineCnt++;
+
+                if (header && !hdrRead)
+                {
+                    hdrRead = true;
+                    continue;
+                }
+
+                var data = line.Split(SEPARATORS[separator]);
+
+
+                //assuming the first field is id and it should be parseable to UUID... but it's not...
+                //3847FD42-66AD-4BFB-A40CD37624CDAA37
+                //xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+                //Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+                //if (!Guid.TryParse(data[0], out var parsedGuid))
+                //    throw new System.Exception($"Could not parse GUID at line {lineCnt}");
+                //sectionAreaIds.Add(parsedGuid);
+
+                sectionAreaIds.Add(data[0]);
+            }
+
+            return sectionAreaIds;
+        }
+
         private async Task ExtractSectionsShpAsync(string fName)
         {
             //shp objects always uploaded 1 by 1, so need to reset collections!
