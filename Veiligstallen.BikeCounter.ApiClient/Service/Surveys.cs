@@ -77,6 +77,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
         {
             var downloadId = Guid.NewGuid();
 
+
+            //need parking locations
+            //for parking locations need sections
+            //also need canonical vehicle category for a survey and vehicles for a category
+            //all then needs to be assembled into a flat structure and output as tsv
+
+
             //TODO - download all the stuff and assemble a separated output!
 
 
