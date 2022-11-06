@@ -33,6 +33,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public string Name { get; set; }
 
         /// <summary>
+        /// Layout of a section
+        /// </summary>
+        [JsonProperty("layout")]
+        public string Layout { get; set; }
+
+        /// <summary>
         /// Date valid from
         /// </summary>
         [JsonProperty("validFrom")]
@@ -61,6 +67,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// </summary>
         [JsonProperty("parkingSystemType")]
         public string ParkingSystemType { get; set; }
+
+        /// <summary>
+        /// Type of a vehicle owner
+        /// </summary>
+        [JsonProperty("vehicleOwnerType")]
+        public string VehicleOwnerType { get; set; }
 
         /// <summary>
         /// Geometry representation
