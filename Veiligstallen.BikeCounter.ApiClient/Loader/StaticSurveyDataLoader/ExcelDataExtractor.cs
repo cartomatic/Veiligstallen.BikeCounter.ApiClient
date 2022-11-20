@@ -171,8 +171,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Name = ExtractFieldValue<string>(r, SECTION_COL_NAME),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDTHROUGH),
-                    Level = (int)ExtractFieldValue<double>(r, SECTION_COL_LEVEL),
-                    ParkingSystemType = ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
+                    Level = (int) ExtractFieldValue<double>(r, SECTION_COL_LEVEL),
+                    ParkingSpaceOf =
+                        TryParseParkingSpaceType(ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
+                            out var parkingSpaceType)
+                            ? new []
+                            {
+                                    new ParkingSpace {
+                                        Type = parkingSpaceType
+                                    }
+                            }
+                            
+                            : null,
                     ParkingLocationLocalId = ExtractFieldValue<string>(r, SECTION_COL_PARKINGLOCATIONLOCALID),
                 };
 
@@ -224,14 +234,14 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return (T)r[colName];
         }
 
-        private SurveyAreaType[] ExtractParkingLocationSurveyAreaTypes(DataRow r)
+        private ParkingLocationFeature[] ExtractParkingLocationSurveyAreaTypes(DataRow r)
         {
-            var output = new List<SurveyAreaType>();
+            var output = new List<ParkingLocationFeature>();
 
             var stringValues = (ExtractFieldValue<string>(r, PARKING_LOCATION_COL_FEATURETYPE)?? string.Empty).Trim().Split(' ');
             foreach (var stringValue in stringValues)
             {
-                if (Enum.TryParse(stringValue, true, out SurveyAreaType enumValue))
+                if (Enum.TryParse(stringValue, true, out ParkingLocationFeature enumValue))
                     output.Add(enumValue);
             }
 

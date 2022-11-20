@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
-    public enum SurveyAreaType
+    public enum ParkingLocationFeature
     {
         lockerService,
         personnelSupervision,

@@ -63,16 +63,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public int Level { get; set; }
 
         /// <summary>
-        /// Parking system type: r = rek, o = etagerek onder, b = etagerek boven, n = nietje, x = geen voorziening
+        /// Parking space type
         /// </summary>
-        [JsonProperty("parkingSystemType")]
-        public string ParkingSystemType { get; set; }
-
-        /// <summary>
-        /// Type of a vehicle owner
-        /// </summary>
-        [JsonProperty("vehicleOwnerType")]
-        public string VehicleOwnerType { get; set; }
+        [JsonProperty("parkingSpaceOf")]
+        public ParkingSpace[] ParkingSpaceOf { get; set; }
 
         /// <summary>
         /// Geometry representation

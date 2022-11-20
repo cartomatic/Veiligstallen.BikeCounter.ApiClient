@@ -160,8 +160,25 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         section.Name,
                         section.Layout,
                         $"{_cfg.Endpoint}/{Configuration.Routes.SECTIONS}/{section.Id}",
-                        section.ParkingSystemType,
-                        section.VehicleOwnerType,
+
+                        //section_parkingSystemType
+                        section.ParkingSpaceOf?.Any() == true
+                            ? string.Join(",", section.ParkingSpaceOf.Select(x => $"{x.Type}"))
+                            : null,
+
+                        //section_vehicleOwnerType
+                        section.ParkingSpaceOf?.Any() == true
+                            ? string.Join(
+                                ",",
+                                section.ParkingSpaceOf.Aggregate(new List<string>(), (agg, ps) =>
+                                {
+                                    if (ps.Vehicles?.Any() == true)
+                                        agg.AddRange(ps.Vehicles.Select(x => $"{x.Owner}"));
+
+                                    return agg;
+                                }).Distinct()
+                            )
+                            : null,
                         section.Level.ToString(),
                         section.ValidFrom?.ToString("yyyy-MM-dd"),
                         section.ValidThrough?.ToString("yyyy-MM-dd")

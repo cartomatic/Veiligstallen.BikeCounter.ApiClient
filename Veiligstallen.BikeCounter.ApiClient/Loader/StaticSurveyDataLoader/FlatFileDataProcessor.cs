@@ -30,141 +30,141 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         };
 
 
-        public void ExportFlatFiles(string dir, FlatFileSeparator separator = FlatFileSeparator.Tab)
-        {
-            if (!Enum.IsDefined(typeof(FlatFileSeparator), separator))
-                throw new ArgumentException(
-                    $"Invalid separator: {separator}; supported separators are: {string.Join(",", SEPARATORS.Keys.Select(k => $"{k}"))}");
+        //public void ExportFlatFiles(string dir, FlatFileSeparator separator = FlatFileSeparator.Tab)
+        //{
+        //    if (!Enum.IsDefined(typeof(FlatFileSeparator), separator))
+        //        throw new ArgumentException(
+        //            $"Invalid separator: {separator}; supported separators are: {string.Join(",", SEPARATORS.Keys.Select(k => $"{k}"))}");
 
-            try
-            {
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-            }
-            catch
-            {
-                //ignore
-            }
+        //    try
+        //    {
+        //        if (!Directory.Exists(dir))
+        //            Directory.CreateDirectory(dir);
+        //    }
+        //    catch
+        //    {
+        //        //ignore
+        //    }
 
-            if (!Directory.Exists(dir))
-                throw new ArgumentException($"Directory does not exist or could not create it: {dir}");
+        //    if (!Directory.Exists(dir))
+        //        throw new ArgumentException($"Directory does not exist or could not create it: {dir}");
 
-            if (!_dataExtracted)
-                throw new InvalidOperationException("No data has been extracted so far");
+        //    if (!_dataExtracted)
+        //        throw new InvalidOperationException("No data has been extracted so far");
 
-            ExportSurveyAreas(dir, separator);
-            ExportParkingLocations(dir, separator);
-            ExportSections(dir, separator);
-        }
+        //    ExportSurveyAreas(dir, separator);
+        //    ExportParkingLocations(dir, separator);
+        //    ExportSections(dir, separator);
+        //}
 
-        private void ExportSurveyAreas(string dir, FlatFileSeparator separator)
-        {
-            var fName = GetFlatFilePath(dir, FLAT_FILE_SURVEY_AREAS, separator);
+        //private void ExportSurveyAreas(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_SURVEY_AREAS, separator);
 
-            //hdr first
-            DumpLine(fName, separator, new[]
-            {
-                nameof(SurveyArea.LocalId),
-                nameof(SurveyArea.ParentLocalId),
-                nameof(SurveyArea.Name),
-                nameof(SurveyArea.ValidFrom),
-                nameof(SurveyArea.ValidThrough),
-                nameof(SurveyArea.Authority),
-                nameof(SurveyArea.XtraInfo),
-                nameof(SurveyArea.SurveyAreaType),
-                nameof(SurveyArea.GeomWkt)
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(SurveyArea.LocalId),
+        //        nameof(SurveyArea.ParentLocalId),
+        //        nameof(SurveyArea.Name),
+        //        nameof(SurveyArea.ValidFrom),
+        //        nameof(SurveyArea.ValidThrough),
+        //        nameof(SurveyArea.Authority),
+        //        nameof(SurveyArea.XtraInfo),
+        //        nameof(SurveyArea.SurveyAreaType),
+        //        nameof(SurveyArea.GeomWkt)
 
-            });
+        //    });
 
-            foreach (var surveyArea in _surveyAreas)
-            {
-                DumpLine(fName, separator, new[]
-                {
-                    surveyArea.LocalId,
-                    surveyArea.ParentLocalId,
-                    surveyArea.Name,
-                    SerializeDate(surveyArea.ValidFrom),
-                    SerializeDate(surveyArea.ValidThrough),
-                    surveyArea.Authority,
-                    surveyArea.XtraInfo,
-                    surveyArea.SurveyAreaType,
-                    surveyArea.GeomWkt
-                });
-            }
-        }
+        //    foreach (var surveyArea in _surveyAreas)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            surveyArea.LocalId,
+        //            surveyArea.ParentLocalId,
+        //            surveyArea.Name,
+        //            SerializeDate(surveyArea.ValidFrom),
+        //            SerializeDate(surveyArea.ValidThrough),
+        //            surveyArea.Authority,
+        //            surveyArea.XtraInfo,
+        //            surveyArea.SurveyAreaType,
+        //            surveyArea.GeomWkt
+        //        });
+        //    }
+        //}
 
-        private void ExportParkingLocations(string dir, FlatFileSeparator separator)
-        {
-            var fName = GetFlatFilePath(dir, FLAT_FILE_PARKING_LOCATIONS, separator);
+        //private void ExportParkingLocations(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_PARKING_LOCATIONS, separator);
 
-            //hdr first
-            DumpLine(fName, separator, new[]
-            {
-                nameof(ParkingLocation.LocalId),
-                nameof(ParkingLocation.Name),
-                nameof(ParkingLocation.ValidFrom),
-                nameof(ParkingLocation.ValidThrough),
-                nameof(ParkingLocation.Authority),
-                nameof(ParkingLocation.XtraInfo),
-                $"{nameof(ParkingLocation.Allows)}_{nameof(ParkingLocation.Allows.Type)}",
-                nameof(ParkingLocation.Features),
-                nameof(ParkingLocation.GeomWkt)
-            });
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(ParkingLocation.LocalId),
+        //        nameof(ParkingLocation.Name),
+        //        nameof(ParkingLocation.ValidFrom),
+        //        nameof(ParkingLocation.ValidThrough),
+        //        nameof(ParkingLocation.Authority),
+        //        nameof(ParkingLocation.XtraInfo),
+        //        $"{nameof(ParkingLocation.Allows)}_{nameof(ParkingLocation.Allows.Type)}",
+        //        nameof(ParkingLocation.Features),
+        //        nameof(ParkingLocation.GeomWkt)
+        //    });
 
-            foreach (var parkingLocation in _parkingLocations)
-            {
-                DumpLine(fName, separator, new[]
-                {
-                    parkingLocation.LocalId,
-                    parkingLocation.Name,
-                    SerializeDate(parkingLocation.ValidFrom),
-                    SerializeDate(parkingLocation.ValidThrough),
-                    parkingLocation.Authority,
-                    parkingLocation.XtraInfo,
-                    SerializeParkingLocationAllowsType(parkingLocation.Allows?.Type),
-                    SerializeParkingLocationFeature(parkingLocation.Features),
-                    parkingLocation.GeomWkt
-                });
-            }
-        }
+        //    foreach (var parkingLocation in _parkingLocations)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            parkingLocation.LocalId,
+        //            parkingLocation.Name,
+        //            SerializeDate(parkingLocation.ValidFrom),
+        //            SerializeDate(parkingLocation.ValidThrough),
+        //            parkingLocation.Authority,
+        //            parkingLocation.XtraInfo,
+        //            SerializeParkingLocationAllowsType(parkingLocation.Allows?.Type),
+        //            SerializeParkingLocationFeature(parkingLocation.Features),
+        //            parkingLocation.GeomWkt
+        //        });
+        //    }
+        //}
 
-        private void ExportSections(string dir, FlatFileSeparator separator)
-        {
-            var fName = GetFlatFilePath(dir, FLAT_FILE_SECTIONS, separator);
+        //private void ExportSections(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_SECTIONS, separator);
 
-            //hdr first
-            DumpLine(fName, separator, new[]
-            {
-                nameof(Section.LocalId),
-                nameof(Section.ParkingLocationLocalId),
-                nameof(Section.Name),
-                nameof(Section.ValidFrom),
-                nameof(Section.ValidThrough),
-                nameof(Section.Authority),
-                nameof(Section.Level),
-                nameof(Section.ParkingSystemType),
-                nameof(Section.GeomWkt)
-            });
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(Section.LocalId),
+        //        nameof(Section.ParkingLocationLocalId),
+        //        nameof(Section.Name),
+        //        nameof(Section.ValidFrom),
+        //        nameof(Section.ValidThrough),
+        //        nameof(Section.Authority),
+        //        nameof(Section.Level),
+        //        nameof(Section.ParkingSystemType),
+        //        nameof(Section.GeomWkt)
+        //    });
 
-            foreach (var section in _sections)
-            {
-                DumpLine(fName, separator, new[]
-                {
-                    section.LocalId,
-                    section.ParkingLocationLocalId,
-                    section.Name,
-                    SerializeDate(section.ValidFrom),
-                    SerializeDate(section.ValidThrough),
-                    section.Authority,
-                    section.Level.ToString(),
-                    section.ParkingSystemType,
-                    section.GeomWkt
-                });
-            }
-        }
+        //    foreach (var section in _sections)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            section.LocalId,
+        //            section.ParkingLocationLocalId,
+        //            section.Name,
+        //            SerializeDate(section.ValidFrom),
+        //            SerializeDate(section.ValidThrough),
+        //            section.Authority,
+        //            section.Level.ToString(),
+        //            section.ParkingSystemType,
+        //            section.GeomWkt
+        //        });
+        //    }
+        //}
 
-        private string SerializeDate(DateTime? dt)
-            => dt.HasValue ? dt.Value.ToString("O") : string.Empty;
+        //private string SerializeDate(DateTime? dt)
+        //    => dt.HasValue ? dt.Value.ToString("O") : string.Empty;
 
         private DateTime? ParseDate(string d)
         {
@@ -174,12 +174,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return null;
         }
 
-        private string SerializeParkingLocationFeature(SurveyAreaType[] features)
+        private string SerializeParkingLocationFeature(ParkingLocationFeature[] features)
             => string.Join(",", features?.Select(x => $"{x}") ?? Array.Empty<string>());
 
-        private SurveyAreaType[] ParseParkingLocationFeature(string s)
+        private ParkingLocationFeature[] ParseParkingLocationFeature(string s)
         {
-            var output = new List<SurveyAreaType>();
+            var output = new List<ParkingLocationFeature>();
 
             foreach (var wouldBeEnumStrValue in s)
             {
@@ -188,7 +188,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 //    output.Add((SurveyAreaType) enumIntValue);
 
                 //case insensitive
-                if(Enum.TryParse<SurveyAreaType>(wouldBeEnumStrValue.ToString(), out var enumValue))
+                if(Enum.TryParse<ParkingLocationFeature>(wouldBeEnumStrValue.ToString(), out var enumValue))
                     output.Add(enumValue);
             }
 
@@ -202,6 +202,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             vehicleType = VehicleType.unknown;
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, out vehicleType);
+        }
+
+        private bool TryParseParkingSpaceType(string s, out ParkingSpaceType parkingSpaceType)
+        {
+            parkingSpaceType = ParkingSpaceType.unknown;
+            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<ParkingSpaceType>(s, out parkingSpaceType);
         }
 
         private void DumpLine(string fName, FlatFileSeparator separator, string[] data)
@@ -392,7 +398,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Level = int.TryParse(data[6], out var parsedLevel)
                         ? parsedLevel
                         : 0,
-                    ParkingSystemType = data[7]
+                    ParkingSpaceOf = TryParseParkingSpaceType(data[7], out var parkingSpaceType)
+                        ? new[]
+                        {
+                            new ParkingSpace
+                            {
+                                Type = parkingSpaceType
+                            }
+                        }
+                        : null
                 };
 
                 try

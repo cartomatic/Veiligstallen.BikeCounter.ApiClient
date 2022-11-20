@@ -38,7 +38,7 @@ await LoadFlatDemoFiles();
 async Task TestOrgApisAsync()
 {
     Console.Write("Getting organizations... ");
-    var orgs = await service.GetOrganizationsAsync();
+    var (orgs, total) = await service.GetOrganizationsAsync(null);
     Console.Write($"Done!{rn}");
     Console.WriteLine($"Organizations: {JsonConvert.SerializeObject(orgs)}");
     Console.WriteLine();
@@ -71,15 +71,15 @@ async Task CleanTestEnvAsync()
     Console.WriteLine();
 }
 
-async Task PrepareFlatDemoFiles()
-{
-    var dir = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload";
-    var dataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir, extractWkt: true);
+//async Task PrepareFlatDemoFiles()
+//{
+//    var dir = @"F:\OneDrive\OneDrive - Cartomatic Dominik Mikiewicz\Projects\Trajan\Trajan.Dashboard\_crow_data_upload";
+//    var dataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir, extractWkt: true);
 
-    await dataLoader.ExtractDataAsync();
+//    await dataLoader.ExtractDataAsync();
 
-    dataLoader.ExportFlatFiles(dir);
-}
+//    dataLoader.ExportFlatFiles(dir);
+//}
 
 async Task LoadFlatDemoFiles()
 {

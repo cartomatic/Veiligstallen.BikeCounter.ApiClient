@@ -212,7 +212,16 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
                     Level = shpReader.GetInt32(colMap[SHP_LEVEL]),
-                    ParkingSystemType = ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE])
+                    ParkingSpaceOf = TryParseParkingSpaceType(ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE]),
+                        out var parkingSpaceType)
+                        ? new[]
+                        {
+                            new ParkingSpace
+                            {
+                                Type = parkingSpaceType
+                            }
+                        }
+                        : null
                 };
 
                 if (_extractWkt)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Remotion.Linq.Clauses;
 using RestSharp;
+using RestSharp.Serializers;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 using Veiligstallen.BikeCounter.ApiClient.Exception;
 
@@ -195,6 +196,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
             return apiOut.Output;
         }
 
+        private ISerializer _serializer = new Cartomatic.Utils.RestSharpSerializers.NewtonSoftJsonSerializer(
+            Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<Newtonsoft.Json.JsonConverter>() { new Newtonsoft.Json.Converters.StringEnumConverter() }
+            });
+
         /// <summary>
         /// Creates an object
         /// </summary>
@@ -209,7 +217,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 PrepareRoute(cfg),
                 Method.POST,
                 data: cfg.Object,
-                authToken: GetAuthorizationHeaderValue()
+                authToken: GetAuthorizationHeaderValue(),
+                serializer: _serializer
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -232,7 +241,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 PrepareRoute(cfg),
                 Method.PUT,
                 data: cfg.Object,
-                authToken: GetAuthorizationHeaderValue()
+                authToken: GetAuthorizationHeaderValue(),
+                serializer: _serializer
             );
 
             EnsureValidResponse(apiOut.Response);
