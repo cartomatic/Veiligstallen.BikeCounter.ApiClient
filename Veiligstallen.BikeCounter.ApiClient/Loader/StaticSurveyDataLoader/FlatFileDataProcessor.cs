@@ -181,7 +181,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             var output = new List<ParkingLocationFeature>();
 
-            foreach (var wouldBeEnumStrValue in s)
+            foreach (var wouldBeEnumStrValue in s.Split(','))
             {
                 //if (int.TryParse(wouldBeEnumStrValue.ToString(), out var enumIntValue) &&
                 //    Enum.IsDefined(typeof(SurveyAreaType), enumIntValue))
