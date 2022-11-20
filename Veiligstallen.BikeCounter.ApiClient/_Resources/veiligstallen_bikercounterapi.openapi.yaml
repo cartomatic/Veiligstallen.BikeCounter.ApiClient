@@ -1573,6 +1573,8 @@ components:
           format: date-time
         authority:
           type: string
+        surveyAreaType:
+          type: string
         xtraInfo:
           type: string
     ParkingLocation:
@@ -1667,13 +1669,17 @@ components:
         appearance:
           type: string
           enum:
-            - f
-            - c
-            - s
+            - k
+            - r
+            - l
             - b
+            - f
+            - v
             - m
+            - d
+            - t
             - g
-            - a
+            - x
           description: Verschijningsvorm (k = Kinderfiets / r = Racefiets / l = Ligfiets / b = Bakfiets/Transportfiets / f = Fietskar / v = Vouwfiets / m = Mountainbike / d = Driewieler / t = Tandem / g = Gehandicaptenvoertuig / x = Sterk afwijkend nl. b,f,d,t,g
         state:
           type: array
