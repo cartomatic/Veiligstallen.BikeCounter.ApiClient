@@ -99,7 +99,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "observation_capacity_id",
             "observation_capacity_timestamp_start",
             "observation_capacity_timestamp_end",
-            "capacity_parkingCapacity",
+            "observation_capacity_parkingCapacity",
             "observation_capacity_note",
             "observation_occupation_id",
             "observation_occupation_timestamp_start",
