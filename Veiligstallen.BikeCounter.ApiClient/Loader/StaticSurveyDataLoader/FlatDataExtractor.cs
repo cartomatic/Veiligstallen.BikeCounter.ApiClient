@@ -241,7 +241,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         };
         
 
-        private async Task<List<SurveyArea>> ExtractSurveyAreasInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator)
+        private List<SurveyArea> ExtractSurveyAreasSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<SurveyArea>();
 
@@ -303,7 +303,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             PARKING_LOCATION_SURVEY_AREA_LOCAL_ID, PARKING_LOCATION_LOCATION_NUMBER
         };
 
-        private async Task<List<ParkingLocation>> ExtractParkingLocationsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator)
+        private List<ParkingLocation> ExtractParkingLocationsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<ParkingLocation>();
 
@@ -376,7 +376,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR
         };
 
-        private async Task<List<Section>> ExtractSectionsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        private List<Section> ExtractSectionsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<Section>();
 

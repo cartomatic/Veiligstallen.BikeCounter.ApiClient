@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
+using Veiligstallen.BikeCounter.ApiClient.DataModel.Extensions;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
@@ -41,9 +42,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             //shp objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
-            _surveyAreas = ExtractSurveyAreasInternalAsync(shpFile);
-
-            throw new NotImplementedException("Flat data extractor required!!!");
+            _surveyAreas = ExtractSurveyAreasShpInternal(shpFile)
+                .Merge(ExtractSurveyAreasSeparatedInternal(flatFile, flatFileSeparator));
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -67,9 +67,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             //shp objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
-            _parkingLocations = ExtractParkingLocationsInternalAsync(shpFile);
-
-            throw new NotImplementedException("Flat data extractor required!!!");
+            _parkingLocations = ExtractParkingLocationsShpInternal(shpFile).
+                Merge(ExtractParkingLocationsSeparatedInternal(flatFile, flatFileSeparator));
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -97,9 +96,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             //shp objects always uploaded 1 by 1, so need to reset collections!
             ResetCollections();
-            _sections = ExtractSectionsInternalAsync(shpFile);
-
-            throw new NotImplementedException("Flat data extractor required!!!");
+            _sections = ExtractSectionsShpInternal(shpFile).
+                Merge(ExtractSectionsSeparatedInternal(flatFile, flatFileSeparator));
         }
     }
 }

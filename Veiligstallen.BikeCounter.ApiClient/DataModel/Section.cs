@@ -60,7 +60,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Level
         /// </summary>
         [JsonProperty("level")]
-        public int Level { get; set; }
+        public int? Level { get; set; }
 
         /// <summary>
         /// Parking space type

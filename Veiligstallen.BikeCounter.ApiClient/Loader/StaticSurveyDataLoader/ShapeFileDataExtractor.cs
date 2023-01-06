@@ -164,7 +164,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<SurveyArea> ExtractSurveyAreasInternalAsync(string shpFile)
+        private List<SurveyArea> ExtractSurveyAreasShpInternal(string shpFile)
         {
             var output = new List<SurveyArea>();
             var map = new Dictionary<string, SurveyArea>();
@@ -249,7 +249,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<ParkingLocation> ExtractParkingLocationsInternalAsync(string shpFile)
+        private List<ParkingLocation> ExtractParkingLocationsShpInternal(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
@@ -323,7 +323,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<Section> ExtractSectionsInternalAsync(string shpFile)
+        private List<Section> ExtractSectionsShpInternal(string shpFile)
         {
             var output = new List<Section>();
 
