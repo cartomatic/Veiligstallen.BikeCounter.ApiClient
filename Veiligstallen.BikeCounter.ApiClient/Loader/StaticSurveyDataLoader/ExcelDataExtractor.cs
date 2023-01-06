@@ -42,14 +42,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private const string AUTHORITY = "prorail";
 
-        private DataSet _excelDataSet;
+        private DataSet _completeDataExcelDataSet;
 
         /// <summary>
         /// Loads an validates excel data
         /// </summary>
-        private void LoadExcelData()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private void LoadCompleteDataExcelData()
         {
-            using var fs = File.OpenRead(Path.Combine(_dir, $"{FILENAME_EXCEL}.xlsx"));
+            using var fs = File.OpenRead(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_EXCEL}.xlsx"));
 
             var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(fs);
             var cfg = new ExcelDataSetConfiguration
@@ -60,7 +61,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 }
             };
 
-            _excelDataSet = excelReader.AsDataSet(cfg);
+            _completeDataExcelDataSet = excelReader.AsDataSet(cfg);
 
             ValidateExcel();
         }
@@ -73,12 +74,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             foreach (var sheetName in new[]{EXCEL_SHEET_SURVEY_AREA_STATIC, EXCEL_SHEET_PARKING_LOCATION_STATIC, EXCEL_SHEET_SECTION_STATIC})
             {
-                if (!_excelDataSet.Tables.Contains(sheetName))
+                if (!_completeDataExcelDataSet.Tables.Contains(sheetName))
                     throw new System.Exception($"Could not find a mandatory excel sheet: {sheetName}");
             }
 
             ValidateColumns(
-                _excelDataSet.Tables[EXCEL_SHEET_SURVEY_AREA_STATIC],
+                _completeDataExcelDataSet.Tables[EXCEL_SHEET_SURVEY_AREA_STATIC],
                 new[]
                 {
                     SURVEY_AREA_COL_LOCALID, SURVEY_AREA_COL_PARENTLOCALID, SURVEY_AREA_COL_NAME,
@@ -88,7 +89,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             );
 
             ValidateColumns(
-                _excelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC],
+                _completeDataExcelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC],
                 new[]
                 {
                     PARKING_LOCATION_COL_NAME, PARKING_LOCATION_COL_FEATURETYPE, PARKING_LOCATION_COL_LOCALID,
@@ -97,7 +98,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             );
 
             ValidateColumns(
-                _excelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC],
+                _completeDataExcelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC],
                 new[]
                 {
                     SECTION_COL_LOCALID, SECTION_COL_NAME, SECTION_COL_VALIDFROM,
@@ -128,11 +129,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// Extracts surveys data from xlsx
         /// </summary>
         /// <returns></returns>
-        private List<SurveyArea> ExtractSurveyAreas()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<SurveyArea> ExtractCompleteDataSurveyAreas()
         {
             var output = new List<SurveyArea>();
 
-            foreach (DataRow r in _excelDataSet.Tables[EXCEL_SHEET_SURVEY_AREA_STATIC].Rows)
+            foreach (DataRow r in _completeDataExcelDataSet.Tables[EXCEL_SHEET_SURVEY_AREA_STATIC].Rows)
             {
                 var sa = new SurveyArea
                 {
@@ -158,11 +160,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// Extracts sections from xlsx
         /// </summary>
         /// <returns></returns>
-        private List<Section> ExtractSections()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<Section> ExtractCompleteDataSections()
         {
             var output = new List<Section>();
 
-            foreach (DataRow r in _excelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC].Rows)
+            foreach (DataRow r in _completeDataExcelDataSet.Tables[EXCEL_SHEET_SECTION_STATIC].Rows)
             {
                 var s = new Section
                 {
@@ -196,11 +199,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// Extracts parking locations from xlsx
         /// </summary>
         /// <returns></returns>
-        private List<ParkingLocation> ExtractParkingLocations()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<ParkingLocation> ExtractCompleteDataParkingLocations()
         {
             var output = new List<ParkingLocation>();
 
-            foreach (DataRow r in _excelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC].Rows)
+            foreach (DataRow r in _completeDataExcelDataSet.Tables[EXCEL_SHEET_PARKING_LOCATION_STATIC].Rows)
             {
                 var pl = new ParkingLocation
                 {
@@ -249,9 +253,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        private void DisposeExcel()
+        private void DisposeCompleteDataExcel()
         {
-            _excelDataSet?.Dispose();
+            _completeDataExcelDataSet?.Dispose();
         }
     }
 }

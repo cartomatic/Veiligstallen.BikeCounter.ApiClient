@@ -10,11 +10,6 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
     internal partial class StaticSurveyDataLoader : IDisposable
     {
-        private const string FILENAME_EXCEL = "Static";
-        private const string FILENAME_PARKING_LOCATIONS = "ParkingLocation";
-        private const string FILENAME_SECTIONS = "Sections";
-        private const string FILENAME_SURVEY_AREAS = "SurveyArea";
-
         private readonly string _dir;
         private readonly bool _extractWkt;
         private EventHandler<string> _msngr;
@@ -35,13 +30,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        public async Task ExtractAndUploadDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadCompleteDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
         {
-            await ExtractDataAsync(msngr);
-            await UploadDataAsync(apiClient, msngr);
+            await ExtractCompleteDataAsync(msngr);
+            await UploadCompletedDataAsync(apiClient, msngr);
         }
 
-        public async Task ExtractAndUploadSurveyAreasFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSurveyAreasFlatAsync(Service service, string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr)
         {
             _msngr = msngr;
             Notify("Extracting survey areas...");
@@ -53,7 +50,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Survey areas uploaded!");
         }
 
-        public async Task ExtractAndUploadParkingLocationsFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadParkingLocationsFlatAsync(Service service, string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
@@ -66,7 +64,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Parking locations uploaded!");
         }
 
-        public async Task ExtractAndUploadSectionsFlatAsync(Service service, string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSectionsFlatAsync(Service service, string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
@@ -79,7 +78,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Sections uploaded!");
         }
 
-        public async Task LinkSurveyAreasToSurveysFlatAsync(Service service, string fName, FlatFileSeparator separator,
+        public async Task LinkSurveyAreasToSurveysFlatAsync(Service service, string fName, FlatFileUtils.FlatFileSeparator separator,
             bool header, string surveyId, bool appendData, EventHandler<string> msngr)
         {
             _msngr = msngr;
@@ -94,11 +93,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        public async Task ExtractAndUploadSurveyAreasShpAsync(Service service, string fName, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSurveyAreasShpOnlyAsync(Service service, string fName, EventHandler<string> msngr)
         {
             _msngr = msngr;
             Notify("Extracting survey areas...");
-            await ExtractSurveyAreasShpAsync(fName);
+            await ExtractSurveyAreasShpOnlyAsync(fName);
             Notify("Survey areas extracted!");
 
             Notify("Uploading survey areas...");
@@ -106,12 +106,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Survey areas uploaded!");
         }
 
-        public async Task ExtractAndUploadParkingLocationsShpAsync(Service service, string fName, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadParkingLocationsShpOnlyAsync(Service service, string fName, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
             Notify("Extracting parking locations...");
-            await ExtractParkingLocationsShpAsync(fName);
+            await ExtractParkingLocationsShpOnlyAsync(fName);
             Notify("Parking locations extracted!");
 
             Notify("Uploading parking locations...");
@@ -119,19 +120,58 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Parking locations uploaded!");
         }
 
-        public async Task ExtractAndUploadSectionsShpAsync(Service service, string fName, EventHandler<string> msngr)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSectionsShpOnlyAsync(Service service, string fName, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
             Notify("Extracting sections...");
-            await ExtractSectionsShpAsync(fName);
+            await ExtractSectionsShpOnlyAsync(fName);
             Notify("Sections extracted!");
 
             Notify("Uploading sections...");
             await UploadSectionsAsync(service);
             Notify("Sections uploaded!");
         }
-        
+
+
+        public async Task ExtractAndUploadSurveyAreasAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+            Notify("Extracting survey areas...");
+            await ExtractSurveyAreasAsync(shpFile, flatFile, flatFileSeparator);
+            Notify("Survey areas extracted!");
+
+            Notify("Uploading survey areas...");
+            await UploadSurveyAreasAsync(service);
+            Notify("Survey areas uploaded!");
+        }
+
+        public async Task ExtractAndUploadParkingLocationsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting parking locations...");
+            await ExtractParkingLocationsAsync(shpFile, flatFile, flatFileSeparator);
+            Notify("Parking locations extracted!");
+
+            Notify("Uploading parking locations...");
+            await UploadParkingLocationsAsync(service);
+            Notify("Parking locations uploaded!");
+        }
+
+        public async Task ExtractAndUploadSectionsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        {
+            _msngr = msngr;
+
+            Notify("Extracting sections...");
+            await ExtractSectionsAsync(shpFile, flatFile, flatFileSeparator);
+            Notify("Sections extracted!");
+
+            Notify("Uploading sections...");
+            await UploadSectionsAsync(service);
+            Notify("Sections uploaded!");
+        }
 
 
         /// <summary>
@@ -139,30 +179,31 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        protected internal async Task ExtractDataAsync(EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        protected internal async Task ExtractCompleteDataAsync(EventHandler<string> msngr = null)
         {
             _msngr = msngr;
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             Notify("Validating files presence...");
-            ValidateFilePresence();
+            ValidateCompleteDataFilePresence();
             Notify("Files ok!");
 
             Notify("Loading & validating excel spreadsheet...");
-            LoadExcelData();
+            LoadCompleteDataExcelData();
             Notify("Excel ok!");
 
             Notify("Extracting survey areas...");
-            await ExtractSurveyAreasAsync();
+            await ExtractCompleteDataSurveyAreasAsync();
             Notify("Survey areas extracted!");
 
             Notify("Extracting parking locations...");
-            await ExtractParkingLocationsAsync();
+            await ExtractCompleteDataParkingLocationsAsync();
             Notify("Parking locations extracted!");
 
             Notify("Extracting sections...");
-            await ExtractSectionsAsync();
+            await ExtractCompleteDataSectionsAsync();
             Notify("Sections extracted!");
 
             _dataExtracted = true;
@@ -174,7 +215,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="msngr"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        private async Task UploadDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task UploadCompletedDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
         {
             if (!_dataExtracted)
                 throw new InvalidOperationException("Data needs to be xtracted before uploading!");
@@ -198,26 +240,33 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             => _msngr?.Invoke(this, msg);
 
 
+
+        private const string COMPLETE_DATA_FILENAME_EXCEL = "Static";
+        private const string COMPLETE_DATA_FILENAME_PARKING_LOCATIONS = "ParkingLocation";
+        private const string COMPLETE_DATA_FILENAME_SECTIONS = "Sections";
+        private const string COMPLETE_DATA_FILENAME_SURVEY_AREAS = "SurveyArea";
+
         /// <summary>
         /// Validates presence of the files required to perform a static data upload
         /// </summary>
         /// <exception cref="System.Exception"></exception>
-        private void ValidateFilePresence()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private void ValidateCompleteDataFilePresence()
         {
             if (!Directory.Exists(_dir))
                 throw new ArgumentException($"Directory does not exist: {_dir}");
 
             var fileNames = new List<string>
             {
-                $"{FILENAME_EXCEL}.xlsx"
+                $"{COMPLETE_DATA_FILENAME_EXCEL}.xlsx"
             };
             foreach (var ext in new[]{"shp", "dbf", "shx"})
             {
                 fileNames.AddRange(new[]
                 {
-                    $"{FILENAME_PARKING_LOCATIONS}.{ext}",
-                    $"{FILENAME_SECTIONS}.{ext}",
-                    $"{FILENAME_SURVEY_AREAS}.{ext}"
+                    $"{COMPLETE_DATA_FILENAME_PARKING_LOCATIONS}.{ext}",
+                    $"{COMPLETE_DATA_FILENAME_SECTIONS}.{ext}",
+                    $"{COMPLETE_DATA_FILENAME_SURVEY_AREAS}.{ext}"
                 });
             }
 
@@ -232,7 +281,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         public void Dispose()
         {
             _msngr = null;
-            DisposeExcel();
+            DisposeCompleteDataExcel();
             DisposeExtractedData();
         }
     }

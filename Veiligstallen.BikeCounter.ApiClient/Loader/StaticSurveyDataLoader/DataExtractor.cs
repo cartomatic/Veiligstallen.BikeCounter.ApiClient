@@ -12,22 +12,25 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private List<SurveyArea> _surveyAreas;
         private List<Section> _sections;
 
-        private async Task ExtractParkingLocationsAsync()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractCompleteDataParkingLocationsAsync()
         {
-            _parkingLocations = ExtractParkingLocations();
-            ExtractParkingLocationsGeoms(_parkingLocations);
+            _parkingLocations = ExtractCompleteDataParkingLocations();
+            ExtractCompleteDataParkingLocationsGeoms(_parkingLocations);
         }
 
-        private async Task ExtractSurveyAreasAsync()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractCompleteDataSurveyAreasAsync()
         {
-            _surveyAreas = ExtractSurveyAreas();
-            ExtractSurveyAreasGeoms(_surveyAreas);
+            _surveyAreas = ExtractCompleteDataSurveyAreas();
+            ExtractCompleteDataSurveyAreasGeoms(_surveyAreas);
         }
 
-        private async Task ExtractSectionsAsync()
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractCompleteDataSectionsAsync()
         {
-            _sections = ExtractSections();
-            ExtractSectionsGeoms(_sections);
+            _sections = ExtractCompleteDataSections();
+            ExtractCompleteDataSectionsGeoms(_sections);
         }
 
         private void DisposeExtractedData()
@@ -37,6 +40,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             _parkingLocations?.Clear();
             _parkingLocations = null;
+
+            _sections?.Clear();
+            _sections = null;
         }
     }
 }

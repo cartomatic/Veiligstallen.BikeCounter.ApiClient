@@ -115,7 +115,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="outDir"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public async Task<Guid> PrepareSurveyCountingSheetAsync(string surveyId, string outDir, FlatFileSeparator separator)
+        public async Task<Guid> PrepareSurveyCountingSheetAsync(string surveyId, string outDir, FlatFileUtils.FlatFileSeparator separator)
         {
             var downloadId = Guid.NewGuid();
 
@@ -137,7 +137,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             var dynamicDataEmptyData = _surveyDynamicDataHeaders.Select(x => string.Empty).ToArray();
 
             var applySeparator = (IEnumerable<string> data) =>
-                string.Join(separator == FlatFileSeparator.Semicolon ? ";" : "\t", data);
+                string.Join(separator == FlatFileUtils.FlatFileSeparator.Semicolon ? ";" : "\t", data);
 
             //output data container
             var data = new List<string>

@@ -14,49 +14,74 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="dir"></param>
         /// <param name="msngr"></param>
         /// <returns></returns>
-        public async Task ExtractAndUploadStaticDataAsync(string dir, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadStaticCompleteDataAsync(string dir, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader(dir);
-            await staticDataLoader.ExtractAndUploadDataAsync(this, msngr);
+            await staticDataLoader.ExtractAndUploadCompleteDataAsync(this, msngr);
         }
 
-        public async Task ExtractAndUploadSurveyAreasFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSurveyAreasFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
             await staticDataLoader.ExtractAndUploadSurveyAreasFlatAsync(this, fName, separator, header, msngr);
         }
 
-        public async Task ExtractAndUploadParkingLocationsFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadParkingLocationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
             await staticDataLoader.ExtractAndUploadParkingLocationsFlatAsync(this, fName, separator, header, msngr);
         }
 
-        public async Task ExtractAndUploadSectionsFlatAsync(string fName, FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSectionsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
             await staticDataLoader.ExtractAndUploadSectionsFlatAsync(this, fName, separator, header, msngr);
         }
 
-        public async Task ExtractAndUploadSurveyAreasShpAsync(string fName, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSurveyAreasShpOnlyAsync(string fName, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadSurveyAreasShpAsync(this, fName, msngr);
+            await staticDataLoader.ExtractAndUploadSurveyAreasShpOnlyAsync(this, fName, msngr);
         }
 
-        public async Task ExtractAndUploadParkingLocationsShpAsync(string fName, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadParkingLocationsShpOnlyAsync(string fName, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadParkingLocationsShpAsync(this, fName, msngr);
+            await staticDataLoader.ExtractAndUploadParkingLocationsShpOnlyAsync(this, fName, msngr);
         }
 
-        public async Task ExtractAndUploadSectionsShpAsync(string fName, EventHandler<string> msngr = null)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        public async Task ExtractAndUploadSectionsShpOnlyAsync(string fName, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadSectionsShpAsync(this, fName, msngr);
+            await staticDataLoader.ExtractAndUploadSectionsShpOnlyAsync(this, fName, msngr);
         }
 
-        public async Task LinkSurveyAreasToSurveysFlatAsync(string fName, FlatFileSeparator separator, bool header, string surveyId, bool appendData, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSurveyAreasAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+        }
+
+        public async Task ExtractAndUploadParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadParkingLocationsAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+        }
+
+        public async Task ExtractAndUploadSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        {
+            using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
+            await staticDataLoader.ExtractAndUploadSectionsAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+        }
+
+        public async Task LinkSurveyAreasToSurveysFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header, string surveyId, bool appendData, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
             await staticDataLoader.LinkSurveyAreasToSurveysFlatAsync(this, fName, separator, header, surveyId, appendData, msngr);

@@ -13,17 +13,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
     internal partial class StaticSurveyDataLoader
     {
-        private const string SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
-        private const string SHP_PARKINGLOCATION_COL_NAME = "Locatie";
-        private const string SHP_SECTION_COL_NAME = "localid";
+        private const string COMPLETE_DATA_SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
+        private const string COMPLETE_DATA_SHP_PARKINGLOCATION_COL_NAME = "Locatie";
+        private const string COMPLETE_DATA_SHP_SECTION_COL_NAME = "localid";
 
         /// <summary>
-        /// Extracts survey area geometries from a shapefile and updates survey areas
+        /// Extracts survey area geometries from a complete data shape file and updates survey areas
         /// </summary>
         /// <param name="surveyAreas"></param>
-        private void ExtractSurveyAreasGeoms(List<SurveyArea> surveyAreas)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private void ExtractCompleteDataSurveyAreasGeoms(List<SurveyArea> surveyAreas)
         {
-            using var shpReader = PrepareShapeFileReader(FILENAME_SURVEY_AREAS, SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_SURVEY_AREAS, COMPLETE_DATA_SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
             
             while (shpReader.Read())
             {
@@ -38,14 +39,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
             }
         }
-        
+
         /// <summary>
-        /// Extracts parking location geometries from a shapefile and updates parking locations
+        /// Extracts parking location geometries from a complete data shape file and updates parking locations
         /// </summary>
         /// <param name="parkingLocations"></param>
-        private void ExtractParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private void ExtractCompleteDataParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
         {
-            using var shpReader = PrepareShapeFileReader(FILENAME_PARKING_LOCATIONS, SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_PARKING_LOCATIONS, COMPLETE_DATA_SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
 
             while (shpReader.Read())
             {
@@ -62,12 +64,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
-        /// Extracts section geometries from a shapefile and updates sections
+        /// Extracts section geometries from a complete data shape file and updates sections
         /// </summary>
         /// <param name="sections"></param>
-        private void ExtractSectionsGeoms(List<Section> sections)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private void ExtractCompleteDataSectionsGeoms(List<Section> sections)
         {
-            using var shpReader = PrepareShapeFileReader(FILENAME_SECTIONS, SHP_SECTION_COL_NAME, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_SECTIONS, COMPLETE_DATA_SHP_SECTION_COL_NAME, out var idColIdx);
 
             while (shpReader.Read())
             {
@@ -84,46 +87,47 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        private const string SHP_LOCAL_ID = "LocId";
-        private const string SHP_NAME = "Name";
-        private const string SHP_FROM = "From";
-        private const string SHP_THROUGH = "Through";
-        private const string SHP_AUTHORITY = "Authority";
-        private const string SHP_EXTRA_INFO = "ExtraInfo";
+        private const string SHP_ONLY_LOCAL_ID = "LocId";
+        private const string SHP_ONLY_NAME = "Name";
+        private const string SHP_ONLY_FROM = "From";
+        private const string SHP_ONLY_THROUGH = "Through";
+        private const string SHP_ONLY_AUTHORITY = "Authority";
+        private const string SHP_ONLY_EXTRA_INFO = "ExtraInfo";
 
-        private const string SHP_PARENT_LOCAL_ID = "PrntLocId";
-        private const string SHP_SURVEY_AREA_TYPE = "AreaType";
+        private const string SHP_ONLY_PARENT_LOCAL_ID = "PrntLocId";
+        private const string SHP_ONLY_SURVEY_AREA_TYPE = "AreaType";
 
-        private static string[] _surveyAreaRequiredShpColumns =
+        private static string[] _surveyAreaShpOnlyRequiredColumns =
         {
-            SHP_LOCAL_ID, SHP_PARENT_LOCAL_ID,
-            SHP_NAME, SHP_FROM, SHP_THROUGH, SHP_AUTHORITY, SHP_EXTRA_INFO,
-            SHP_SURVEY_AREA_TYPE
+            SHP_ONLY_LOCAL_ID, SHP_ONLY_PARENT_LOCAL_ID,
+            SHP_ONLY_NAME, SHP_ONLY_FROM, SHP_ONLY_THROUGH, SHP_ONLY_AUTHORITY, SHP_ONLY_EXTRA_INFO,
+            SHP_ONLY_SURVEY_AREA_TYPE
         };
 
         /// <summary>
-        /// Extracts survey areas from a shp file
+        /// Extracts survey areas from a self contained shp file
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<SurveyArea> ExtractSurveyAreasShpInternalAsync(string shpFile)
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<SurveyArea> ExtractSurveyAreasShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<SurveyArea>();
 
-            using var shpReader = PrepareShapeFileReader(shpFile, _surveyAreaRequiredShpColumns, out var colMap);
+            using var shpReader = PrepareShapeFileReader(shpFile, _surveyAreaShpOnlyRequiredColumns, out var colMap);
 
             while (shpReader.Read())
             {
                 var surveyArea = new SurveyArea
                 {
-                    LocalId = ExtractString(shpReader, colMap[SHP_LOCAL_ID]),
-                    ParentLocalId = ExtractString(shpReader, colMap[SHP_PARENT_LOCAL_ID]),
-                    Name = ExtractString(shpReader, colMap[SHP_NAME]),
-                    ValidFrom = ParseDateTime(ExtractString(shpReader, colMap[SHP_FROM])),
-                    ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
-                    Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
-                    XtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
-                    SurveyAreaType = ExtractString(shpReader, colMap[SHP_SURVEY_AREA_TYPE])
+                    LocalId = ExtractString(shpReader, colMap[SHP_ONLY_LOCAL_ID]),
+                    ParentLocalId = ExtractString(shpReader, colMap[SHP_ONLY_PARENT_LOCAL_ID]),
+                    Name = ExtractString(shpReader, colMap[SHP_ONLY_NAME]),
+                    ValidFrom = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_FROM])),
+                    ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
+                    Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
+                    XtraInfo = ExtractString(shpReader, colMap[SHP_ONLY_EXTRA_INFO]),
+                    SurveyAreaType = ExtractString(shpReader, colMap[SHP_ONLY_SURVEY_AREA_TYPE])
                 };
 
                 if (_extractWkt)
@@ -137,39 +141,84 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
-        private const string SHP_ALLOWS_TYPE = "AllowsType";
-        private const string SHP_FEATURES = "Features";
+        private const string SHP_ONLY_ALLOWS_TYPE = "AllowsType";
+        private const string SHP_ONLY_FEATURES = "Features";
 
-        private static string[] _parkingLocationsRequiredShpColumns =
+        private static string[] _parkingLocationsShpOnlyRequiredColumns =
         {
-            SHP_LOCAL_ID, 
-            SHP_NAME, SHP_FROM, SHP_THROUGH, SHP_AUTHORITY, SHP_EXTRA_INFO,
-            SHP_ALLOWS_TYPE, SHP_FEATURES
+            SHP_ONLY_LOCAL_ID, 
+            SHP_ONLY_NAME, SHP_ONLY_FROM, SHP_ONLY_THROUGH, SHP_ONLY_AUTHORITY, SHP_ONLY_EXTRA_INFO,
+            SHP_ONLY_ALLOWS_TYPE, SHP_ONLY_FEATURES
         };
 
-        private List<ParkingLocation> ExtractParkingLocationsShpInternalAsync(string shpFile)
+        private const string DEFAULT_FORMAT_SHP_ID = "local_id";
+
+        private static string[] _defaultFormatShpRequiredColumns =
+        {
+            DEFAULT_FORMAT_SHP_ID
+        };
+
+
+        /// <summary>
+        /// Extracts surveys from a default format - shp + flat
+        /// </summary>
+        /// <param name="shpFile"></param>
+        /// <returns></returns>
+        private List<SurveyArea> ExtractSurveyAreasInternalAsync(string shpFile)
+        {
+            var output = new List<SurveyArea>();
+            var map = new Dictionary<string, SurveyArea>();
+
+            using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
+            while (shpReader.Read())
+            {
+                var surveyArea = new SurveyArea
+                {
+                    LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
+                };
+
+                if (_extractWkt)
+                    surveyArea.GeomWkt = shpReader.Geometry.ToText();
+
+                surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                output.Add(surveyArea);
+                map[surveyArea.LocalId] = surveyArea;
+            }
+
+            return output;
+        }
+
+
+        /// <summary>
+        /// Extracts parking locations from a self contained shape file
+        /// </summary>
+        /// <param name="shpFile"></param>
+        /// <returns></returns>
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<ParkingLocation> ExtractParkingLocationsShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
-            using var shpReader = PrepareShapeFileReader(shpFile, _parkingLocationsRequiredShpColumns, out var colMap);
+            using var shpReader = PrepareShapeFileReader(shpFile, _parkingLocationsShpOnlyRequiredColumns, out var colMap);
 
             while (shpReader.Read())
             {
                 var parkingLocation = new ParkingLocation
                 {
-                    LocalId = ExtractString(shpReader, colMap[SHP_LOCAL_ID]),
-                    Name = ExtractString(shpReader, colMap[SHP_NAME]),
-                    ValidFrom = ParseDateTime(ExtractString(shpReader, colMap[SHP_FROM])),
-                    ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
-                    Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
-                    XtraInfo = ExtractString(shpReader, colMap[SHP_EXTRA_INFO]),
-                    Allows = TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ALLOWS_TYPE]), out var vehicleType)
+                    LocalId = ExtractString(shpReader, colMap[SHP_ONLY_LOCAL_ID]),
+                    Name = ExtractString(shpReader, colMap[SHP_ONLY_NAME]),
+                    ValidFrom = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_FROM])),
+                    ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
+                    Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
+                    XtraInfo = ExtractString(shpReader, colMap[SHP_ONLY_EXTRA_INFO]),
+                    Allows = TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ONLY_ALLOWS_TYPE]), out var vehicleType)
                         ? new Vehicle
                         {
                             Type = vehicleType
                         }
                         : null,
-                    Features = ParseParkingLocationFeature(ExtractString(shpReader, colMap[SHP_FEATURES]))
+                    Features = ParseParkingLocationFeature(ExtractString(shpReader, colMap[SHP_ONLY_FEATURES]), ',')
                 };
 
                 if (_extractWkt)
@@ -189,13 +238,47 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private static string[] _sectionRequiredShpColumns =
         {
-            SHP_LOCAL_ID, SHP_PARKING_LOCATION_LOCAL_ID,
-            SHP_NAME, SHP_FROM, SHP_THROUGH, SHP_AUTHORITY,
+            SHP_ONLY_LOCAL_ID, SHP_PARKING_LOCATION_LOCAL_ID,
+            SHP_ONLY_NAME, SHP_ONLY_FROM, SHP_ONLY_THROUGH, SHP_ONLY_AUTHORITY,
             SHP_LEVEL,
             SHP_PARKING_SYSTEM_TYPE
         };
 
-        private List<Section> ExtractSectionsShpInternalAsync(string shpFile)
+        /// <summary>
+        /// Extracts parking locations from a default format - shp + flat
+        /// </summary>
+        /// <param name="shpFile"></param>
+        /// <returns></returns>
+        private List<ParkingLocation> ExtractParkingLocationsInternalAsync(string shpFile)
+        {
+            var output = new List<ParkingLocation>();
+
+            using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
+            while (shpReader.Read())
+            {
+                var parkingLocation = new ParkingLocation
+                {
+                    LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
+                };
+
+                if (_extractWkt)
+                    parkingLocation.GeomWkt = shpReader.Geometry.ToText();
+
+                parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                output.Add(parkingLocation);
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Extracts sections from a self contained shape file
+        /// </summary>
+        /// <param name="shpFile"></param>
+        /// <returns></returns>
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private List<Section> ExtractSectionsShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<Section>();
 
@@ -205,12 +288,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             {
                 var section = new Section
                 {
-                    LocalId = ExtractString(shpReader, colMap[SHP_LOCAL_ID]),
+                    LocalId = ExtractString(shpReader, colMap[SHP_ONLY_LOCAL_ID]),
                     ParkingLocationLocalId = ExtractString(shpReader, colMap[SHP_PARKING_LOCATION_LOCAL_ID]),
-                    Name = ExtractString(shpReader, colMap[SHP_NAME]),
-                    ValidFrom = ParseDateTime(ExtractString(shpReader, colMap[SHP_FROM])),
-                    ValidThrough = ParseDateTime(ExtractString(shpReader, colMap[SHP_THROUGH])),
-                    Authority = ExtractString(shpReader, colMap[SHP_AUTHORITY]),
+                    Name = ExtractString(shpReader, colMap[SHP_ONLY_NAME]),
+                    ValidFrom = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_FROM])),
+                    ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
+                    Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
                     Level = shpReader.GetInt32(colMap[SHP_LEVEL]),
                     ParkingSpaceOf = TryParseParkingSpaceType(ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE]),
                         out var parkingSpaceType)
@@ -235,7 +318,35 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
-        private DateTime? ParseDateTime(string wouldBeDateTime)
+        /// <summary>
+        /// Extracts sections from a default format - shp + flat
+        /// </summary>
+        /// <param name="shpFile"></param>
+        /// <returns></returns>
+        private List<Section> ExtractSectionsInternalAsync(string shpFile)
+        {
+            var output = new List<Section>();
+
+            using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
+            while (shpReader.Read())
+            {
+                var section = new Section
+                {
+                    LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
+                };
+
+                if (_extractWkt)
+                    section.GeomWkt = shpReader.Geometry.ToText();
+
+                section.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                output.Add(section);
+            }
+
+            return output;
+        }
+
+        private DateTime? ParseDateTimeShpOnly(string wouldBeDateTime)
         {
             if(string.IsNullOrWhiteSpace(wouldBeDateTime))
                 return null;
