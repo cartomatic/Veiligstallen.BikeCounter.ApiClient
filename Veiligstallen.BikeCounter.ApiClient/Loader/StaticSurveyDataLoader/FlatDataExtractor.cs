@@ -379,6 +379,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private List<Section> ExtractSectionsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<Section>();
+            var map = new Dictionary<string, Section>();
 
             var hdrRead = false;
             var lineCnt = 0;
@@ -391,43 +392,45 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     if (!hdrRead)
                     {
                         colMap = SeparatedPrepareColMap(line, separator);
-                        SeparatedVerifyRequiredFieldsPresence(colMap, _parkingLocationColumns);
+                        SeparatedVerifyRequiredFieldsPresence(colMap, _sectionColumns);
                         hdrRead = true;
                     }
 
                     var data = SeparatedExtractDataRow(colMap, line, separator);
 
-                    var section = new Section
+                    if (map.ContainsKey(data[SECTION_LOCAL_ID]))
                     {
-                        LocalId = data[SECTION_LOCAL_ID],
-                        ParkingLocationLocalId = data[SECTION_PARKING_LOCATION_LOCAL_ID],
-                        Name = data[SECTION_NAME],
-                        ValidFrom = ParseDate(data[SECTION_VALID_FROM]),
-                        ValidThrough = ParseDate(data[SECTION_VALID_THROUGH]),
-                        //Authority = data[5], //WTF???? field missing in the model!!!
-                        Level = int.TryParse(data[SECTION_LEVEL], out var parsedLevel)
-                            ? parsedLevel
-                            : 0,
-                        ParkingSpaceOf = TryParseParkingSpaceType(data[SECTION_PARKING_SYSTEM_TYPE], out var parkingSpaceType)
-                            ? new[]
-                            {
-                                new ParkingSpace
-                                {
-                                    Type = parkingSpaceType,
-                                    Vehicles = TryParseVehicleOwnerType(data[SECTION_VEHICLE_OWNER_TYPE], out var ownerType) 
-                                    ? new []
-                                    {
-                                        new Vehicle
-                                        {
-                                            Owner = ownerType
-                                        }
-                                    }
-                                    : null}
-                            }
-                            : null
-                    };
+                        var section = map[data[SECTION_LOCAL_ID]];
+                        var parkingSpace = CreateParkingSpace(data[SECTION_PARKING_SYSTEM_TYPE],
+                            data[SECTION_VEHICLE_OWNER_TYPE]);
 
-                    output.Add(section);
+                        if (parkingSpace != null)
+                        {
+                            var list = section.ParkingSpaceOf?.ToList() ?? new List<ParkingSpace>();
+                            list.Add(parkingSpace);
+                            section.ParkingSpaceOf = list.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        var section = new Section
+                        {
+                            LocalId = data[SECTION_LOCAL_ID],
+                            ParkingLocationLocalId = data[SECTION_PARKING_LOCATION_LOCAL_ID],
+                            Name = data[SECTION_NAME],
+                            ValidFrom = ParseDate(data[SECTION_VALID_FROM]),
+                            ValidThrough = ParseDate(data[SECTION_VALID_THROUGH]),
+                            //Authority = data[5], //WTF???? field missing in the model!!!
+                            Level = int.TryParse(data[SECTION_LEVEL], out var parsedLevel)
+                                ? parsedLevel
+                                : 0,
+                            ParkingSpaceOf = CreateParkingSpaceArr(data[SECTION_PARKING_SYSTEM_TYPE], data[SECTION_VEHICLE_OWNER_TYPE]),
+                            Layout = data[SECTION_LAYOUT]
+                        };
+
+                        output.Add(section);
+                        map.Add(section.LocalId, section);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -436,6 +439,34 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
 
             return output;
+        }
+
+        private ParkingSpace[] CreateParkingSpaceArr(string parkingSpaceTypeStr, string ownerTypeStr)
+        {
+            var parkingSpace = CreateParkingSpace(parkingSpaceTypeStr, ownerTypeStr);
+            return parkingSpace != null ? new[] {parkingSpace} : null;
+        }
+
+        private ParkingSpace CreateParkingSpace(string parkingSpaceTypeStr, string ownerTypeStr)
+        {
+            if (TryParseParkingSpaceType(parkingSpaceTypeStr, out var parkingSpaceType))
+            {
+                return new ParkingSpace
+                {
+                    Type = parkingSpaceType,
+                    Vehicles = TryParseVehicleOwnerType(ownerTypeStr, out var ownerType)
+                        ? new[]
+                        {
+                            new Vehicle
+                            {
+                                Owner = ownerType
+                            }
+                        }
+                        : null
+                };
+            }
+
+            return null;
         }
     }
 }

@@ -167,25 +167,30 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private List<SurveyArea> ExtractSurveyAreasShpInternal(string shpFile)
         {
             var output = new List<SurveyArea>();
-            var map = new Dictionary<string, SurveyArea>();
 
             using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
             while (shpReader.Read())
             {
-                var surveyArea = new SurveyArea
+                var obj = new SurveyArea
                 {
                     LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
                 };
 
-                if (_extractWkt)
-                    surveyArea.GeomWkt = shpReader.Geometry.ToText();
+                //it looks like there may be some null geoms present in a shape file - how the heck it is possible???
+                //perhaps there is a rec in the dbf, but no actual geom
 
-                surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                //only need objects with geometries!
+                if (!shpReader.Geometry.IsEmpty)
+                {
+                    if (_extractWkt)
+                        obj.GeomWkt = shpReader.Geometry.ToText();
 
-                output.Add(surveyArea);
-                map[surveyArea.LocalId] = surveyArea;
+                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                    output.Add(obj);
+                }
             }
-
+            
             return output;
         }
 
@@ -256,17 +261,25 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
             while (shpReader.Read())
             {
-                var parkingLocation = new ParkingLocation
+                var obj = new ParkingLocation
                 {
                     LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
                 };
 
-                if (_extractWkt)
-                    parkingLocation.GeomWkt = shpReader.Geometry.ToText();
+                //it looks like there may be some null geoms present in a shape file - how the heck it is possible???
+                //perhaps there is a rec in the dbf, but no actual geom
 
-                parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                //only need objects with geometries!
+                if (!shpReader.Geometry.IsEmpty)
+                {
+                    if (_extractWkt)
+                        obj.GeomWkt = shpReader.Geometry.ToText();
 
-                output.Add(parkingLocation);
+                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                    output.Add(obj);
+                }
+
             }
 
             return output;
@@ -330,17 +343,24 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             using var shpReader = PrepareShapeFileReader(shpFile, _defaultFormatShpRequiredColumns, out var colMap);
             while (shpReader.Read())
             {
-                var section = new Section
+                var obj = new Section
                 {
                     LocalId = ExtractString(shpReader, colMap[DEFAULT_FORMAT_SHP_ID])
                 };
 
-                if (_extractWkt)
-                    section.GeomWkt = shpReader.Geometry.ToText();
+                //it looks like there may be some null geoms present in a shape file - how the heck it is possible???
+                //perhaps there is a rec in the dbf, but no actual geom
 
-                section.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                //only need objects with geometries!
+                if (!shpReader.Geometry.IsEmpty)
+                {
+                    if (_extractWkt)
+                        obj.GeomWkt = shpReader.Geometry.ToText();
 
-                output.Add(section);
+                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+
+                    output.Add(obj);
+                }
             }
 
             return output;

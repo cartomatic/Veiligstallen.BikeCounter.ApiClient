@@ -18,7 +18,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel.Extensions
             var output = new List<SurveyArea>();
 
             var map1 = set1.ToDictionary(x => x.LocalId, x => x);
-            var map2 = set1.ToDictionary(x => x.LocalId, x => x);
+            var map2 = set2.ToDictionary(x => x.LocalId, x => x);
 
             foreach (var kv in map1)
             {
