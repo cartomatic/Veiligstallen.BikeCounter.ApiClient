@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -50,6 +52,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         [Obsolete("Format abandoned and not officially supported anymore")]
         private void LoadCompleteDataExcelData()
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             using var fs = File.OpenRead(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_EXCEL}.xlsx"));
 
             var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(fs);
@@ -222,6 +226,90 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return output;
         }
+
+
+        private async Task<List<Observation>> ExtractObservationsXlsxInternalAsync(string fName)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            var output = new List<Observation>();
+
+            using var fs = File.OpenRead(fName);
+
+            var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(fs);
+            var cfg = new ExcelDataSetConfiguration
+            {
+                ConfigureDataTable = _ => new ExcelDataTableConfiguration
+                {
+                    UseHeaderRow = true
+                }
+            };
+
+            var ds = excelReader.AsDataSet(cfg);
+
+            //only one table here, so...
+            var tbl = ds.Tables[0];
+
+            //Note: see flatDataExtractor ExtractObservationsSeparatedInternalAsync for extra comments!
+
+            var colMap = new Dictionary<int, string>();
+            var idx = 0;
+            foreach (DataColumn col in tbl.Columns)
+            {
+                colMap[idx] = col.ColumnName;
+                idx++;
+            }
+
+            var vehicleColMap = new Dictionary<int, string>();
+            if(tbl.Columns.Count > 24)
+            {
+                for (var i = 24; i < tbl.Columns.Count; i++)
+                {
+                    vehicleColMap.Add(i, colMap[i]);
+                }
+            }
+
+            foreach (DataRow r in tbl.Rows)
+            {
+                var observationCapacity = new Observation
+                {
+                    Survey = ExtractFieldValue<string>(r, colMap[12]),
+                    ObservedProperty = "capacity",
+                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]),
+                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[15]),
+                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[16]),
+                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[18]) },
+                    Measurement = new Measurement
+                    {
+                        ParkingCapacity = (int)ExtractFieldValue<double>(r, colMap[17])
+                    }
+                };
+                output.Add(observationCapacity);
+
+                var observationOccupation = new Observation
+                {
+                    Survey = ExtractFieldValue<string>(r, colMap[12]),
+                    ObservedProperty = "occupation",
+                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]),
+                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[20]),
+                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[21]),
+                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[23]) },
+                    Measurement = new Measurement
+                    {
+                        TotalParked = (int)ExtractFieldValue<double>(r, colMap[17]),
+                        VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
+                        {
+                            CanonicalVehicleCode = kv.Value,
+                            NumberOfVehicles = (int)ExtractFieldValue<double>(r, colMap[kv.Key])
+                        }).ToArray()
+                    }
+                };
+                output.Add(observationOccupation);
+            }
+
+            return output;
+        }
+
 
         /// <summary>
         /// Extracts field value

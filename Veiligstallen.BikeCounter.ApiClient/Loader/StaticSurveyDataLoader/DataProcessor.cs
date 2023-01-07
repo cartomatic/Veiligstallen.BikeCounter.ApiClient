@@ -99,5 +99,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _sections = ExtractSectionsShpInternal(shpFile).
                 Merge(ExtractSectionsSeparatedInternal(flatFile, flatFileSeparator));
         }
+
+        private async Task ExtractObservationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            _observations = await ExtractObservationsInternalAsync(fName, separator, header);
+        }
     }
 }

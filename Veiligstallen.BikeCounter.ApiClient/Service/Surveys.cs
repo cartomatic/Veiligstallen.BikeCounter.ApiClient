@@ -131,13 +131,14 @@ namespace Veiligstallen.BikeCounter.ApiClient
             var (parkingLocations, _) = await GetSurveyPaekingLocationsAsync(surveyId);
             var (sections, _) = await GetSurveySectionsAsync(surveyId);
 
-            var canonicalVehicleHeaders = canonicalVehicles.Select(x => $"{x.Code} ({x.Name})").ToArray();
+            var canonicalVehicleHeaders = canonicalVehicles.Select(x => $"{x.Code}").ToArray();
             var canonicalVehiclesEmptyData = canonicalVehicleHeaders.Select(x => string.Empty).ToArray();
 
             var dynamicDataEmptyData = _surveyDynamicDataHeaders.Select(x => string.Empty).ToArray();
+            dynamicDataEmptyData[0] = surveyId;
 
             var applySeparator = (IEnumerable<string> data) =>
-                string.Join(separator == FlatFileUtils.FlatFileSeparator.Semicolon ? ";" : "\t", data);
+                string.Join(FlatFileUtils.FlatFileSeparators[separator].ToString(), data);
 
             //output data container
             var data = new List<string>

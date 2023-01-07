@@ -91,6 +91,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
         }
 
+        private async Task UploadObservationsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
+        {
+            var counter = 1;
+            foreach (var observation in _observations)
+            {
+                Notify($"Uploading observation {counter} of {_observations.Count}...");
+                
+                var _ = await apiClient.CreateObservationAsync(observation);
+                counter++;
+            }
+        }
+
         /// <summary>
         /// Links survey areas to survey
         /// </summary>

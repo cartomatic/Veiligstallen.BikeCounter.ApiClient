@@ -19,6 +19,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     DateTime.TryParseExact(d, "d-M-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "d-M-yyyy H:m:s", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
+                    DateTime.TryParseExact(d, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParse(d, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date)
                 )
                )
@@ -54,19 +55,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private bool TryParseParkingLocationAllowsType(string s, out VehicleType vehicleType)
         {
             vehicleType = VehicleType.unknown;
-            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, out vehicleType);
+            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, true, out vehicleType);
         }
 
         private bool TryParseParkingSpaceType(string s, out ParkingSpaceType parkingSpaceType)
         {
             parkingSpaceType = ParkingSpaceType.unknown;
-            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<ParkingSpaceType>(s, out parkingSpaceType);
+            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<ParkingSpaceType>(s, true, out parkingSpaceType);
         }
 
         private bool TryParseVehicleOwnerType(string s, out VehicleOwner ownerType)
         {
             ownerType = VehicleOwner.unknown;
-            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleOwner>(s, out ownerType);
+            return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleOwner>(s, true, out ownerType);
         }
     }
 }

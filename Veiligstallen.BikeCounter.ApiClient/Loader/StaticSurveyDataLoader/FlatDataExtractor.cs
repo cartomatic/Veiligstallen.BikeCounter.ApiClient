@@ -187,6 +187,132 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return output;
         }
+        
+
+
+        private async Task<List<Observation>> ExtractObservationsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+            {
+                //so client has enough time to show progress...
+                return await ExtractObservationsXlsxInternalAsync(fName);
+            }
+            else
+            {
+                return await ExtractObservationsSeparatedInternalAsync(fName, separator, header);
+            }
+        }
+        
+
+        private async Task<List<Observation>> ExtractObservationsSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            //Notes:
+            //there are 2 types of observations - each depends on the actual data!!!
+            //For the time being assuming the column order of the input data MUST always be the same
+            //vehicle counts start at column Y
+
+            //input fields columns - indexes and excel addressation
+            //
+            // 0 A "section_id",
+            // 1 B "section_localId",
+            // 2 C "parkinglocation_id",
+            // 3 D "parkinglocation_localId",
+            // 4 E "section_name",
+            // 5 F "section_layout",
+            // 6 G "section_url_geolocation",
+            // 7 H "section_parkingSystemType",
+            // 8 I "section_vehicleOwnerType",
+            // 9 J "section_level",
+            //10 K "section_validFrom",
+            //11 L "section_validThrough"
+            //
+            //12 M "survey_id",
+            //13 N "contractor",
+            //14 O "observation_capacity_id",
+            //15 P "observation_capacity_timestamp_start",
+            //16 Q "observation_capacity_timestamp_end",
+            //17 R "observation_capacity_parkingCapacity",
+            //18 S "observation_capacity_note",
+            //19 T "observation_occupation_id",
+            //20 U "observation_occupation_timestamp_start",
+            //21 V "observation_occupation_timestamp_end",
+            //22 W "occupation_totalParked",
+            //23 X "observation_occupation_note"
+            //
+            //24 Y - here start vehicle counts! header needs to have a value!
+
+
+            var output = new List<Observation>();
+
+            var hdrRead = false;
+            var fldCount = 9;
+            var lineCnt = 0;
+            var vehicleColMap = new Dictionary<int, string>();
+            foreach (var line in File.ReadLines(fName))
+            {
+                lineCnt++;
+
+                if (header && !hdrRead)
+                {
+                    hdrRead = true;
+                    
+                    var hdrData = line.Split(FlatFileUtils.FlatFileSeparators[separator]);
+
+                    fldCount = hdrData.Length;
+
+                    if (hdrData.Length > 24)
+                    {
+                        for (var i = 24; i < hdrData.Length; i++)
+                        {
+                            vehicleColMap.Add(i, hdrData[i]);
+                        }
+                    }
+
+                    continue;
+                }
+                
+                var data = line.Split(FlatFileUtils.FlatFileSeparators[separator]);
+                if (data.Length != fldCount)
+                    throw new System.Exception($"Filed to parse flat section data at line {lineCnt}; expected field count to be ${fldCount}, but found {data.Length}");
+
+                var observationCapacity = new Observation
+                {
+                    Survey = data[12],
+                    ObservedProperty = "capacity",
+                    FeatureOfInterest = data[0],
+                    TimestampStart = ParseDate(data[15]),
+                    TimestampEnd = ParseDate(data[16]),
+                    Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[18] },
+                    Measurement = new Measurement
+                    {
+                        ParkingCapacity = int.TryParse(data[17], out var parkingCapacity) ? parkingCapacity : 0
+                    }
+                };
+                output.Add(observationCapacity);
+
+                var observationOccupation = new Observation
+                {
+                    Survey = data[12],
+                    ObservedProperty = "occupation",
+                    FeatureOfInterest = data[0],
+                    TimestampStart = ParseDate(data[20]),
+                    TimestampEnd = ParseDate(data[21]),
+                    Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[23] },
+                    Measurement = new Measurement
+                    {
+                        TotalParked = int.TryParse(data[17], out var totalParked) ? totalParked : 0,
+                        VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
+                        {
+                            CanonicalVehicleCode = kv.Value,
+                            NumberOfVehicles = int.TryParse(data[kv.Key], out var vehicleCount) ? vehicleCount : 0
+                        }).ToArray()
+                    }
+                };
+                output.Add(observationOccupation);
+            }
+
+            return output;
+        }
 
         private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
@@ -332,7 +458,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         ValidThrough = ParseDate(data[PARKING_LOCATION_VALID_THROUGH]),
                         Authority = data[PARKING_LOCATION_AUTHORITY],
                         XtraInfo = data[PARKING_LOCATION_XTRA_INFO],
-                        //WTF - no such field in the default format????
+                        //no such field in the default format; this is now skipped
                         //Allows = TryParseParkingLocationAllowsType(data[6], out var vehicleType)
                         //    ? new Vehicle
                         //    {
