@@ -469,14 +469,14 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string PARKING_LOCATION_AUTHORITY = "parkinglocation_authority";
         private const string PARKING_LOCATION_XTRA_INFO = "parkinglocation_xtrainfo";
         private const string PARKING_LOCATION_SURVEY_AREA_LOCAL_ID = "surveyArea_localId";
-        private const string PARKING_LOCATION_LOCATION_NUMBER = "location_number";
+        private const string PARKING_LOCATION_NUMBER = "location_number";
 
         private static string[] _parkingLocationColumns =
         {
             PARKING_LOCATION_LOCAL_ID, PARKING_LOCATION_NAME, PARKING_LOCATION_FEATURE_TYPE,
             PARKING_LOCATION_VALID_FROM, PARKING_LOCATION_VALID_THROUGH,
             PARKING_LOCATION_AUTHORITY, PARKING_LOCATION_XTRA_INFO,
-            PARKING_LOCATION_SURVEY_AREA_LOCAL_ID, PARKING_LOCATION_LOCATION_NUMBER
+            PARKING_LOCATION_SURVEY_AREA_LOCAL_ID, PARKING_LOCATION_NUMBER
         };
 
         /// <summary>
@@ -519,6 +519,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         ValidThrough = Parsers.ParseDate(data[PARKING_LOCATION_VALID_THROUGH]),
                         Authority = data[PARKING_LOCATION_AUTHORITY],
                         XtraInfo = data[PARKING_LOCATION_XTRA_INFO],
+                        Number = data[PARKING_LOCATION_NUMBER],
                         //no such field in the default format; this is now skipped
                         //Allows = TryParseParkingLocationAllowsType(data[6], out var vehicleType)
                         //    ? new Vehicle
