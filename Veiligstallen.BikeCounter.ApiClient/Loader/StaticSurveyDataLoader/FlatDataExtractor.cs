@@ -316,6 +316,21 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+            {
+                //so client has enough time to show progress...
+                return await ExtractSurveyAreasIdsFlatXlsxInternalAsync(fName, header);
+            }
+            else
+            {
+                return await ExtractSurveyAreasIdsFlatSeparatedInternalAsync(fName, separator, header);
+            }
+
+            
+        }
+
+        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
             var sectionAreaIds = new List<string>();
 
             var hdrRead = false;
@@ -346,6 +361,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return sectionAreaIds;
         }
+        
 
 
         private const string SURVEY_AREA_LOCAL_ID = "surveyarea_localId";

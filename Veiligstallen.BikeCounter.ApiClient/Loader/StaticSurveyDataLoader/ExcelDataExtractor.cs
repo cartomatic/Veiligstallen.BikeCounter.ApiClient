@@ -227,7 +227,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
-
+        /// <summary>
+        /// Extracts observations data
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
         private async Task<List<Observation>> ExtractObservationsXlsxInternalAsync(string fName)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -310,20 +314,67 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+        /// <summary>
+        /// Extracts survey areas ids for linking
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatXlsxInternalAsync(string fName, bool header)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            var output = new List<string>();
+
+            using var fs = File.OpenRead(fName);
+
+            var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(fs);
+            var cfg = new ExcelDataSetConfiguration
+            {
+                ConfigureDataTable = _ => new ExcelDataTableConfiguration
+                {
+                    UseHeaderRow = header
+                }
+            };
+
+            var ds = excelReader.AsDataSet(cfg);
+
+            //only one table here, so...
+            var tbl = ds.Tables[0];
+
+            //first col is the one
+            foreach (DataRow r in tbl.Rows)
+            {
+                output.Add(ExtractFieldValue<string>(r[0]));
+            }
+
+            return output;
+        }
+
+
 
         /// <summary>
-        /// Extracts field value
+        /// extracts and casts field value to a desired type
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="r"></param>
         /// <param name="colName"></param>
         /// <returns></returns>
         private T ExtractFieldValue<T>(DataRow r, string colName)
+            => ExtractFieldValue<T>(r[colName]);
+
+        /// <summary>
+        /// extracts and casts field value to a desired type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        private T ExtractFieldValue<T>(object o)
         {
-            if (r[colName] == DBNull.Value)
+            if (o == DBNull.Value)
                 return default;
 
-            return (T)r[colName];
+            return (T)o;
         }
 
         private ParkingLocationFeature[] ExtractParkingLocationSurveyAreaTypes(DataRow r)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using RestSharp;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
+using Veiligstallen.BikeCounter.ApiClient.Loader;
 
 namespace Veiligstallen.BikeCounter.ApiClient
 {
@@ -58,8 +59,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="queryParams"></param>
         /// <param name="outDir"></param>
         /// <returns></returns>
-        public async Task<Guid> PrepareSurveyAreasDownloadAsync(Dictionary<string, string> queryParams, string outDir)
+        public async Task<Guid> PrepareSurveyAreasDownloadAsync(Dictionary<string, string> queryParams, FlatFileUtils.FlatFileSeparator separator, string outDir)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException("No XLSX support for this data output");
+
             queryParams ??= new Dictionary<string, string>();
 
             //reset paging
@@ -76,7 +80,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             //hdr
             await sw.WriteAsync(
-                string.Join("\t", new []
+                string.Join(FlatFileUtils.FlatFileSeparators[separator].ToString(), new []
                 {
                     nameof(SurveyArea.Id),
                     nameof(SurveyArea.LocalId),
@@ -97,7 +101,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             foreach (var surveyArea in data)
             {
                 await sw.WriteAsync(
-                    string.Join("\t", new[]
+                    string.Join(FlatFileUtils.FlatFileSeparators[separator].ToString(), new[]
                     {
                         surveyArea.Id,
                         surveyArea.LocalId,
