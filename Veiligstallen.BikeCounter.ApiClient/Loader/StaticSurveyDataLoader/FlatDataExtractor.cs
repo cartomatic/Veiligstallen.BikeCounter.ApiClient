@@ -466,7 +466,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     var data = SeparatedExtractDataRow(colMap, line, separator);
 
-                    var surveyArea = new ParkingLocation
+                    var parkingLocation = new ParkingLocation
                     {
                         LocalId = data[PARKING_LOCATION_LOCAL_ID],
                         Name = data[PARKING_LOCATION_NAME],
@@ -484,7 +484,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         Features = ParseParkingLocationFeature(data[PARKING_LOCATION_FEATURE_TYPE], ' ')
                     };
 
-                    output.Add(surveyArea);
+                    output.Add(parkingLocation);
                 }
             }
             catch (System.Exception ex)
