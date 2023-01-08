@@ -24,7 +24,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
-        /// Extracts survey area geometries from a complete data shape file and updates survey areas
+        /// Extracts survey area geometries from a complete data shape file and updates passed survey areas
         /// </summary>
         /// <param name="surveyAreas"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -47,7 +47,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
-        /// Extracts parking location geometries from a complete data shape file and updates parking locations
+        /// Extracts parking location geometries from a complete data shape file and updates passed parking locations
         /// </summary>
         /// <param name="parkingLocations"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -70,7 +70,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         /// <summary>
-        /// Extracts section geometries from a complete data shape file and updates sections
+        /// Extracts section geometries from a complete data shape file and updates passed sections
         /// </summary>
         /// <param name="sections"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -116,7 +116,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public List<SurveyArea> ExtractSurveyAreasShpOnlyInternalAsync(string shpFile)
+        public List<SurveyArea> ExtractSurveyAreasShpOnlyAsync(string shpFile)
         {
             var output = new List<SurveyArea>();
 
@@ -170,7 +170,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        public List<SurveyArea> ExtractSurveyAreasShpInternal(string shpFile)
+        public List<SurveyArea> ExtractSurveyAreasShp(string shpFile)
         {
             var output = new List<SurveyArea>();
 
@@ -207,7 +207,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public List<ParkingLocation> ExtractParkingLocationsShpOnlyInternalAsync(string shpFile)
+        public List<ParkingLocation> ExtractParkingLocationsShpOnlyAsync(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
@@ -260,7 +260,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        public List<ParkingLocation> ExtractParkingLocationsShpInternal(string shpFile)
+        public List<ParkingLocation> ExtractParkingLocationsShp(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
@@ -297,7 +297,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public List<Section> ExtractSectionsShpOnlyInternalAsync(string shpFile)
+        public List<Section> ExtractSectionsShpOnlyAsync(string shpFile)
         {
             var output = new List<Section>();
 
@@ -342,7 +342,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        public List<Section> ExtractSectionsShpInternal(string shpFile)
+        public List<Section> ExtractSectionsShp(string shpFile)
         {
             var output = new List<Section>();
 

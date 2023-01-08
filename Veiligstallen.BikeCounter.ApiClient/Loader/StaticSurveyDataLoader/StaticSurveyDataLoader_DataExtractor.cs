@@ -15,7 +15,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private List<Section> _sections;
         private List<Observation> _observations;
 
-        private void ResetCollections()
+        private void ResetCompleteDataCollections()
         {
             _surveyAreas?.Clear();
             _parkingLocations?.Clear();
@@ -197,6 +197,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             _msngr = msngr;
 
+            ResetCompleteDataCollections();
+
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             Notify("Validating files presence...");
@@ -208,165 +210,21 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Excel ok!");
 
             Notify("Extracting survey areas...");
-            await ExtractCompleteDataSurveyAreasAsync();
+            _surveyAreas = _excelDataExtractor.ExtractCompleteDataSurveyAreas();
+            _shapeFileDataExtractor.ExtractCompleteDataSurveyAreasGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_SURVEY_AREAS}.shp"), _surveyAreas);
             Notify("Survey areas extracted!");
 
             Notify("Extracting parking locations...");
-            await ExtractCompleteDataParkingLocationsAsync();
+            _parkingLocations = _excelDataExtractor.ExtractCompleteDataParkingLocations();
+            _shapeFileDataExtractor.ExtractCompleteDataParkingLocationsGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_PARKING_LOCATIONS}.shp"), _parkingLocations);
             Notify("Parking locations extracted!");
 
             Notify("Extracting sections...");
-            await ExtractCompleteDataSectionsAsync();
+            _sections = _excelDataExtractor.ExtractCompleteDataSections();
+            _shapeFileDataExtractor.ExtractCompleteDataSectionsGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_SECTIONS}.shp"), _sections);
             Notify("Sections extracted!");
 
         }
-
-        /// <summary>
-        /// Uploads data to crow api
-        /// </summary>
-        /// <param name="msngr"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task UploadCompletedDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
-        {
-            Notify("Uploading survey areas...");
-            await UploadSurveyAreasAsync(apiClient);
-            Notify("Survey areas uploaded!");
-
-            Notify("Uploading parking locations...");
-            await UploadParkingLocationsAsync(apiClient);
-            Notify("Parking locations uploaded!");
-
-            Notify("Uploading sections...");
-            await UploadSectionsAsync(apiClient);
-            Notify("Sections uploaded!");
-
-        }
-
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractCompleteDataParkingLocationsAsync()
-        {
-            _parkingLocations = _excelDataExtractor.ExtractCompleteDataParkingLocations();
-            _shapeFileDataExtractor.ExtractCompleteDataParkingLocationsGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_PARKING_LOCATIONS}.shp"), _parkingLocations);
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractCompleteDataSurveyAreasAsync()
-        {
-            _surveyAreas = _excelDataExtractor.ExtractCompleteDataSurveyAreas();
-            _shapeFileDataExtractor.ExtractCompleteDataSurveyAreasGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_SURVEY_AREAS}.shp"), _surveyAreas);
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractCompleteDataSectionsAsync()
-        {
-            _sections = _excelDataExtractor.ExtractCompleteDataSections();
-            _shapeFileDataExtractor.ExtractCompleteDataSectionsGeoms(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_SECTIONS}.shp"), _sections);
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractSurveyAreasFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            //flat objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _surveyAreas = await _flatDataExtractor.ExtractSurveyAreasFlatInternalAsync(fName, separator, header);
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractSurveyAreasShpOnlyAsync(string fName)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShpOnlyInternalAsync(fName);
-        }
-
-        private async Task ExtractSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShpInternal(shpFile)
-                .Merge(_flatDataExtractor.ExtractSurveyAreasSeparatedInternal(flatFile, flatFileSeparator));
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractParkingLocationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            //flat objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-
-            _parkingLocations = await _flatDataExtractor.ExtractParkingLocationsFlatInternalAsync(fName, separator, header);
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractParkingLocationsShpOnlyAsync(string fName)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShpOnlyInternalAsync(fName);
-        }
-
-        private async Task ExtractParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShpInternal(shpFile).
-                Merge(_flatDataExtractor.ExtractParkingLocationsSeparatedInternal(flatFile, flatFileSeparator));
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractSectionsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            //flat objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-
-            _sections = await _flatDataExtractor.ExtractSectionsFlatInternalAsync(fName, separator, header);
-        }
-
-        private Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatAsync(string fName,
-            FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
-            {
-                //so client has enough time to show progress...
-                return _excelDataExtractor.ExtractSurveyAreasIdsAsync(fName, header);
-            }
-            else
-            {
-                return _flatDataExtractor.ExtractSurveyAreasIdsFlatSeparatedInternalAsync(fName, separator, header);
-            }
-        }
-
-        [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task ExtractSectionsShpOnlyAsync(string fName)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _sections = _shapeFileDataExtractor.ExtractSectionsShpOnlyInternalAsync(fName);
-        }
-
-        private async Task ExtractSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
-        {
-            //shp objects always uploaded 1 by 1, so need to reset collections!
-            ResetCollections();
-            _sections = _shapeFileDataExtractor.ExtractSectionsShpInternal(shpFile).
-                Merge(_flatDataExtractor.ExtractSectionsSeparatedInternal(flatFile, flatFileSeparator));
-        }
-
-        private async Task ExtractObservationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
-            {
-                _observations = await _excelDataExtractor.ExtractObservationsAsync(fName);
-            }
-            else
-            {
-                _observations = await _flatDataExtractor.ExtractObservationsInternalAsync(fName, separator, header);
-            }
-            
-        }
-        
 
         private const string COMPLETE_DATA_FILENAME_EXCEL = "Static";
         private const string COMPLETE_DATA_FILENAME_PARKING_LOCATIONS = "ParkingLocation";
@@ -403,6 +261,129 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     throw new System.Exception($"Missing file: {fileName}");
             }
         }
+
+        /// <summary>
+        /// Uploads data to crow api
+        /// </summary>
+        /// <param name="msngr"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task UploadCompletedDataAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient, EventHandler<string> msngr = null)
+        {
+            Notify("Uploading survey areas...");
+            await UploadSurveyAreasAsync(apiClient);
+            Notify("Survey areas uploaded!");
+
+            Notify("Uploading parking locations...");
+            await UploadParkingLocationsAsync(apiClient);
+            Notify("Parking locations uploaded!");
+
+            Notify("Uploading sections...");
+            await UploadSectionsAsync(apiClient);
+            Notify("Sections uploaded!");
+        }
+        
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractSurveyAreasFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _surveyAreas = await _flatDataExtractor.ExtractSurveyAreasFlatAsync(fName, separator, header);
+        }
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractSurveyAreasShpOnlyAsync(string fName)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShpOnlyAsync(fName);
+        }
+
+        private async Task ExtractSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShp(shpFile)
+                .Merge(_flatDataExtractor.ExtractSurveyAreas(flatFile, flatFileSeparator));
+        }
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractParkingLocationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+
+            _parkingLocations = await _flatDataExtractor.ExtractParkingLocationsFlatAsync(fName, separator, header);
+        }
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractParkingLocationsShpOnlyAsync(string fName)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShpOnlyAsync(fName);
+        }
+
+        private async Task ExtractParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShp(shpFile).
+                Merge(_flatDataExtractor.ExtractParkingLocations(flatFile, flatFileSeparator));
+        }
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractSectionsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _sections = await _flatDataExtractor.ExtractSectionsFlatAsync(fName, separator, header);
+        }
+
+        private Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatAsync(string fName,
+            FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+            {
+                //so client has enough time to show progress...
+                return _excelDataExtractor.ExtractSurveyAreasIdsAsync(fName, header);
+            }
+            else
+            {
+                return _flatDataExtractor.ExtractSurveyAreasIdsAsync(fName, separator, header);
+            }
+        }
+
+        [Obsolete("Format abandoned and not officially supported anymore")]
+        private async Task ExtractSectionsShpOnlyAsync(string fName)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _sections = _shapeFileDataExtractor.ExtractSectionsShpOnlyAsync(fName);
+        }
+
+        private async Task ExtractSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        {
+            //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
+            ResetCompleteDataCollections();
+            _sections = _shapeFileDataExtractor.ExtractSectionsShp(shpFile).
+                Merge(_flatDataExtractor.ExtractSections(flatFile, flatFileSeparator));
+        }
+
+        private async Task ExtractObservationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+            {
+                _observations = await _excelDataExtractor.ExtractObservationsAsync(fName);
+            }
+            else
+            {
+                _observations = await _flatDataExtractor.ExtractObservationsAsync(fName, separator, header);
+            }
+        }
+        
 
         private void DisposeExtractedData()
         {

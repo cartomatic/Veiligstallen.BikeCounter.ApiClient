@@ -13,9 +13,21 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
     internal partial class FlatDataExtractor : IDisposable
     {
+
+        /// <summary>
+        /// Extracts complete survey areas from a flat file
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public async Task<List<SurveyArea>> ExtractSurveyAreasFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<SurveyArea>> ExtractSurveyAreasFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<SurveyArea>();
 
             var wktReader = new WKTReader(GeometryFactory.Default);
@@ -67,9 +79,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+        /// <summary>
+        /// Extracts complete parking locations from a flat file
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public async Task<List<ParkingLocation>> ExtractParkingLocationsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<ParkingLocation>> ExtractParkingLocationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<ParkingLocation>();
 
             var wktReader = new WKTReader(GeometryFactory.Default);
@@ -126,9 +149,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+        /// <summary>
+        /// Extracts complete sections from a flat file
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        public async Task<List<Section>> ExtractSectionsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<Section>> ExtractSectionsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<Section>();
 
             var wktReader = new WKTReader(GeometryFactory.Default);
@@ -188,9 +222,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
-
-        public async Task<List<Observation>> ExtractObservationsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        /// <summary>
+        /// Extracts observations
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public async Task<List<Observation>> ExtractObservationsAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             //Notes:
             //there are 2 types of observations - each depends on the actual data!!!
             //For the time being assuming the column order of the input data MUST always be the same
@@ -299,8 +343,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
         
-        public async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        /// <summary>
+        /// Extract survey areas ids
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<string>> ExtractSurveyAreasIdsAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var sectionAreaIds = new List<string>();
 
             var hdrRead = false;
@@ -352,9 +406,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             SURVEY_AREA_NAME, SURVEY_AREA_XTRA_INFO, SURVEY_AREA_TYPE
         };
         
-
-        public List<SurveyArea> ExtractSurveyAreasSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        /// <summary>
+        /// Extracts survey areas data
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="System.Exception"></exception>
+        public List<SurveyArea> ExtractSurveyAreas(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<SurveyArea>();
 
             var hdrRead = false;
@@ -367,12 +431,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     if (!hdrRead)
                     {
-                        colMap = SeparatedPrepareColMap(line, separator);
-                        SeparatedVerifyRequiredFieldsPresence(colMap, _surveyAreasColumns);
+                        colMap = PrepareColMap(line, separator);
+                        VerifyRequiredFieldsPresence(colMap, _surveyAreasColumns);
                         hdrRead = true;
                     }
 
-                    var data = SeparatedExtractDataRow(colMap, line, separator);
+                    var data = ExtractDataRow(colMap, line, separator);
 
                     var surveyArea = new SurveyArea
                     {
@@ -415,8 +479,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             PARKING_LOCATION_SURVEY_AREA_LOCAL_ID, PARKING_LOCATION_LOCATION_NUMBER
         };
 
-        public List<ParkingLocation> ExtractParkingLocationsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        /// <summary>
+        /// Extracts parking locations data
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="System.Exception"></exception>
+        public List<ParkingLocation> ExtractParkingLocations(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<ParkingLocation>();
 
             var hdrRead = false;
@@ -429,12 +504,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     if (!hdrRead)
                     {
-                        colMap = SeparatedPrepareColMap(line, separator);
-                        SeparatedVerifyRequiredFieldsPresence(colMap, _parkingLocationColumns);
+                        colMap = PrepareColMap(line, separator);
+                        VerifyRequiredFieldsPresence(colMap, _parkingLocationColumns);
                         hdrRead = true;
                     }
 
-                    var data = SeparatedExtractDataRow(colMap, line, separator);
+                    var data = ExtractDataRow(colMap, line, separator);
 
                     var parkingLocation = new ParkingLocation
                     {
@@ -488,8 +563,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR
         };
 
-        public List<Section> ExtractSectionsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        /// <summary>
+        /// Extracts sections data
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="System.Exception"></exception>
+        public List<Section> ExtractSections(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
+            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
+                throw new NotImplementedException($"XLSX file format not supported by the {nameof(FlatDataExtractor)}");
+
             var output = new List<Section>();
             var map = new Dictionary<string, Section>();
 
@@ -503,12 +589,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     if (!hdrRead)
                     {
-                        colMap = SeparatedPrepareColMap(line, separator);
-                        SeparatedVerifyRequiredFieldsPresence(colMap, _sectionColumns);
+                        colMap = PrepareColMap(line, separator);
+                        VerifyRequiredFieldsPresence(colMap, _sectionColumns);
                         hdrRead = true;
                     }
 
-                    var data = SeparatedExtractDataRow(colMap, line, separator);
+                    var data = ExtractDataRow(colMap, line, separator);
 
                     if (map.ContainsKey(data[SECTION_LOCAL_ID]))
                     {
@@ -587,7 +673,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="header"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        private Dictionary<string, int> SeparatedPrepareColMap(string header, FlatFileUtils.FlatFileSeparator separator)
+        private Dictionary<string, int> PrepareColMap(string header, FlatFileUtils.FlatFileSeparator separator)
         {
             var fieldNames = header.Split(FlatFileUtils.FlatFileSeparators[separator]);
             var colMap = new Dictionary<string, int>();
@@ -605,7 +691,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="colMap"></param>
         /// <param name="requiredFieldNames"></param>
-        private void SeparatedVerifyRequiredFieldsPresence(Dictionary<string, int> colMap, IEnumerable<string> requiredFieldNames)
+        private void VerifyRequiredFieldsPresence(Dictionary<string, int> colMap, IEnumerable<string> requiredFieldNames)
         {
             foreach (var fieldName in requiredFieldNames)
             {
@@ -622,7 +708,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="separator"></param>
         /// <returns></returns>
         /// <exception cref="System.Exception"></exception>
-        private Dictionary<string, string> SeparatedExtractDataRow(Dictionary<string, int> colMap, string line, FlatFileUtils.FlatFileSeparator separator)
+        private Dictionary<string, string> ExtractDataRow(Dictionary<string, int> colMap, string line, FlatFileUtils.FlatFileSeparator separator)
         {
             var data = line.Split(FlatFileUtils.FlatFileSeparators[separator]);
             if (data.Length != colMap.Count)
