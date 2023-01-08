@@ -11,8 +11,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
     internal partial class StaticSurveyDataLoader : IDisposable
     {
         private readonly string _dir;
-        private readonly bool _extractWkt;
         private EventHandler<string> _msngr;
+        private ExcelDataExtractor _excelDataExtractor;
+        private FlatDataExtractor _flatDataExtractor;
+        private ShapeFileDataExtractor _shapeFileDataExtractor;
 
         public StaticSurveyDataLoader()
         {
@@ -20,8 +22,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         public StaticSurveyDataLoader(string dir, bool extractWkt = false)
         {
-            _extractWkt = extractWkt;
             _dir = dir;
+            _excelDataExtractor = new ExcelDataExtractor();
+            _flatDataExtractor = new FlatDataExtractor();
+            _shapeFileDataExtractor = new ShapeFileDataExtractor(extractWkt);
         }
         
 
@@ -32,7 +36,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         public void Dispose()
         {
             _msngr = null;
-            DisposeCompleteDataExcel();
+            _excelDataExtractor?.Dispose();
+            _excelDataExtractor = null;
+            _flatDataExtractor?.Dispose();
+            _flatDataExtractor = null;
+            _shapeFileDataExtractor?.Dispose();
+            _shapeFileDataExtractor = null;
             DisposeExtractedData();
         }
     }

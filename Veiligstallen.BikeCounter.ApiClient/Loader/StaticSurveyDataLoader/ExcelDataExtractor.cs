@@ -13,7 +13,7 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    internal partial class StaticSurveyDataLoader
+    internal partial class ExcelDataExtractor : IDisposable
     {
         private const string EXCEL_SHEET_SURVEY_AREA_STATIC = "SurveyArea";
         private const string EXCEL_SHEET_PARKING_LOCATION_STATIC = "ParkingLocation_static";
@@ -50,11 +50,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// Loads an validates excel data
         /// </summary>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private void LoadCompleteDataExcelData()
+        public void LoadCompleteData(string fPath)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            using var fs = File.OpenRead(Path.Combine(_dir, $"{COMPLETE_DATA_FILENAME_EXCEL}.xlsx"));
+            using var fs = File.OpenRead(fPath);
 
             var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(fs);
             var cfg = new ExcelDataSetConfiguration
@@ -67,14 +67,14 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             _completeDataExcelDataSet = excelReader.AsDataSet(cfg);
 
-            ValidateExcel();
+            ValidateCompleteData();
         }
 
         /// <summary>
         /// Validates excel data against required schema
         /// </summary>
         /// <exception cref="System.Exception"></exception>
-        private void ValidateExcel()
+        private void ValidateCompleteData()
         {
             foreach (var sheetName in new[]{EXCEL_SHEET_SURVEY_AREA_STATIC, EXCEL_SHEET_PARKING_LOCATION_STATIC, EXCEL_SHEET_SECTION_STATIC})
             {
@@ -134,7 +134,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<SurveyArea> ExtractCompleteDataSurveyAreas()
+        public List<SurveyArea> ExtractCompleteDataSurveyAreas()
         {
             var output = new List<SurveyArea>();
 
@@ -165,7 +165,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<Section> ExtractCompleteDataSections()
+        public List<Section> ExtractCompleteDataSections()
         {
             var output = new List<Section>();
 
@@ -180,7 +180,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidThrough = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDTHROUGH),
                     Level = (int) ExtractFieldValue<double>(r, SECTION_COL_LEVEL),
                     ParkingSpaceOf =
-                        TryParseParkingSpaceType(ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
+                        Parsers.TryParseParkingSpaceType(ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
                             out var parkingSpaceType)
                             ? new []
                             {
@@ -204,7 +204,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<ParkingLocation> ExtractCompleteDataParkingLocations()
+        public List<ParkingLocation> ExtractCompleteDataParkingLocations()
         {
             var output = new List<ParkingLocation>();
 
@@ -232,7 +232,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="fName"></param>
         /// <returns></returns>
-        private async Task<List<Observation>> ExtractObservationsXlsxInternalAsync(string fName)
+        public async Task<List<Observation>> ExtractObservationsAsync(string fName)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -320,7 +320,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="fName"></param>
         /// <param name="header"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatXlsxInternalAsync(string fName, bool header)
+        public async Task<IEnumerable<string>> ExtractSurveyAreasIdsAsync(string fName, bool header)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -392,7 +392,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        private void DisposeCompleteDataExcel()
+        /// <inheritdoc />
+        public void Dispose()
         {
             _completeDataExcelDataSet?.Dispose();
         }

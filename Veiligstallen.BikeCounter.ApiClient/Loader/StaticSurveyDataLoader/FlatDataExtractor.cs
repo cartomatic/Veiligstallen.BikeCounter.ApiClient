@@ -11,10 +11,10 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    internal partial class StaticSurveyDataLoader
+    internal partial class FlatDataExtractor : IDisposable
     {
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task<List<SurveyArea>> ExtractSurveyAreasFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<SurveyArea>> ExtractSurveyAreasFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
             var output = new List<SurveyArea>();
 
@@ -43,8 +43,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     LocalId = data[0],
                     ParentLocalId = data[1],
                     Name = data[2],
-                    ValidFrom = ParseDate(data[3]),
-                    ValidThrough = ParseDate(data[4]),
+                    ValidFrom = Parsers.ParseDate(data[3]),
+                    ValidThrough = Parsers.ParseDate(data[4]),
                     Authority = data[5],
                     XtraInfo = data[6],
                     SurveyAreaType = data[7]
@@ -53,7 +53,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 try
                 {
                     var geom = wktReader.Read(data[8]);
-                    surveyArea.GeoLocation = ExtractGeometry(geom);
+                    surveyArea.GeoLocation = GeomExtractor.ExtractGeometry(geom);
                 }
                 catch (System.Exception ex)
                 {
@@ -68,7 +68,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task<List<ParkingLocation>> ExtractParkingLocationsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<ParkingLocation>> ExtractParkingLocationsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
             var output = new List<ParkingLocation>();
 
@@ -96,23 +96,23 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     LocalId = data[0],
                     Name = data[1],
-                    ValidFrom = ParseDate(data[2]),
-                    ValidThrough = ParseDate(data[3]),
+                    ValidFrom = Parsers.ParseDate(data[2]),
+                    ValidThrough = Parsers.ParseDate(data[3]),
                     Authority = data[4],
                     XtraInfo = data[5],
-                    Allows = TryParseParkingLocationAllowsType(data[6], out var vehicleType)
+                    Allows = Parsers.TryParseParkingLocationAllowsType(data[6], out var vehicleType)
                         ? new Vehicle
                         {
                             Type = vehicleType
                         }
                         : null,
-                    Features = ParseParkingLocationFeature(data[7], ',')
+                    Features = Parsers.ParseParkingLocationFeature(data[7], ',')
                 };
 
                 try
                 {
                     var geom = wktReader.Read(data[8]);
-                    parkingLocation.GeoLocation = ExtractGeometry(geom);
+                    parkingLocation.GeoLocation = GeomExtractor.ExtractGeometry(geom);
                 }
                 catch (System.Exception ex)
                 {
@@ -127,7 +127,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private async Task<List<Section>> ExtractSectionsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<Section>> ExtractSectionsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
             var output = new List<Section>();
 
@@ -155,13 +155,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     LocalId = data[0],
                     ParkingLocationLocalId = data[1],
                     Name = data[2],
-                    ValidFrom = ParseDate(data[3]),
-                    ValidThrough = ParseDate(data[4]),
+                    ValidFrom = Parsers.ParseDate(data[3]),
+                    ValidThrough = Parsers.ParseDate(data[4]),
                     Authority = data[5],
                     Level = int.TryParse(data[6], out var parsedLevel)
                         ? parsedLevel
                         : 0,
-                    ParkingSpaceOf = TryParseParkingSpaceType(data[7], out var parkingSpaceType)
+                    ParkingSpaceOf = Parsers.TryParseParkingSpaceType(data[7], out var parkingSpaceType)
                         ? new[]
                         {
                             new ParkingSpace
@@ -175,7 +175,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 try
                 {
                     var geom = wktReader.Read(data[8]);
-                    section.GeoLocation = ExtractGeometry(geom);
+                    section.GeoLocation = GeomExtractor.ExtractGeometry(geom);
                 }
                 catch (System.Exception ex)
                 {
@@ -187,24 +187,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return output;
         }
-        
 
 
-        private async Task<List<Observation>> ExtractObservationsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
-            {
-                //so client has enough time to show progress...
-                return await ExtractObservationsXlsxInternalAsync(fName);
-            }
-            else
-            {
-                return await ExtractObservationsSeparatedInternalAsync(fName, separator, header);
-            }
-        }
-        
-
-        private async Task<List<Observation>> ExtractObservationsSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        public async Task<List<Observation>> ExtractObservationsInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
             //Notes:
             //there are 2 types of observations - each depends on the actual data!!!
@@ -280,8 +265,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Survey = data[12],
                     ObservedProperty = "capacity",
                     FeatureOfInterest = data[0],
-                    TimestampStart = ParseDate(data[15]),
-                    TimestampEnd = ParseDate(data[16]),
+                    TimestampStart = Parsers.ParseDate(data[15]),
+                    TimestampEnd = Parsers.ParseDate(data[16]),
                     Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[18] },
                     Measurement = new Measurement
                     {
@@ -295,8 +280,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Survey = data[12],
                     ObservedProperty = "occupation",
                     FeatureOfInterest = data[0],
-                    TimestampStart = ParseDate(data[20]),
-                    TimestampEnd = ParseDate(data[21]),
+                    TimestampStart = Parsers.ParseDate(data[20]),
+                    TimestampEnd = Parsers.ParseDate(data[21]),
                     Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[23] },
                     Measurement = new Measurement
                     {
@@ -313,23 +298,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return output;
         }
-
-        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
-        {
-            if (separator == FlatFileUtils.FlatFileSeparator.Xlsx)
-            {
-                //so client has enough time to show progress...
-                return await ExtractSurveyAreasIdsFlatXlsxInternalAsync(fName, header);
-            }
-            else
-            {
-                return await ExtractSurveyAreasIdsFlatSeparatedInternalAsync(fName, separator, header);
-            }
-
-            
-        }
-
-        private async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
+        
+        public async Task<IEnumerable<string>> ExtractSurveyAreasIdsFlatSeparatedInternalAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
         {
             var sectionAreaIds = new List<string>();
 
@@ -383,7 +353,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         };
         
 
-        private List<SurveyArea> ExtractSurveyAreasSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        public List<SurveyArea> ExtractSurveyAreasSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<SurveyArea>();
 
@@ -409,8 +379,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         LocalId = data[SURVEY_AREA_LOCAL_ID],
                         ParentLocalId = data[SURVEY_AREA_PARENT_LOCAL_ID],
                         Name = data[SURVEY_AREA_NAME],
-                        ValidFrom = ParseDate(data[SURVEY_AREA_VALID_FROM]),
-                        ValidThrough = ParseDate(data[SURVEY_AREA_VALID_THROUGH]),
+                        ValidFrom = Parsers.ParseDate(data[SURVEY_AREA_VALID_FROM]),
+                        ValidThrough = Parsers.ParseDate(data[SURVEY_AREA_VALID_THROUGH]),
                         Authority = data[SURVEY_AREA_AUTHORITY_ID],
                         XtraInfo = data[SURVEY_AREA_XTRA_INFO],
                         SurveyAreaType = data[SURVEY_AREA_TYPE]
@@ -445,7 +415,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             PARKING_LOCATION_SURVEY_AREA_LOCAL_ID, PARKING_LOCATION_LOCATION_NUMBER
         };
 
-        private List<ParkingLocation> ExtractParkingLocationsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        public List<ParkingLocation> ExtractParkingLocationsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<ParkingLocation>();
 
@@ -470,8 +440,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     {
                         LocalId = data[PARKING_LOCATION_LOCAL_ID],
                         Name = data[PARKING_LOCATION_NAME],
-                        ValidFrom = ParseDate(data[PARKING_LOCATION_VALID_FROM]),
-                        ValidThrough = ParseDate(data[PARKING_LOCATION_VALID_THROUGH]),
+                        ValidFrom = Parsers.ParseDate(data[PARKING_LOCATION_VALID_FROM]),
+                        ValidThrough = Parsers.ParseDate(data[PARKING_LOCATION_VALID_THROUGH]),
                         Authority = data[PARKING_LOCATION_AUTHORITY],
                         XtraInfo = data[PARKING_LOCATION_XTRA_INFO],
                         //no such field in the default format; this is now skipped
@@ -481,7 +451,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         //        Type = vehicleType
                         //    }
                         //    : null,
-                        Features = ParseParkingLocationFeature(data[PARKING_LOCATION_FEATURE_TYPE], ' ')
+                        Features = Parsers.ParseParkingLocationFeature(data[PARKING_LOCATION_FEATURE_TYPE], ' ')
                     };
 
                     output.Add(parkingLocation);
@@ -518,7 +488,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR
         };
 
-        private List<Section> ExtractSectionsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
+        public List<Section> ExtractSectionsSeparatedInternal(string fName, FlatFileUtils.FlatFileSeparator separator)
         {
             var output = new List<Section>();
             var map = new Dictionary<string, Section>();
@@ -560,8 +530,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                             LocalId = data[SECTION_LOCAL_ID],
                             ParkingLocationLocalId = data[SECTION_PARKING_LOCATION_LOCAL_ID],
                             Name = data[SECTION_NAME],
-                            ValidFrom = ParseDate(data[SECTION_VALID_FROM]),
-                            ValidThrough = ParseDate(data[SECTION_VALID_THROUGH]),
+                            ValidFrom = Parsers.ParseDate(data[SECTION_VALID_FROM]),
+                            ValidThrough = Parsers.ParseDate(data[SECTION_VALID_THROUGH]),
                             //Authority = data[5], //WTF???? field missing in the model!!!
                             Level = int.TryParse(data[SECTION_LEVEL], out var parsedLevel)
                                 ? parsedLevel
@@ -591,12 +561,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private ParkingSpace CreateParkingSpace(string parkingSpaceTypeStr, string ownerTypeStr)
         {
-            if (TryParseParkingSpaceType(parkingSpaceTypeStr, out var parkingSpaceType))
+            if (Parsers.TryParseParkingSpaceType(parkingSpaceTypeStr, out var parkingSpaceType))
             {
                 return new ParkingSpace
                 {
                     Type = parkingSpaceType,
-                    Vehicles = TryParseVehicleOwnerType(ownerTypeStr, out var ownerType)
+                    Vehicles = Parsers.TryParseVehicleOwnerType(ownerTypeStr, out var ownerType)
                         ? new[]
                         {
                             new Vehicle
@@ -609,6 +579,213 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Prepares a col map based on a header row
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        private Dictionary<string, int> SeparatedPrepareColMap(string header, FlatFileUtils.FlatFileSeparator separator)
+        {
+            var fieldNames = header.Split(FlatFileUtils.FlatFileSeparators[separator]);
+            var colMap = new Dictionary<string, int>();
+
+            for (var i = 0; i < fieldNames.Length; i++)
+            {
+                colMap.Add(fieldNames[i], i);
+            }
+
+            return colMap;
+        }
+
+        /// <summary>
+        /// Verifies required fields presence; throws when a required field could not be found
+        /// </summary>
+        /// <param name="colMap"></param>
+        /// <param name="requiredFieldNames"></param>
+        private void SeparatedVerifyRequiredFieldsPresence(Dictionary<string, int> colMap, IEnumerable<string> requiredFieldNames)
+        {
+            foreach (var fieldName in requiredFieldNames)
+            {
+                if (!colMap.ContainsKey(fieldName))
+                    throw new System.Exception($"Could nit find a required field: {fieldName}");
+            }
+        }
+
+        /// <summary>
+        /// Reads separated data line and returns it as a dict of col name, col value
+        /// </summary>
+        /// <param name="colMap"></param>
+        /// <param name="line"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        private Dictionary<string, string> SeparatedExtractDataRow(Dictionary<string, int> colMap, string line, FlatFileUtils.FlatFileSeparator separator)
+        {
+            var data = line.Split(FlatFileUtils.FlatFileSeparators[separator]);
+            if (data.Length != colMap.Count)
+                throw new System.Exception($"Invalid field count: expected {colMap.Count}, found: {data.Length}");
+
+            return colMap.ToDictionary(kv => kv.Key, kv => data[kv.Value]);
+        }
+
+
+        //public void ExportFlatFiles(string dir, FlatFileSeparator separator = FlatFileSeparator.Tab)
+        //{
+        //    if (!Enum.IsDefined(typeof(FlatFileSeparator), separator))
+        //        throw new ArgumentException(
+        //            $"Invalid separator: {separator}; supported separators are: {string.Join(",", SEPARATORS.Keys.Select(k => $"{k}"))}");
+
+        //    try
+        //    {
+        //        if (!Directory.Exists(dir))
+        //            Directory.CreateDirectory(dir);
+        //    }
+        //    catch
+        //    {
+        //        //ignore
+        //    }
+
+        //    if (!Directory.Exists(dir))
+        //        throw new ArgumentException($"Directory does not exist or could not create it: {dir}");
+
+        //    if (!_dataExtracted)
+        //        throw new InvalidOperationException("No data has been extracted so far");
+
+        //    ExportSurveyAreas(dir, separator);
+        //    ExportParkingLocations(dir, separator);
+        //    ExportSections(dir, separator);
+        //}
+
+        //private void ExportSurveyAreas(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_SURVEY_AREAS, separator);
+
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(SurveyArea.LocalId),
+        //        nameof(SurveyArea.ParentLocalId),
+        //        nameof(SurveyArea.Name),
+        //        nameof(SurveyArea.ValidFrom),
+        //        nameof(SurveyArea.ValidThrough),
+        //        nameof(SurveyArea.Authority),
+        //        nameof(SurveyArea.XtraInfo),
+        //        nameof(SurveyArea.SurveyAreaType),
+        //        nameof(SurveyArea.GeomWkt)
+
+        //    });
+
+        //    foreach (var surveyArea in _surveyAreas)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            surveyArea.LocalId,
+        //            surveyArea.ParentLocalId,
+        //            surveyArea.Name,
+        //            SerializeDate(surveyArea.ValidFrom),
+        //            SerializeDate(surveyArea.ValidThrough),
+        //            surveyArea.Authority,
+        //            surveyArea.XtraInfo,
+        //            surveyArea.SurveyAreaType,
+        //            surveyArea.GeomWkt
+        //        });
+        //    }
+        //}
+
+        //private void ExportParkingLocations(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_PARKING_LOCATIONS, separator);
+
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(ParkingLocation.LocalId),
+        //        nameof(ParkingLocation.Name),
+        //        nameof(ParkingLocation.ValidFrom),
+        //        nameof(ParkingLocation.ValidThrough),
+        //        nameof(ParkingLocation.Authority),
+        //        nameof(ParkingLocation.XtraInfo),
+        //        $"{nameof(ParkingLocation.Allows)}_{nameof(ParkingLocation.Allows.Type)}",
+        //        nameof(ParkingLocation.Features),
+        //        nameof(ParkingLocation.GeomWkt)
+        //    });
+
+        //    foreach (var parkingLocation in _parkingLocations)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            parkingLocation.LocalId,
+        //            parkingLocation.Name,
+        //            SerializeDate(parkingLocation.ValidFrom),
+        //            SerializeDate(parkingLocation.ValidThrough),
+        //            parkingLocation.Authority,
+        //            parkingLocation.XtraInfo,
+        //            SerializeParkingLocationAllowsType(parkingLocation.Allows?.Type),
+        //            SerializeParkingLocationFeature(parkingLocation.Features),
+        //            parkingLocation.GeomWkt
+        //        });
+        //    }
+        //}
+
+        //private void ExportSections(string dir, FlatFileSeparator separator)
+        //{
+        //    var fName = GetFlatFilePath(dir, FLAT_FILE_SECTIONS, separator);
+
+        //    //hdr first
+        //    DumpLine(fName, separator, new[]
+        //    {
+        //        nameof(Section.LocalId),
+        //        nameof(Section.ParkingLocationLocalId),
+        //        nameof(Section.Name),
+        //        nameof(Section.ValidFrom),
+        //        nameof(Section.ValidThrough),
+        //        nameof(Section.Authority),
+        //        nameof(Section.Level),
+        //        nameof(Section.ParkingSystemType),
+        //        nameof(Section.GeomWkt)
+        //    });
+
+        //    foreach (var section in _sections)
+        //    {
+        //        DumpLine(fName, separator, new[]
+        //        {
+        //            section.LocalId,
+        //            section.ParkingLocationLocalId,
+        //            section.Name,
+        //            SerializeDate(section.ValidFrom),
+        //            SerializeDate(section.ValidThrough),
+        //            section.Authority,
+        //            section.Level.ToString(),
+        //            section.ParkingSystemType,
+        //            section.GeomWkt
+        //        });
+        //    }
+        //}
+        
+
+        private void DumpLine(string fName, FlatFileUtils.FlatFileSeparator separator, string[] data)
+        {
+            File.AppendAllLines(fName, new[]
+            {
+                string.Join(FlatFileUtils.FlatFileSeparators[separator].ToString(), data)
+            });
+        }
+
+        private string GetFilePath(string dir, string fName, FlatFileUtils.FlatFileSeparator separator)
+        {
+            var outFName = Path.Combine(dir, $"{fName}.{FlatFileUtils.FlatFileExtensions[separator]}");
+            if (File.Exists(outFName))
+                File.Delete(outFName);
+
+            return outFName;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
         }
     }
 }

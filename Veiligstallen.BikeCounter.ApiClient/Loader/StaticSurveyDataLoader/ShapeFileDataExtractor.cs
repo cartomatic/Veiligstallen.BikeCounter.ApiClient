@@ -11,20 +11,26 @@ using Geometry = Veiligstallen.BikeCounter.ApiClient.DataModel.Geometry;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    internal partial class StaticSurveyDataLoader
+    internal partial class ShapeFileDataExtractor : IDisposable
     {
         private const string COMPLETE_DATA_SHP_SURVEYAREA_COL_SURVEYAREAID = "surveyarea";
         private const string COMPLETE_DATA_SHP_PARKINGLOCATION_COL_NAME = "Locatie";
         private const string COMPLETE_DATA_SHP_SECTION_COL_NAME = "localid";
+
+        private readonly bool _extractWkt;
+        public ShapeFileDataExtractor(bool extractWkt)
+        {
+            _extractWkt = extractWkt;
+        }
 
         /// <summary>
         /// Extracts survey area geometries from a complete data shape file and updates survey areas
         /// </summary>
         /// <param name="surveyAreas"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private void ExtractCompleteDataSurveyAreasGeoms(List<SurveyArea> surveyAreas)
+        public void ExtractCompleteDataSurveyAreasGeoms(string fName, List<SurveyArea> surveyAreas)
         {
-            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_SURVEY_AREAS, COMPLETE_DATA_SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(fName, COMPLETE_DATA_SHP_SURVEYAREA_COL_SURVEYAREAID, out var idColIdx);
             
             while (shpReader.Read())
             {
@@ -36,7 +42,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if(_extractWkt)
                     surveyArea.GeomWkt = shpReader.Geometry.ToText();
                 
-                surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                surveyArea.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
             }
         }
 
@@ -45,9 +51,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="parkingLocations"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private void ExtractCompleteDataParkingLocationsGeoms(List<ParkingLocation> parkingLocations)
+        public void ExtractCompleteDataParkingLocationsGeoms(string fName, List<ParkingLocation> parkingLocations)
         {
-            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_PARKING_LOCATIONS, COMPLETE_DATA_SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(fName, COMPLETE_DATA_SHP_PARKINGLOCATION_COL_NAME, out var idColIdx);
 
             while (shpReader.Read())
             {
@@ -59,7 +65,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if (_extractWkt)
                     parkingLocation.GeomWkt = shpReader.Geometry.ToText();
 
-                parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                parkingLocation.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
             }
         }
 
@@ -68,9 +74,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="sections"></param>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private void ExtractCompleteDataSectionsGeoms(List<Section> sections)
+        public void ExtractCompleteDataSectionsGeoms(string fName, List<Section> sections)
         {
-            using var shpReader = PrepareShapeFileReader(COMPLETE_DATA_FILENAME_SECTIONS, COMPLETE_DATA_SHP_SECTION_COL_NAME, out var idColIdx);
+            using var shpReader = PrepareShapeFileReader(fName, COMPLETE_DATA_SHP_SECTION_COL_NAME, out var idColIdx);
 
             while (shpReader.Read())
             {
@@ -82,7 +88,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if (_extractWkt)
                     section.GeomWkt = shpReader.Geometry.ToText();
 
-                section.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                section.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
             }
         }
 
@@ -110,7 +116,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<SurveyArea> ExtractSurveyAreasShpOnlyInternalAsync(string shpFile)
+        public List<SurveyArea> ExtractSurveyAreasShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<SurveyArea>();
 
@@ -133,7 +139,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if (_extractWkt)
                     surveyArea.GeomWkt = shpReader.Geometry.ToText();
 
-                surveyArea.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                surveyArea.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
                 
                 output.Add(surveyArea);
             }
@@ -164,7 +170,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<SurveyArea> ExtractSurveyAreasShpInternal(string shpFile)
+        public List<SurveyArea> ExtractSurveyAreasShpInternal(string shpFile)
         {
             var output = new List<SurveyArea>();
 
@@ -185,7 +191,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     if (_extractWkt)
                         obj.GeomWkt = shpReader.Geometry.ToText();
 
-                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                    obj.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
 
                     output.Add(obj);
                 }
@@ -201,7 +207,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<ParkingLocation> ExtractParkingLocationsShpOnlyInternalAsync(string shpFile)
+        public List<ParkingLocation> ExtractParkingLocationsShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
@@ -217,19 +223,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
                     XtraInfo = ExtractString(shpReader, colMap[SHP_ONLY_EXTRA_INFO]),
-                    Allows = TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ONLY_ALLOWS_TYPE]), out var vehicleType)
+                    Allows = Parsers.TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ONLY_ALLOWS_TYPE]), out var vehicleType)
                         ? new Vehicle
                         {
                             Type = vehicleType
                         }
                         : null,
-                    Features = ParseParkingLocationFeature(ExtractString(shpReader, colMap[SHP_ONLY_FEATURES]), ',')
+                    Features = Parsers.ParseParkingLocationFeature(ExtractString(shpReader, colMap[SHP_ONLY_FEATURES]), ',')
                 };
 
                 if (_extractWkt)
                     parkingLocation.GeomWkt = shpReader.Geometry.ToText();
 
-                parkingLocation.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                parkingLocation.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
 
                 output.Add(parkingLocation);
             }
@@ -254,7 +260,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<ParkingLocation> ExtractParkingLocationsShpInternal(string shpFile)
+        public List<ParkingLocation> ExtractParkingLocationsShpInternal(string shpFile)
         {
             var output = new List<ParkingLocation>();
 
@@ -275,7 +281,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     if (_extractWkt)
                         obj.GeomWkt = shpReader.Geometry.ToText();
 
-                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                    obj.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
 
                     output.Add(obj);
                 }
@@ -291,7 +297,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="shpFile"></param>
         /// <returns></returns>
         [Obsolete("Format abandoned and not officially supported anymore")]
-        private List<Section> ExtractSectionsShpOnlyInternalAsync(string shpFile)
+        public List<Section> ExtractSectionsShpOnlyInternalAsync(string shpFile)
         {
             var output = new List<Section>();
 
@@ -308,7 +314,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
                     Level = shpReader.GetInt32(colMap[SHP_LEVEL]),
-                    ParkingSpaceOf = TryParseParkingSpaceType(ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE]),
+                    ParkingSpaceOf = Parsers.TryParseParkingSpaceType(ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE]),
                         out var parkingSpaceType)
                         ? new[]
                         {
@@ -323,7 +329,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 if (_extractWkt)
                     section.GeomWkt = shpReader.Geometry.ToText();
 
-                section.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                section.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
 
                 output.Add(section);
             }
@@ -336,7 +342,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// </summary>
         /// <param name="shpFile"></param>
         /// <returns></returns>
-        private List<Section> ExtractSectionsShpInternal(string shpFile)
+        public List<Section> ExtractSectionsShpInternal(string shpFile)
         {
             var output = new List<Section>();
 
@@ -357,7 +363,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     if (_extractWkt)
                         obj.GeomWkt = shpReader.Geometry.ToText();
 
-                    obj.GeoLocation = ExtractGeometry(shpReader.Geometry);
+                    obj.GeoLocation = GeomExtractor.ExtractGeometry(shpReader.Geometry);
 
                     output.Add(obj);
                 }
@@ -385,9 +391,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <param name="idColIdx"></param>
         /// <returns></returns>
         /// <exception cref="System.Exception"></exception>
-        private ShapefileDataReader PrepareShapeFileReader(string fileName, string idColName, out int idColIdx)
+        private ShapefileDataReader PrepareShapeFileReader(string fName, string idColName, out int idColIdx)
         {
-            var fName = Path.Combine(_dir, $"{fileName}.shp");
             var shpReader = new NetTopologySuite.IO.ShapefileDataReader(fName, new GeometryFactory());
 
             var dBaseHdr = shpReader.DbaseHeader;
@@ -439,80 +444,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return null;
         }
 
-        /// <summary>
-        /// Extracts shp geom as Veiligstallen.BikeCounter geom
-        /// </summary>
-        /// <param name="g"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private Geometry ExtractGeometry(NetTopologySuite.Geometries.Geometry g)
+        /// <inheritdoc />
+        public void Dispose()
         {
-            return g.GeometryType switch
-            {
-                nameof(NetTopologySuite.Geometries.MultiPolygon) => ExtractMultiPolygonGeometry(g),
-                nameof(NetTopologySuite.Geometries.Polygon) => ExtractPolygonGeometry(g),
-                _ => throw new NotImplementedException($"{g.GeometryType} is not supported at this time")
-            };
         }
-
-        /// <summary>
-        /// Extracts multipolygon as Veiligstallen.BikeCounter geom
-        /// </summary>
-        /// <param name="g"></param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception"></exception>
-        private Geometry ExtractMultiPolygonGeometry(NetTopologySuite.Geometries.Geometry g)
-        {
-            if (g is not NetTopologySuite.Geometries.MultiPolygon multiPoly)
-                throw new System.Exception($"Expected {nameof(NetTopologySuite.Geometries.MultiPolygon)}  but got {g.GeometryType}");
-
-            var polys = new List<double[][][]>();
-
-            for (var idx = 0; idx < multiPoly.Count; idx++)
-            {
-                var poly = (NetTopologySuite.Geometries.Polygon) multiPoly[idx];
-
-                polys.Add(ExtractCoords(poly));
-            }
-
-            return new DataModel.MultiPolygon(polys.ToArray());
-        }
-
-        /// <summary>
-        /// Extracts polygon as Veiligstallen.BikeCounter geom
-        /// </summary>
-        /// <param name="g"></param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception"></exception>
-        private Geometry ExtractPolygonGeometry(NetTopologySuite.Geometries.Geometry g)
-        {
-            if (g is not NetTopologySuite.Geometries.Polygon poly)
-                throw new System.Exception($"Expected {nameof(NetTopologySuite.Geometries.Polygon)} but got {g.GeometryType}");
-
-            return new DataModel.Polygon(ExtractCoords(poly));
-        }
-
-        /// <summary>
-        /// Extracts coords from polygon
-        /// </summary>
-        /// <param name="poly"></param>
-        /// <returns></returns>
-        private double[][][] ExtractCoords(NetTopologySuite.Geometries.Polygon poly)
-        {
-            var rings = new List<double[][]>();
-
-            rings.Add(ExtractCoords(poly.ExteriorRing));
-            rings.AddRange(poly.InteriorRings.Select(ExtractCoords));
-
-            return rings.ToArray();
-        }
-
-        /// <summary>
-        /// Extracts coords from a line string
-        /// </summary>
-        /// <param name="ls"></param>
-        /// <returns></returns>
-        private double[][] ExtractCoords(NetTopologySuite.Geometries.LineString ls)
-            => ls.Coordinates.Select(c => new[] {c.X, c.Y}).ToArray();
     }
 }

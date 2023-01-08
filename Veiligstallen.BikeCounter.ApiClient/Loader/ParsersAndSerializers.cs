@@ -7,9 +7,9 @@ using Veiligstallen.BikeCounter.ApiClient.DataModel;
 
 namespace Veiligstallen.BikeCounter.ApiClient.Loader
 {
-    internal partial class StaticSurveyDataLoader
+    internal static class Parsers
     {
-        private DateTime? ParseDate(string d)
+        public static DateTime? ParseDate(string d)
         {
             DateTime date;
 
@@ -28,10 +28,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return null;
         }
 
-        private string SerializeParkingLocationFeature(ParkingLocationFeature[] features)
+        public static string SerializeParkingLocationFeature(ParkingLocationFeature[] features)
             => string.Join(",", features?.Select(x => $"{x}") ?? Array.Empty<string>());
 
-        private ParkingLocationFeature[] ParseParkingLocationFeature(string s, char separator)
+        public static ParkingLocationFeature[] ParseParkingLocationFeature(string s, char separator)
         {
             var output = new List<ParkingLocationFeature>();
 
@@ -49,25 +49,27 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output.Any() ? output.ToArray() : null;
         }
 
-        private string SerializeParkingLocationAllowsType(VehicleType? t)
+        public static string SerializeParkingLocationAllowsType(VehicleType? t)
             => t.HasValue ? $"{t}" : string.Empty;
 
-        private bool TryParseParkingLocationAllowsType(string s, out VehicleType vehicleType)
+        public static bool TryParseParkingLocationAllowsType(string s, out VehicleType vehicleType)
         {
             vehicleType = VehicleType.unknown;
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, true, out vehicleType);
         }
 
-        private bool TryParseParkingSpaceType(string s, out ParkingSpaceType parkingSpaceType)
+        public static bool TryParseParkingSpaceType(string s, out ParkingSpaceType parkingSpaceType)
         {
             parkingSpaceType = ParkingSpaceType.unknown;
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<ParkingSpaceType>(s, true, out parkingSpaceType);
         }
 
-        private bool TryParseVehicleOwnerType(string s, out VehicleOwner ownerType)
+        public static bool TryParseVehicleOwnerType(string s, out VehicleOwner ownerType)
         {
             ownerType = VehicleOwner.unknown;
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleOwner>(s, true, out ownerType);
         }
+        public static string SerializeDateAsIso8601(DateTime? dt)
+            => dt.HasValue ? dt.Value.ToString("O") : string.Empty;
     }
 }
