@@ -18,6 +18,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         public StaticSurveyDataLoader()
         {
+            _excelDataExtractor = new ExcelDataExtractor();
+            _flatDataExtractor = new FlatDataExtractor();
+            _shapeFileDataExtractor = new ShapeFileDataExtractor(false);
         }
 
         public StaticSurveyDataLoader(string dir, bool extractWkt = false)

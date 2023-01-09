@@ -553,6 +553,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string SECTION_VALID_FROM = "section_validFrom";
         private const string SECTION_VALID_THROUGH = "section_validThrough";
         private const string SECTION_NR = "section_nr";
+        private const string SECTION_AUTHORITY = "section_authority";
 
 
         private static string[] _sectionColumns =
@@ -561,7 +562,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //SECTION_PARKING_LOCATION_ID - WTF??? this should not be here!
             SECTION_PARKING_LOCATION_LOCAL_ID,
             SECTION_NAME, SECTION_LAYOUT, SECTION_PARKING_SYSTEM_TYPE, SECTION_VEHICLE_OWNER_TYPE,
-            SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR
+            SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR,
+            SECTION_AUTHORITY
         };
 
         /// <summary>
@@ -619,7 +621,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                             Name = data[SECTION_NAME],
                             ValidFrom = Parsers.ParseDate(data[SECTION_VALID_FROM]),
                             ValidThrough = Parsers.ParseDate(data[SECTION_VALID_THROUGH]),
-                            //Authority = data[5], //WTF???? field missing in the model!!!
+                            Authority = data[SECTION_AUTHORITY],
                             Level = int.TryParse(data[SECTION_LEVEL], out var parsedLevel)
                                 ? parsedLevel
                                 : 0,
