@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
-    public class Observation
+    public class Observation : Base
     {
         [JsonProperty("survey")]
         public string Survey { get; set; }

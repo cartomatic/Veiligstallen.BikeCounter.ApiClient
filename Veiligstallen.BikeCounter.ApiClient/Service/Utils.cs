@@ -1,12 +1,15 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Remotion.Linq.Clauses;
 using RestSharp;
 using RestSharp.Serializers;
@@ -43,6 +46,66 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 Object = @object;
             }
         }
+
+        private class CustomEnumConverter : StringEnumConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return base.CanConvert(objectType);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var isNullable = (Nullable.GetUnderlyingType(objectType) != null);
+                if (reader.TokenType == JsonToken.Null)
+                {
+                    if (!isNullable)
+                    {
+                        throw new JsonSerializationException();
+                    }
+                    return null;
+                }
+
+                var type = (isNullable ? Nullable.GetUnderlyingType(objectType) : objectType);
+
+                try
+                {
+                    if (reader.TokenType == JsonToken.String)
+                    {
+                        string value = reader.Value?.ToString();
+                        if (string.IsNullOrWhiteSpace(value) && isNullable)
+                        {
+                            return null;
+                        }
+
+                        //trim dashes if any - this seems to appear in bike counter data...
+                        value = value.Replace("-", string.Empty);
+
+                        try
+                        {
+                            return Enum.Parse(type, value, true);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            //this should be a default value for a type
+                            return isNullable ? null : Activator.CreateInstance(type);
+                        }
+                    }
+
+                    if (reader.TokenType == JsonToken.Integer)
+                    {
+                        return base.ReadJson(reader, objectType, existingValue, serializer); ;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    throw new JsonSerializationException($"Error converting value {reader.Value} to type '{objectType?.ToString()}'.", ex);
+                }
+
+                throw new JsonSerializationException($"Unexpected token {reader.TokenType} when parsing enum.");
+            }
+        }
+
 
         private class Sort
         {
@@ -200,8 +263,15 @@ namespace Veiligstallen.BikeCounter.ApiClient
             Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
-                Converters = new List<Newtonsoft.Json.JsonConverter>() { new Newtonsoft.Json.Converters.StringEnumConverter() }
+                Converters = new List<Newtonsoft.Json.JsonConverter>() {
+                    new Newtonsoft.Json.Converters.StringEnumConverter()
+                }
             });
+
+        private JsonConverter[] _converters = new []
+        {
+            new CustomEnumConverter()
+        };
 
         /// <summary>
         /// Creates an object
@@ -218,7 +288,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 Method.POST,
                 data: cfg.Object,
                 authToken: GetAuthorizationHeaderValue(),
-                serializer: _serializer
+                serializer: _serializer,
+                converters: _converters
             );
 
             EnsureValidResponse(apiOut.Response);
