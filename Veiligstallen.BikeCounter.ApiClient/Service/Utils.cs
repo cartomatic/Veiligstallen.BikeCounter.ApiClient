@@ -113,6 +113,20 @@ namespace Veiligstallen.BikeCounter.ApiClient
             public string Direction { get; set; }
         }
 
+        private ISerializer _serializer = new Cartomatic.Utils.RestSharpSerializers.NewtonSoftJsonSerializer(
+            Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<Newtonsoft.Json.JsonConverter>() {
+                    new Newtonsoft.Json.Converters.StringEnumConverter()
+                }
+            });
+
+        private JsonConverter[] _converters = new[]
+        {
+            new CustomEnumConverter()
+        };
+
         /// <summary>
         /// Ensures api resulted in a valid output
         /// </summary>
@@ -161,7 +175,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 PrepareRoute(cfg),
                 Method.GET,
                 authToken: GetAuthorizationHeaderValue(),
-                queryParams: PrepareQueryParams(cfg)
+                queryParams: PrepareQueryParams(cfg),
+                serializer: _serializer,
+                converters: _converters
             );
 
             EnsureValidResponse(apiOut.Response);
@@ -251,27 +267,15 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 _cfg.Endpoint,
                 PrepareRoute(cfg),
                 Method.GET,
-                authToken: GetAuthorizationHeaderValue()
+                authToken: GetAuthorizationHeaderValue(),
+                serializer: _serializer,
+                converters: _converters
             );
 
             EnsureValidResponse(apiOut.Response);
 
             return apiOut.Output;
         }
-
-        private ISerializer _serializer = new Cartomatic.Utils.RestSharpSerializers.NewtonSoftJsonSerializer(
-            Formatting.None, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = new List<Newtonsoft.Json.JsonConverter>() {
-                    new Newtonsoft.Json.Converters.StringEnumConverter()
-                }
-            });
-
-        private JsonConverter[] _converters = new []
-        {
-            new CustomEnumConverter()
-        };
 
         /// <summary>
         /// Creates an object
@@ -313,7 +317,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 Method.PUT,
                 data: cfg.Object,
                 authToken: GetAuthorizationHeaderValue(),
-                serializer: _serializer
+                serializer: _serializer,
+                converters: _converters
             );
 
             EnsureValidResponse(apiOut.Response);

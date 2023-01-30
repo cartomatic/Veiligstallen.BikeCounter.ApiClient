@@ -334,7 +334,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(parkingLocation?.Id);
                 emitCell(parkingLocation?.LocalId);
                 emitCell(parkingLocation?.Name);
-                emitCell(string.Join(", ", parkingLocation?.Features?.Select(x => $"{x}")));
+                emitCell(string.Join(", ", parkingLocation?.Features?.Select(x => $"{x}") ?? Array.Empty<string>()));
                 emitCell(parkingLocation?.XtraInfo);
 
 
@@ -344,13 +344,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(section?.Name);
                 emitCell(section?.Layout);
 
-                emitCell(string.Join(", ", section?.ParkingSpaceOf.Select(x => $"{x.Type}")));
+                emitCell(string.Join(", ", section?.ParkingSpaceOf.Select(x => $"{x.Type}") ?? Array.Empty<string>()));
 
                 emitCell(
                     string.Join(
                         ", ",
                         section?.ParkingSpaceOf.Select(
-                            x => x.Vehicles.Aggregate(
+                            x => (x.Vehicles ?? Array.Empty<Vehicle>()).Aggregate(
                                 new List<VehicleOwner>(),
                                 (agg, v) => {
                                     agg.Add(v.Owner);
@@ -379,10 +379,10 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(o.OccupationObservation?.Note?.Remark);
 
                 var capacities = o.OccupationObservation?.Measurement?.CapacityPerParkingSpaceTypes ?? Array.Empty<CapacityPerParkingSpaceType>();
-                if(capacities.Length != canonicalVehicleHeaders.Length)
-                {
-                    var wtf = true;
-                }
+                //if(capacities.Length != canonicalVehicleHeaders.Length)
+                //{
+                //    var wtf = true;
+                //}
                 foreach (var capacity in capacities)
                 {
                     emitCell(capacity.NumberOfVehicles.ToString());
