@@ -302,7 +302,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 cellIdx++;
             };
             var tz = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-            var toCet = (DateTime? dt) => dt.HasValue ? TimeZoneInfo.ConvertTime(dt.Value, tz).ToString("d-m-yyyy H:mm:ss") : string.Empty;
+            var toCet = (DateTime? dt) => dt.HasValue ? TimeZoneInfo.ConvertTime(dt.Value, tz).ToString("d-M-yyyy H:mm:ss") : string.Empty;
             foreach (var o in combinedObservations)
             {
                 cellIdx = 1;

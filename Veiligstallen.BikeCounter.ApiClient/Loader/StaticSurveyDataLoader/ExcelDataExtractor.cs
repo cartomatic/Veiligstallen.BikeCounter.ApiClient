@@ -288,7 +288,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         ParkingCapacity = (int)ExtractFieldValue<double>(r, colMap[17])
                     }
                 };
-                output.Add(observationCapacity);
+                if (observationCapacity.TimestampStart.HasValue)
+                    output.Add(observationCapacity);
 
                 var observationOccupation = new Observation
                 {
@@ -308,7 +309,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         }).ToArray()
                     }
                 };
-                output.Add(observationOccupation);
+                if (observationOccupation.TimestampStart.HasValue)
+                    output.Add(observationOccupation);
             }
 
             return output;
