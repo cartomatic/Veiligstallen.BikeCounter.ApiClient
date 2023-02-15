@@ -330,7 +330,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[23] },
                     Measurement = new Measurement
                     {
-                        TotalParked = int.TryParse(data[17], out var totalParked) ? totalParked : 0,
+                        TotalParked = int.TryParse(data[22], out var totalParked) ? totalParked : 0,
                         VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
                         {
                             CanonicalVehicleCode = kv.Value,

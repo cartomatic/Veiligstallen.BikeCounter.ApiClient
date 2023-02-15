@@ -48,6 +48,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         }
 
         public string Endpoint { get; set; }
+        public string ShapeEndpoint { get; set; }
         public string AuthorizationScheme { get; set; } = "Basic";
         public string User { get; set; }
         public string Pass { get; set; }

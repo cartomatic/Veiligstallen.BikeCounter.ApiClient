@@ -212,8 +212,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "surveyarea_name", //SurveyArea.name
             "surveyarea_xtrainfo", //SurveyArea.xtrainfo
 
+            "surveyarea_id_child",
             "surveyarea_localId_child", //child SurveyArea.id (optional, child is surveyArea with prop parent filled)
             "surveyarea_name_child", //child SurveyArea.name  (optional, child is surveyArea with prop parent filled)
+            "surveyarea_xtrainfo_child",
+
             "geolocation", //https://remote.veiligstallenontwikkel.nl/rest/api/v2/parking-locations/<parking-location.id>, https://remote.veiligstallenontwikkel.nl/rest/api/v2/sections/<section.id>
 
             "parkinglocation_id", //parkinglocation.id
@@ -293,11 +296,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 var cell = ws.Cell(rowIdx, cellIdx);
                 cell.Value = value;
 
-                cell.Style.Font.FontColor = GetTextOrBorderColor(cellIdx);
-
+                //no cell colouring enymore...
+                cell.Style.Font.FontColor = GetCellTextOrBorderColor(cellIdx);
                 cell.Style.Fill.BackgroundColor = GetCellColor(cellIdx);
 
-                ApplyCellBorder(cell, GetTextOrBorderColor(cellIdx));
+                ApplyCellBorder(cell, GetCellTextOrBorderColor(cellIdx));
 
                 cellIdx++;
             };
@@ -323,11 +326,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(parentSurveyArea?.Name);
                 emitCell(parentSurveyArea?.XtraInfo);
 
+                emitCell(surveyArea?.Id);
                 emitCell(surveyArea?.LocalId);
                 emitCell(surveyArea?.Name);
+                emitCell(surveyArea?.XtraInfo);
 
 
-                emitCell($"{_cfg.Endpoint}/{Configuration.Routes.SECTIONS}/{o.Section}");
+                emitCell($"{_cfg.ShapeEndpoint}{_cfg.Endpoint}/{Configuration.Routes.SECTIONS}/{o.Section}");
 
 
                 var parkingLocation = parkingLocations.FirstOrDefault(x => x.Id == o.ParkingLocation);
@@ -349,17 +354,18 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(
                     string.Join(
                         ", ",
-                        section?.ParkingSpaceOf.Select(
-                            x => (x.Vehicles ?? Array.Empty<Vehicle>()).Aggregate(
-                                new List<VehicleOwner>(),
-                                (agg, v) => {
-                                    agg.Add(v.Owner);
-                                    return agg;
-                                })
-                                .Distinct()
-                            )
+                        section?.ParkingSpaceOf.Aggregate(new List<VehicleOwner>(), (agg, v) =>
+                        {
+                            agg.AddRange(
+                                (v.Vehicles ?? Array.Empty<Vehicle>()).Select(x => x.Owner)
+                            );
+                            return agg;
+                        })
+                        .Distinct()
+                        ?? Array.Empty<VehicleOwner>()
                     )
                 );
+
 
                 emitCell(section?.Level.ToString());
 
@@ -375,17 +381,18 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(o.OccupationObservation?.Id);
                 emitCell(toCet(o.OccupationObservation?.TimestampStart));
                 emitCell(toCet(o.OccupationObservation?.TimestampEnd));
-                emitCell(o.OccupationObservation?.Measurement?.ParkingCapacity.ToString());
+                emitCell(o.OccupationObservation?.Measurement?.TotalParked.ToString());
                 emitCell(o.OccupationObservation?.Note?.Remark);
 
-                var capacities = o.OccupationObservation?.Measurement?.CapacityPerParkingSpaceTypes ?? Array.Empty<CapacityPerParkingSpaceType>();
+                var capacities = o.OccupationObservation?.Measurement?.VehicleTypeCounts ?? Array.Empty<VehicleTypeCount>();
                 //if(capacities.Length != canonicalVehicleHeaders.Length)
                 //{
                 //    var wtf = true;
                 //}
-                foreach (var capacity in capacities)
+                for (var i = 0; i < canonicalVehicleHeaders.Length; i++)
                 {
-                    emitCell(capacity.NumberOfVehicles.ToString());
+                    
+                    emitCell(capacities.Length> i ? capacities[i].NumberOfVehicles.ToString() : string.Empty);
                 }
 
                 rowIdx++; ;
@@ -406,11 +413,11 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 cell.Value = value;
 
                 cell.Style.Font.Bold = true;
-                cell.Style.Font.FontColor = GetTextOrBorderColor(cellIdx);
+                cell.Style.Font.FontColor = GetHeaderTextOrBorderColor(cellIdx);
 
-                cell.Style.Fill.BackgroundColor = GetCellColor(cellIdx);
+                cell.Style.Fill.BackgroundColor = GetHeaderCellColor(cellIdx);
 
-                ApplyCellBorder(cell, GetTextOrBorderColor(cellIdx));
+                ApplyCellBorder(cell, GetHeaderTextOrBorderColor(cellIdx));
 
                 cellIdx++;
             };
@@ -442,39 +449,49 @@ namespace Veiligstallen.BikeCounter.ApiClient
             cell.Style.Border.RightBorderColor = color;
         }
 
-        private XLColor GetCellColor(int cellIdx)
+        private XLColor GetHeaderCellColor(int cellIdx)
         {
-            if(cellIdx < 5)
-                return XLColor.FromArgb(0,97,0);
-            if(cellIdx < 9)
+            if (cellIdx < 5)
+                return XLColor.FromArgb(0, 97, 0);
+            if (cellIdx < 9)
                 return XLColor.FromArgb(56, 118, 29);
-            if (cellIdx < 11)
+            if (cellIdx < 13)
                 return XLColor.FromArgb(106, 168, 79);
-            if (cellIdx < 12)
+            if (cellIdx < 14)
                 return XLColor.FromArgb(234, 209, 220);
-            if (cellIdx < 17)
+            if (cellIdx < 19)
                 return XLColor.FromArgb(182, 215, 168);
-            if (cellIdx < 24)
+            if (cellIdx < 26)
                 return XLColor.FromArgb(198, 239, 206);
-            if (cellIdx < 29)
+            if (cellIdx < 31)
                 return XLColor.FromArgb(255, 229, 152);
-            if (cellIdx < 34)
+            if (cellIdx < 36)
                 return XLColor.FromArgb(254, 242, 203);
-            if (cellIdx < 39)
+            if (cellIdx < 41)
                 return XLColor.FromArgb(222, 234, 246);
 
             return XLColor.NoColor;
         }
 
-        private XLColor GetTextOrBorderColor(int cellIdx)
+        private XLColor GetCellColor(int cellIdx)
         {
-            if (cellIdx < 11)
+            return XLColor.NoColor;
+        }
+
+        private XLColor GetHeaderTextOrBorderColor(int cellIdx)
+        {
+            if (cellIdx < 13)
                 return XLColor.White;
 
             return XLColor.Black;
         }
 
-            
+        private XLColor GetCellTextOrBorderColor(int cellIdx)
+        {
+            return XLColor.Black;
+        }
+
+
 
 
         /// <summary>

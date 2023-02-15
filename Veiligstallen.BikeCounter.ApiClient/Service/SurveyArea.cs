@@ -113,7 +113,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         surveyArea.Authority,
                         surveyArea.XtraInfo,
                         surveyArea.SurveyAreaType,
-                        $"{_cfg.Endpoint}/{Configuration.Routes.SURVEY_AREAS}/{surveyArea.Id}",
+                        $"{_cfg.ShapeEndpoint}{_cfg.Endpoint}/{Configuration.Routes.SURVEY_AREAS}/{surveyArea.Id}",
                         Environment.NewLine
                     })
                 );
