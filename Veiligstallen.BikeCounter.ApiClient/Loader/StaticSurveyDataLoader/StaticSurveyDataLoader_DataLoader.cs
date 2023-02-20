@@ -30,6 +30,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var parent = _surveyAreas.FirstOrDefault(sa => sa.LocalId == rawChild.ParentLocalId);
                 if (parent == null)
                 {
+                    //no parent in the data set - try to look it up in a remote repo
+                    parent = await apiClient.GetSurveyAreaByLocalIdAsync(rawChild.Authority, rawChild.ParentLocalId);
+                }
+
+                if (parent == null)
+                {
                     Notify($"Could not find parent: {rawChild.ParentLocalId} for child survey area: {rawChild.LocalId}; skipping ...");
                     continue;
                 }

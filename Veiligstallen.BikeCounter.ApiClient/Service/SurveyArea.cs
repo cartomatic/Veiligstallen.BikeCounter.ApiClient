@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
@@ -51,6 +52,32 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         public Task DeleteSurveyAreaAsync(string surveyAreaId)
             => DeleteObjectAsync(new RequestConfig(Configuration.Routes.SURVEY_AREA, surveyAreaId));
+
+
+        /// <summary>
+        /// Gets a survey area by authority and local id
+        /// </summary>
+        /// <param name="authority"></param>
+        /// <param name="localId"></param>
+        /// <returns></returns>
+        public async Task<SurveyArea> GetSurveyAreaByLocalIdAsync(string authority, string localId)
+        {
+            var apiOut = await Cartomatic.Utils.RestApi.RestApiCall<SurveyArea[]>(
+                _cfg.Endpoint,
+                Configuration.Routes.SURVEY_AREAS,
+                Method.GET,
+                authToken: GetAuthorizationHeaderValue(),
+                queryParams: new Dictionary<string, object>
+                {
+                    {nameof(authority), authority},
+                    {nameof(localId), localId}
+                }
+            );
+
+            return apiOut.Response.IsSuccessful
+                ? apiOut.Output?.FirstOrDefault()
+                : null;
+        }
 
 
         /// <summary>
