@@ -19,9 +19,17 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //need to upload parents first and then children so can assign parent ids 
             foreach (var rawParent in _surveyAreas.Where(sa => string.IsNullOrWhiteSpace(sa.ParentLocalId)).ToArray())
             {
-                Notify($"Uploading parent survey area: {rawParent.LocalId}...");
-                var parent = await apiClient.CreateSurveyAreaAsync(rawParent);
-                rawParent.Id = parent.Id;
+                try
+                {
+                    Notify($"Uploading parent survey area: {rawParent.LocalId}...");
+                    var parent = await apiClient.CreateSurveyAreaAsync(rawParent);
+                    rawParent.Id = parent.Id;
+                }
+                catch (System.Exception ex)
+                {
+                    Notify($"Failed to upload parent survey area: {rawParent.LocalId}; error msg: {ex.Message}; skipping...");
+                }
+                
             }
 
             //children
@@ -36,14 +44,21 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 if (parent == null)
                 {
-                    Notify($"Could not find parent: {rawChild.ParentLocalId} for child survey area: {rawChild.LocalId}; skipping ...");
+                    Notify($"Could not find parent: {rawChild.ParentLocalId} for child survey area: {rawChild.LocalId}; skipping...");
                     continue;
                 }
 
-                Notify($"Uploading child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
+                try
+                {
+                    Notify($"Uploading child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
 
-                rawChild.Parent = parent.Id;
-                var child = await apiClient.CreateSurveyAreaAsync(rawChild);
+                    rawChild.Parent = parent.Id;
+                    var child = await apiClient.CreateSurveyAreaAsync(rawChild);
+                }
+                catch (System.Exception ex)
+                {
+                    Notify($"Failed to upload child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}; error msg: {ex.Message}; skipping...");
+                }
             }
         }
 
