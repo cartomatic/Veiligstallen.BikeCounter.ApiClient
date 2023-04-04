@@ -163,7 +163,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         parkingLocation.LocalId,
                         section.Name,
                         section.Layout,
-                        $"{_cfg.Endpoint}/{Configuration.Routes.SECTIONS}/{section.Id}",
+                        $"{_cfg.ShapeEndpoint}{_cfg.Endpoint}/{Configuration.Routes.SECTIONS}/{section.Id}",
 
                         //section_parkingSystemType
                         section.ParkingSpaceOf?.Any() == true
