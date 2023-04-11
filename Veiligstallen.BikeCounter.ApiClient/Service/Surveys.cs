@@ -317,7 +317,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
 
                 var surveyArea = surveyAreas.FirstOrDefault(x => x.Id == o.SurveyArea);
-                var parentSurveyArea = surveyAreas.FirstOrDefault(x => surveyArea.Parent != null && x.Id == surveyArea.Parent) ?? surveyArea;
+                var parentSurveyArea = surveyArea != null //this is a stupid fix really as an observation should have a survey; in the test env this wasn't always true...
+                    ? surveyAreas.FirstOrDefault(x => surveyArea.Parent != null && x.Id == surveyArea.Parent) ?? surveyArea
+                    : null;
                 if (parentSurveyArea == surveyArea)
                     surveyArea = null;
 
