@@ -130,7 +130,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 ? (Array.Empty<CanonicalVehicle>(), 0)
                 : await GetCanonicalVehiclesAsync(survey.CanonicalVehicleCategory, queryParams);
 
-            var (parkingLocations, _) = await GetSurveyPaekingLocationsAsync(surveyId);
+            var (parkingLocations, _) = await GetSurveyParkingLocationsAsync(surveyId);
             var (sections, _) = await GetSurveySectionsAsync(surveyId);
 
             var canonicalVehicleHeaders = canonicalVehicles.Select(x => $"{x.Code}").ToArray();
@@ -271,7 +271,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             var (surveyAreas, _) = await GetSurveySurveyAreasAsync(surveyId);
 
-            var (parkingLocations, _) = await GetSurveyPaekingLocationsAsync(surveyId);
+            var (parkingLocations, _) = await GetSurveyParkingLocationsAsync(surveyId);
             var (sections, _) = await GetSurveySectionsAsync(surveyId);
 
 
@@ -524,7 +524,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="surveyId"></param>
         /// <returns></returns>
-        public Task<(IEnumerable<ParkingLocation> data, int total)> GetSurveyPaekingLocationsAsync(string surveyId)
+        public Task<(IEnumerable<ParkingLocation> data, int total)> GetSurveyParkingLocationsAsync(string surveyId)
             => GetObjectsAsync<ParkingLocation>(new RequestConfig(Configuration.Routes.SURVEY_PARKING_LOCATIONS, surveyId));
 
         /// <summary>
