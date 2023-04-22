@@ -27,7 +27,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 }
                 catch (System.Exception ex)
                 {
-                    Notify($"Failed to upload parent survey area: {rawParent.LocalId}; error msg: {ex.Message}; skipping...");
+                    Notify($"[ERROR] {ex.Message}; skipping parent survey area: {rawParent.LocalId}...");
                 }
                 
             }
@@ -57,7 +57,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 }
                 catch (System.Exception ex)
                 {
-                    Notify($"Failed to upload child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}; error msg: {ex.Message}; skipping...");
+                    Notify($"[ERROR] {ex.Message}; skipping child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
                 }
             }
         }
@@ -71,10 +71,17 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             foreach (var parkingLocation in _parkingLocations.Where(pl => pl.GeoLocation != null))
             {
-                Notify($"Uploading parking location: {parkingLocation.LocalId}...");
+                try
+                {
+                    Notify($"Uploading parking location: {parkingLocation.LocalId}...");
 
-                var pl = await apiClient.CreateParkingLocationAsync(parkingLocation);
-                parkingLocation.Id = pl.Id;
+                    var pl = await apiClient.CreateParkingLocationAsync(parkingLocation);
+                    parkingLocation.Id = pl.Id;
+                }
+                catch (System.Exception ex)
+                {
+                    Notify($"[ERROR] {ex.Message}; skipping parking location: {parkingLocation.LocalId}...");
+                }
             }
         }
 
@@ -105,10 +112,17 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     continue;
                 }
 
-                Notify($"Uploading section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
+                try
+                {
+                    Notify($"Uploading section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
 
-                section.ParkingLocation = parkingLocation.Id;
-                var s = await apiClient.CreateSectionAsync(section);
+                    section.ParkingLocation = parkingLocation.Id;
+                    var s = await apiClient.CreateSectionAsync(section);
+                }
+                catch (System.Exception ex)
+                {
+                    Notify($"[ERROR] {ex.Message}; skipping section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
+                }
             }
         }
 
@@ -117,10 +131,17 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             var counter = 1;
             foreach (var observation in _observations)
             {
-                Notify($"Uploading observation {counter} of {_observations.Count}...");
+                try
+                {
+                    Notify($"Uploading observation {counter} of {_observations.Count}...");
+                    var _ = await apiClient.CreateObservationAsync(observation);
+                    counter++;
+                }
+                catch (System.Exception ex)
+                {
+                    Notify($"[ERROR] {ex.Message}; skipping observation {counter} of {_observations.Count}...");
+                }
                 
-                var _ = await apiClient.CreateObservationAsync(observation);
-                counter++;
             }
         }
 
