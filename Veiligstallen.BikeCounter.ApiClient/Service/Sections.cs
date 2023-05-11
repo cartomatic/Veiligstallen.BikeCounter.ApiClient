@@ -25,6 +25,14 @@ namespace Veiligstallen.BikeCounter.ApiClient
             => GetObjectAsync<Section>(new RequestConfig(Configuration.Routes.SECTION, sectionId));
 
         /// <summary>
+        /// Gets a section by local Id
+        /// </summary>
+        /// <param name="localId"></param>
+        /// <returns></returns>
+        public Task<Section> GetSectionByLocalIdAsync(string localId)
+            => GetObjectAsync<Section>(new RequestConfig(Configuration.Routes.SECTIONS){QueryParams = new Dictionary<string, string>{{nameof(Section.LocalId), localId}}});
+
+        /// <summary>
         /// Creates a section
         /// </summary>
         /// <param name="section"></param>

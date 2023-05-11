@@ -27,5 +27,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 
         [JsonProperty("note")]
         public Note Note { get; set; }
+        
+        /// <summary>
+        /// utility property used for looking up sections when FeatureOfInterestIsNotDefined
+        /// </summary>
+        [JsonIgnore]
+        public string SectionLocalId { get; set; }
     }
 }

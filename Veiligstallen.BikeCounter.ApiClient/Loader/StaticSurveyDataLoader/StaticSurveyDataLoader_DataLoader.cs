@@ -134,6 +134,19 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 try
                 {
                     Notify($"Uploading observation {counter} of {_observations.Count}...");
+
+                    if (string.IsNullOrEmpty(observation.FeatureOfInterest))
+                    {
+                        var section = await apiClient.GetSectionByLocalIdAsync(observation.SectionLocalId);
+                        observation.FeatureOfInterest = section?.Id;
+                    }
+
+                    if (string.IsNullOrEmpty(observation.FeatureOfInterest))
+                    {
+                        Notify($"Could not find feature of interest for observation; skipping...");
+                        continue;
+                    }
+                    
                     var _ = await apiClient.CreateObservationAsync(observation);
                     counter++;
                 }

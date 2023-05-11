@@ -308,7 +308,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Survey = data[12],
                     ObservedProperty = "capacity",
-                    FeatureOfInterest = data[0],
+                    FeatureOfInterest = data[0], //this is supposed to be section id
+                    SectionLocalId = data[1],
                     TimestampStart = Parsers.ParseDate(data[15]),
                     TimestampEnd = Parsers.ParseDate(data[16]),
                     Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[18] },
@@ -324,7 +325,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Survey = data[12],
                     ObservedProperty = "occupation",
-                    FeatureOfInterest = data[0],
+                    FeatureOfInterest = data[0], //this is supposed to be section id
+                    SectionLocalId = data[1],
                     TimestampStart = Parsers.ParseDate(data[20]),
                     TimestampEnd = Parsers.ParseDate(data[21]),
                     Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[23] },

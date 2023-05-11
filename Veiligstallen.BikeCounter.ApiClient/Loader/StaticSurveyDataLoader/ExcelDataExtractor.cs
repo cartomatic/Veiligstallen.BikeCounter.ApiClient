@@ -279,7 +279,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
                     ObservedProperty = "capacity",
-                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]),
+                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
+                    SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
                     TimestampStart = ExtractFieldValue<DateTime>(r, colMap[15]),
                     TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[16]),
                     Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[18]) },
@@ -295,7 +296,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
                     ObservedProperty = "occupation",
-                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]),
+                    FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
+                    SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
                     TimestampStart = ExtractFieldValue<DateTime>(r, colMap[20]),
                     TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[21]),
                     Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[23]) },
