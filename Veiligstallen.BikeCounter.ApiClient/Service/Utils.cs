@@ -177,6 +177,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 authToken: GetAuthorizationHeaderValue(),
                 queryParams: PrepareQueryParams(cfg),
                 serializer: _serializer,
+                timeout: int.MaxValue, //waive off timeouts, api is slow as hell
                 converters: _converters
             );
 
