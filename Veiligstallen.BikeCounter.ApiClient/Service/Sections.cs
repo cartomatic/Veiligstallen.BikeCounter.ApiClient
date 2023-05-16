@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
@@ -29,8 +30,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="localId"></param>
         /// <returns></returns>
-        public Task<Section> GetSectionByLocalIdAsync(string localId)
-            => GetObjectAsync<Section>(new RequestConfig(Configuration.Routes.SECTIONS){QueryParams = new Dictionary<string, string>{{nameof(Section.LocalId), localId}}});
+        public async Task<Section> GetSectionByLocalIdAsync(string localId)
+            => (await GetObjectAsync<Section[]>(new RequestConfig(Configuration.Routes.SECTIONS){QueryParams = new Dictionary<string, string>{{nameof(Section.LocalId), localId}}})).FirstOrDefault();
 
         /// <summary>
         /// Creates a section
