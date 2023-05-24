@@ -270,7 +270,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 Method.GET,
                 authToken: GetAuthorizationHeaderValue(),
                 serializer: _serializer,
-                converters: _converters
+                converters: _converters ,
+                queryParams:cfg.QueryParams.ToDictionary(x => x.Key, x => (object)x.Value)
             );
 
             EnsureValidResponse(apiOut.Response);

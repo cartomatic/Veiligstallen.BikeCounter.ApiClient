@@ -144,6 +144,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     if (string.IsNullOrEmpty(observation.FeatureOfInterest))
                     {
                         Notify($"Could not find feature of interest for observation; skipping...");
+                        counter++;
                         continue;
                     }
                     
