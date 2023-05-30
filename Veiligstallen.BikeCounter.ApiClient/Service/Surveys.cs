@@ -351,12 +351,12 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(section?.Name);
                 emitCell(section?.Layout);
 
-                emitCell(string.Join(", ", section?.ParkingSpaceOf.Select(x => $"{x.Type}") ?? Array.Empty<string>()));
+                emitCell(string.Join(", ", section?.ParkingSpaceOf?.Select(x => $"{x.Type}") ?? Array.Empty<string>()));
 
                 emitCell(
                     string.Join(
                         ", ",
-                        section?.ParkingSpaceOf.Aggregate(new List<VehicleOwner>(), (agg, v) =>
+                        section?.ParkingSpaceOf?.Aggregate(new List<VehicleOwner>(), (agg, v) =>
                         {
                             agg.AddRange(
                                 (v.Vehicles ?? Array.Empty<Vehicle>()).Select(x => x.Owner)
