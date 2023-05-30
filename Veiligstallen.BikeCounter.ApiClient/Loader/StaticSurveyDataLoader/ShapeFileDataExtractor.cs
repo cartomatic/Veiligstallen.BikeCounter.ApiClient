@@ -224,9 +224,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
                     XtraInfo = ExtractString(shpReader, colMap[SHP_ONLY_EXTRA_INFO]),
                     Allows = Parsers.TryParseParkingLocationAllowsType(ExtractString(shpReader, colMap[SHP_ONLY_ALLOWS_TYPE]), out var vehicleType)
-                        ? new Vehicle
+                        ? new []
                         {
-                            Type = vehicleType
+                            new Vehicle
+                            {
+                                Type = vehicleType
+                            }
                         }
                         : null,
                     Features = Parsers.ParseParkingLocationFeature(ExtractString(shpReader, colMap[SHP_ONLY_FEATURES]), ',')
