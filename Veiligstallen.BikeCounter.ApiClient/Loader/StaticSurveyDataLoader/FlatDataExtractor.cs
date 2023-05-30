@@ -124,12 +124,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Authority = data[4],
                     XtraInfo = data[5],
                     Allows = Parsers.TryParseParkingLocationAllowsType(data[6], out var vehicleType)
-                        ? new[]
+                        ? new Vehicle
                         {
-                            new Vehicle
-                            {
-                                Type = vehicleType
-                            }
+                            Type = vehicleType
                         }
                         : null,
                     Features = Parsers.ParseParkingLocationFeature(data[7], ',')

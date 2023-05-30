@@ -67,7 +67,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// 
         /// </summary>
         [JsonProperty("allows")]
-        public Vehicle[] Allows { get; set; }
+        public Vehicle Allows { get; set; }
 
         /// <summary>
         /// Parking location features
