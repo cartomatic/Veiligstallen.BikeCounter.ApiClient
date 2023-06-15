@@ -13,8 +13,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         [JsonProperty("authority")]
         public string Authority { get; set; }
 
-        [JsonProperty("contractor")]
-        public string Contractor { get; set; }
+        [JsonProperty("contractors")]
+        public string[] Contractors { get; set; }
 
 
         [JsonProperty("license")] 

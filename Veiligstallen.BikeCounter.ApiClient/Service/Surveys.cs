@@ -97,7 +97,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         private string[] _surveyDynamicDataHeaders =
         {
             "survey_id",
-            "contractor",
+            "contractors",
             "observation_capacity_id",
             "observation_capacity_timestamp_start",
             "observation_capacity_timestamp_end",
@@ -138,7 +138,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             var dynamicDataEmptyData = _surveyDynamicDataHeaders.Select(x => string.Empty).ToArray();
             dynamicDataEmptyData[0] = surveyId;
-            dynamicDataEmptyData[1] = survey.Contractor;
+            dynamicDataEmptyData[1] = string.Join(", ", survey.Contractors);
 
             var applySeparator = (IEnumerable<string> data) =>
                 string.Join(FlatFileUtils.FlatFileSeparators[separator].ToString(), data);
@@ -205,7 +205,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "survey_id", //Survey.id
             "survey_name", //Survey.name
             "survey_authority", //Survey.authority
-            "survey_contractor", //Survey.contractor
+            "survey_contractors", //Survey.contractors
 
             "surveyarea_id", //SurveyArea.id (SurveyArea with empty or no property ‘parent’)
             "surveyarea_localId", //SurveyArea.localId
@@ -313,7 +313,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(survey.Id);
                 emitCell(survey.Name);
                 emitCell(survey.Authority);
-                emitCell(survey.Contractor);
+                emitCell(string.Join(", ", survey.Contractors));
 
 
                 var surveyArea = surveyAreas.FirstOrDefault(x => x.Id == o.SurveyArea);
