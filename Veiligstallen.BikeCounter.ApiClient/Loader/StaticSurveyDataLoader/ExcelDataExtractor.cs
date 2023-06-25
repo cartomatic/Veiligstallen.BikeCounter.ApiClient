@@ -303,7 +303,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[23]) },
                     Measurement = new Measurement
                     {
-                        TotalParked = (int)ExtractFieldValue<double>(r, colMap[17]),
+                        TotalParked = (int)ExtractFieldValue<double>(r, colMap[22]),
                         VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
                         {
                             CanonicalVehicleCode = kv.Value,
