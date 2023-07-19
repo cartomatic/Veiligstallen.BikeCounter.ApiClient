@@ -37,12 +37,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             foreach (var wouldBeEnumStrValue in s.Split(separator))
             {
-                //if (int.TryParse(wouldBeEnumStrValue.ToString(), out var enumIntValue) &&
+                //if (int.TryParse(wouldBeEnumStrValue, out var enumIntValue) &&
                 //    Enum.IsDefined(typeof(SurveyAreaType), enumIntValue))
                 //    output.Add((SurveyAreaType) enumIntValue);
 
                 //case insensitive
-                if (Enum.TryParse<ParkingLocationFeature>(wouldBeEnumStrValue.ToString(), out var enumValue))
+                if (Enum.TryParse<ParkingLocationFeature>(wouldBeEnumStrValue, true, out var enumValue))
                     output.Add(enumValue);
             }
 

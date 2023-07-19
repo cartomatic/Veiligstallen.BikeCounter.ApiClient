@@ -218,7 +218,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     XtraInfo = ExtractFieldValue<string>(r, PARKING_LOCATION_COL_XTRAINFO),
                     ValidFrom = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, PARKING_LOCATION_COL_VALIDTHROUGH),
-                    Features = ExtractParkingLocationSurveyAreaTypes(r)
+                    Features = Parsers.ParseParkingLocationFeature((ExtractFieldValue<string>(r, PARKING_LOCATION_COL_FEATURETYPE) ?? string.Empty).Trim(), ' ')
                 };
                 
                 output.Add(pl);
@@ -382,21 +382,6 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return (T)o;
         }
-
-        private ParkingLocationFeature[] ExtractParkingLocationSurveyAreaTypes(DataRow r)
-        {
-            var output = new List<ParkingLocationFeature>();
-
-            var stringValues = (ExtractFieldValue<string>(r, PARKING_LOCATION_COL_FEATURETYPE)?? string.Empty).Trim().Split(' ');
-            foreach (var stringValue in stringValues)
-            {
-                if (Enum.TryParse(stringValue, true, out ParkingLocationFeature enumValue))
-                    output.Add(enumValue);
-            }
-
-            return output.ToArray();
-        }
-
 
         /// <inheritdoc />
         public void Dispose()
