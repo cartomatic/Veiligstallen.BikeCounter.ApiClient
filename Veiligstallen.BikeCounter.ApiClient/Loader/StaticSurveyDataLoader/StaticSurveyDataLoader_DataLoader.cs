@@ -135,6 +135,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Notify($"Uploading observation {counter} of {_observations.Count}...");
 
+                    if ((!observation.TimestampStart.HasValue || observation.TimestampStart == default(DateTime)) && (!observation.TimestampEnd.HasValue || observation.TimestampEnd == default(DateTime)))
+                    {
+                        Notify($"Detected and empty '{observation.ObservedProperty}' observation for section {observation.SectionLocalId}; skipping...");
+                        counter++;
+                        continue;
+                    }
+
                     if (string.IsNullOrEmpty(observation.FeatureOfInterest))
                     {
                         var section = await apiClient.GetSectionByLocalIdAsync(observation.SectionLocalId);
