@@ -278,6 +278,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationCapacity = new Observation
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
+                    Contractor = ExtractFieldValue<string>(r, colMap[13]),
                     ObservedProperty = "capacity",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
@@ -295,6 +296,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationOccupation = new Observation
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
+                    Contractor = ExtractFieldValue<string>(r, colMap[13]),
                     ObservedProperty = "occupation",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),

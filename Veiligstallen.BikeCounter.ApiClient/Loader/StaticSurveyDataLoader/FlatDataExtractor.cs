@@ -307,6 +307,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationCapacity = new Observation
                 {
                     Survey = data[12],
+                    Contractor = data[13],
                     ObservedProperty = "capacity",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
@@ -324,6 +325,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationOccupation = new Observation
                 {
                     Survey = data[12],
+                    Contractor = data[13],
                     ObservedProperty = "occupation",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
@@ -511,6 +513,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         colMap = PrepareColMap(line, separator);
                         VerifyRequiredFieldsPresence(colMap, _parkingLocationColumns);
                         hdrRead = true;
+                        continue;
                     }
 
                     var data = ExtractDataRow(colMap, line, separator);

@@ -27,6 +27,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 
         [JsonProperty("note")]
         public Note Note { get; set; }
+
+        [JsonProperty("contractor")]
+        public string Contractor { get; set; }
         
         /// <summary>
         /// utility property used for looking up sections when FeatureOfInterestIsNotDefined
