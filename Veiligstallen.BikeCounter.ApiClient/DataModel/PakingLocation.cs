@@ -73,7 +73,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Parking location features
         /// </summary>
         [JsonProperty("features")]
-        public ParkingLocationFeature[] Features { get; set; }
+        public string[] Features { get; set; }
+        //public ParkingLocationFeature[] Features { get; set; }
 
         /// <summary>
         /// location number

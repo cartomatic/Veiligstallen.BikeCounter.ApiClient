@@ -31,23 +31,25 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         public static string SerializeParkingLocationFeature(ParkingLocationFeature[] features)
             => string.Join(",", features?.Select(x => $"{x}") ?? Array.Empty<string>());
 
-        public static ParkingLocationFeature[] ParseParkingLocationFeature(string s, char separator)
-        {
-            var output = new List<ParkingLocationFeature>();
+        //public static ParkingLocationFeature[] ParseParkingLocationFeature(string s, char separator)
+        //{
+        //    var output = new List<ParkingLocationFeature>();
 
-            foreach (var wouldBeEnumStrValue in s.Split(separator))
-            {
-                //if (int.TryParse(wouldBeEnumStrValue, out var enumIntValue) &&
-                //    Enum.IsDefined(typeof(SurveyAreaType), enumIntValue))
-                //    output.Add((SurveyAreaType) enumIntValue);
+        //    foreach (var wouldBeEnumStrValue in s.Split(separator))
+        //    {
+        //        //if (int.TryParse(wouldBeEnumStrValue, out var enumIntValue) &&
+        //        //    Enum.IsDefined(typeof(SurveyAreaType), enumIntValue))
+        //        //    output.Add((SurveyAreaType) enumIntValue);
 
-                //case insensitive
-                if (Enum.TryParse<ParkingLocationFeature>(wouldBeEnumStrValue, true, out var enumValue))
-                    output.Add(enumValue);
-            }
+        //        //case insensitive
+        //        if (Enum.TryParse<ParkingLocationFeature>(wouldBeEnumStrValue, true, out var enumValue))
+        //            output.Add(enumValue);
+        //    }
 
-            return output.Any() ? output.ToArray() : null;
-        }
+        //    return output.Any() ? output.ToArray() : null;
+        //}
+        public static string[] ParseParkingLocationFeature(string s, char separator)
+            => s.Split(separator);
 
         public static string SerializeParkingLocationAllowsType(VehicleType? t)
             => t.HasValue ? $"{t}" : string.Empty;
