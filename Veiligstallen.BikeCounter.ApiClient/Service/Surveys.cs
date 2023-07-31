@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
@@ -271,13 +272,19 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             var (surveyAreas, _) = await GetSurveySurveyAreasAsync(surveyId);
 
-            var (parkingLocations, _) = await GetSurveyParkingLocationsAsync(surveyId);
-            var (sections, _) = await GetSurveySectionsAsync(surveyId);
 
-
+            
             var canonicalVehicleHeaders = canonicalVehicles.Select(x => $"{x.Code} ({x.Name})").ToArray();
             
             var (combinedObservations, _) = await GetSurveyCombinedObservationsAsync(surveyId);
+
+            IEnumerable<ParkingLocation> parkingLocations = new List<ParkingLocation>();
+            if (combinedObservations.Any() && combinedObservations.First().ParkingLocationSummary == null)
+                (parkingLocations, _) = await GetSurveyParkingLocationsAsync(surveyId);
+
+            IEnumerable<Section> sections = new List<Section>();
+            if (combinedObservations.Any() && combinedObservations.First().SectionSummary == null)
+                (sections, _) = await GetSurveySectionsAsync(surveyId);
 
 
             //at this stage all the data should be available, so can start pumping it into excel output
@@ -338,20 +345,24 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
 
                 var parkingLocation = parkingLocations.FirstOrDefault(x => x.Id == o.ParkingLocation);
-                emitCell(parkingLocation?.Id);
-                emitCell(parkingLocation?.LocalId);
-                emitCell(parkingLocation?.Name);
-                emitCell(string.Join(", ", parkingLocation?.Features?.Select(x => $"{x}") ?? Array.Empty<string>()));
-                emitCell(parkingLocation?.XtraInfo);
+                emitCell(o.ParkingLocationSummary?.Id ?? parkingLocation?.Id);
+                emitCell(o.ParkingLocationSummary?.LocalId ?? parkingLocation?.LocalId);
+                emitCell(o.ParkingLocationSummary?.Name ?? parkingLocation?.Name);
+                emitCell(string.Join(", ",
+                    o.ParkingLocationSummary?.Features?.Select(x => $"{x}") ??
+                    parkingLocation?.Features?.Select(x => $"{x}") ?? Array.Empty<string>()));
+                emitCell(o.ParkingLocationSummary.XtraInfo ?? parkingLocation?.XtraInfo);
 
 
                 var section = sections.FirstOrDefault(x => x.Id == o.Section);
-                emitCell(section?.Id);
-                emitCell(section?.LocalId);
-                emitCell(section?.Name);
-                emitCell(section?.Layout);
+                emitCell(o.SectionSummary?.Id ?? section?.Id);
+                emitCell(o.SectionSummary?.LocalId ?? section?.LocalId);
+                emitCell(o.SectionSummary?.Name ?? section?.Name); 
+                emitCell(o.SectionSummary?.Layout ?? section?.Layout);
 
-                emitCell(string.Join(", ", section?.ParkingSpaceOf?.Select(x => $"{x.Type}") ?? Array.Empty<string>()));
+                emitCell(string.Join(", ",
+                    o.SectionSummary?.ParkingSpaceOf?.Select(x => $"{x.Type}") ??
+                    section?.ParkingSpaceOf?.Select(x => $"{x.Type}") ?? Array.Empty<string>()));
 
                 emitCell(
                     string.Join(
