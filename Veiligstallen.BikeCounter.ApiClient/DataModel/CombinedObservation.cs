@@ -7,13 +7,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
 {
     public class CombinedObservation
     {
-        [JsonProperty("surveyArea")] public string SurveyArea { get; set; }
+        [JsonProperty("surveyArea")]
+        public string SurveyArea { get; set; }
 
-        [JsonProperty("parkingLocation")] public string ParkingLocation { get; set; }
+        [JsonProperty("surveyAreaParent")]
+        public string SurveyAreaParent { get; set; }
 
-        [JsonProperty("section")] public string Section { get; set; }
+        [JsonProperty("parkingLocation")]
+        public string ParkingLocation { get; set; }
 
-        [JsonProperty("capacityObservation")] public Observation CapacityObservation { get; set; }
+        [JsonProperty("section")]
+        public string Section { get; set; }
+
+        [JsonProperty("capacityObservation")]
+        public Observation CapacityObservation { get; set; }
 
         [JsonProperty("occupationObservation")]
         public Observation OccupationObservation { get; set; }
