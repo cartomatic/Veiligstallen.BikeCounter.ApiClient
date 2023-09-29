@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -206,7 +207,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "survey_id", //Survey.id
             "survey_name", //Survey.name
             "survey_authority", //Survey.authority
-            "survey_contractors", //Survey.contractors
+            "contractor", //"survey_contractors", //Survey.contractors
 
             "surveyarea_id", //SurveyArea.id (SurveyArea with empty or no property ‘parent’)
             "surveyarea_localId", //SurveyArea.localId
@@ -303,7 +304,29 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 var cell = ws.Cell(rowIdx, cellIdx);
                 cell.Value = value;
 
-                //no cell colouring enymore...
+                //no cell colouring anymore...
+                cell.Style.Font.FontColor = GetCellTextOrBorderColor(cellIdx);
+                cell.Style.Fill.BackgroundColor = GetCellColor(cellIdx);
+
+                ApplyCellBorder(cell, GetCellTextOrBorderColor(cellIdx));
+
+                cellIdx++;
+            };
+            var emitNumericCell = (string value) =>
+            {
+                var cell = ws.Cell(rowIdx, cellIdx);
+                
+
+                if (decimal.TryParse((value ?? string.Empty).Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedNumeric))
+                {
+                    cell.Value = parsedNumeric;
+                }
+                else
+                {
+                    cell.Value = value;
+                }
+
+                //no cell colouring anymore...
                 cell.Style.Font.FontColor = GetCellTextOrBorderColor(cellIdx);
                 cell.Style.Fill.BackgroundColor = GetCellColor(cellIdx);
 
@@ -320,7 +343,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(survey.Id);
                 emitCell(survey.Name);
                 emitCell(survey.Authority);
-                emitCell(string.Join(", ", survey.Contractors));
+                emitCell(o.OccupationObservation.Contractor ?? string.Join(", ", survey.Contractors));
 
 
                 var surveyArea = surveyAreas.FirstOrDefault(x => x.Id == o.SurveyArea);
@@ -394,14 +417,14 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(o.CapacityObservation?.Id);
                 emitCell(toCet(o.CapacityObservation?.TimestampStart));
                 emitCell(toCet(o.CapacityObservation?.TimestampEnd));
-                emitCell(o.CapacityObservation?.Measurement?.ParkingCapacity.ToString());
+                emitNumericCell(o.CapacityObservation?.Measurement?.ParkingCapacity.ToString());
                 emitCell(o.CapacityObservation?.Note?.Remark);
 
 
                 emitCell(o.OccupationObservation?.Id);
                 emitCell(toCet(o.OccupationObservation?.TimestampStart));
                 emitCell(toCet(o.OccupationObservation?.TimestampEnd));
-                emitCell(o.OccupationObservation?.Measurement?.TotalParked.ToString());
+                emitNumericCell(o.OccupationObservation?.Measurement?.TotalParked.ToString());
                 emitCell(o.OccupationObservation?.Note?.Remark);
 
                 var capacities = o.OccupationObservation?.Measurement?.VehicleTypeCounts ?? Array.Empty<VehicleTypeCount>();
@@ -411,8 +434,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 //}
                 for (var i = 0; i < canonicalVehicleHeaders.Length; i++)
                 {
-                    
-                    emitCell(capacities.Length> i ? capacities[i].NumberOfVehicles.ToString() : string.Empty);
+
+                    emitNumericCell(capacities.Length > i ? capacities[i].NumberOfVehicles.ToString() : string.Empty);
                 }
 
                 rowIdx++; ;
