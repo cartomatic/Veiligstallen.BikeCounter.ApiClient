@@ -9,6 +9,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
 {
     public partial class Service
     {
+        private const string ANONYMOUS_ORG = "anonymous";
+
         /// <summary>
         /// Gets a list of organizations
         /// </summary>
@@ -29,6 +31,12 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="organizationId"></param>
         /// <returns></returns>
         public Task<Organization> GetOrganizationAsync(string organizationId)
-            => GetObjectAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATION, organizationId));
+            => organizationId == ANONYMOUS_ORG
+                ? Task.FromResult(new Organization
+                {
+                    Id = ANONYMOUS_ORG,
+                    Name = ANONYMOUS_ORG
+                })
+                : GetObjectAsync<Organization>(new RequestConfig(Configuration.Routes.ORGANIZATION, organizationId));
     }
 }

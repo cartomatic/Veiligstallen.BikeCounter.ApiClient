@@ -7,6 +7,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
 {
     public partial class Service
     {
+        public const string ANONYMOUS = "anonymous";
+        private static readonly string ANONYMOUS_BASE_AUTH_HDR = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{ANONYMOUS}:{ANONYMOUS}"));
+
         private readonly Configuration _cfg;
         private readonly string _user;
         private readonly string _pass;

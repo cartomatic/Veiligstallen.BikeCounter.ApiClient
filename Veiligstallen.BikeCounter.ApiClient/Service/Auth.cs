@@ -49,6 +49,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         private static string GetAuthorizationHeaderValue(string user, string pass)
         {
+            if (user == ANONYMOUS && pass == ANONYMOUS)
+                return null;
+
             var cfg = Configuration.Read();
 
             switch (cfg?.AuthorizationScheme?.ToLower())
@@ -69,6 +72,9 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <returns></returns>
         private static string GetAuthorizationHeaderValue(string authToken)
         {
+            if (authToken == ANONYMOUS_BASE_AUTH_HDR)
+                return null;
+
             var cfg = Configuration.Read();
             return $"{cfg?.AuthorizationScheme} {authToken}";
         }
