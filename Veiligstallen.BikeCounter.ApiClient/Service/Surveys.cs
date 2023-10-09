@@ -343,8 +343,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                 emitCell(survey.Id);
                 emitCell(survey.Name);
                 emitCell(survey.Authority);
-                emitCell(o.OccupationObservation.Contractor ?? string.Join(", ", survey.Contractors));
-
+                emitCell(o.OccupationObservation?.Contractor ?? o.CapacityObservation?.Contractor ?? string.Join(", ", survey.Contractors));
 
                 var surveyArea = surveyAreas.FirstOrDefault(x => x.Id == o.SurveyArea);
                 var surveyAreaParentId = surveyArea?.Parent ?? o.SurveyAreaParent;
