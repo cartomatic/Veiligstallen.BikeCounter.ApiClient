@@ -137,7 +137,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     if ((!observation.TimestampStart.HasValue || observation.TimestampStart == default(DateTime)) && (!observation.TimestampEnd.HasValue || observation.TimestampEnd == default(DateTime)))
                     {
-                        Notify($"Detected and empty '{observation.ObservedProperty}' observation for section {observation.SectionLocalId}; skipping...");
+                        Notify($"Empty dates detected in '{observation.ObservedProperty}' observation for section {observation.SectionLocalId}; skipping...");
                         counter++;
                         continue;
                     }

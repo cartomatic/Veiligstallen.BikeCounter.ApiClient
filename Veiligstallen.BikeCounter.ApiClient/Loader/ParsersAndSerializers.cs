@@ -18,8 +18,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     DateTime.TryParseExact(d, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "d-M-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
+                    DateTime.TryParseExact(d, "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "d-M-yyyy H:m:s", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
+                    DateTime.TryParseExact(d, "d-M-yyyy H:m", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParseExact(d, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
+                    DateTime.TryParseExact(d, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date) ||
                     DateTime.TryParse(d, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date)
                 )
                )
