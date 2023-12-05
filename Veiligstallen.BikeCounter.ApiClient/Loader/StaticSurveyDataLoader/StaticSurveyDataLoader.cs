@@ -34,7 +34,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private void Notify(string msg)
             => _msngr?.Invoke(this, msg);
-        
+
+        private void NotifyProgress(int progress)
+            => _msngr?.Invoke(this, progress.ToString());
+
+        private int CalculateProgress(int counter, int count)
+            => (int)Math.Ceiling((double)counter / count * 100);
+
         /// <inheritdoc />
         public void Dispose()
         {

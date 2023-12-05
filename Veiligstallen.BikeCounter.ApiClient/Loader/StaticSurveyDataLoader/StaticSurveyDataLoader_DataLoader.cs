@@ -16,9 +16,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <returns></returns>
         private async Task UploadSurveyAreasAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
+            var count = _surveyAreas.Count;
+            var counter = 0;
+
             //need to upload parents first and then children so can assign parent ids 
             foreach (var rawParent in _surveyAreas.Where(sa => string.IsNullOrWhiteSpace(sa.ParentLocalId)).ToArray())
             {
+                counter++;
+                NotifyProgress(CalculateProgress(counter, count));
+
                 try
                 {
                     Notify($"Uploading parent survey area: {rawParent.LocalId}...");
@@ -35,6 +41,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //children
             foreach (var rawChild in _surveyAreas.Where(sa => !string.IsNullOrWhiteSpace(sa.ParentLocalId)).ToArray())
             {
+                counter++;
+                NotifyProgress(CalculateProgress(counter, count));
+
                 var parent = _surveyAreas.FirstOrDefault(sa => sa.LocalId == rawChild.ParentLocalId);
                 if (parent == null)
                 {
@@ -69,8 +78,13 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <returns></returns>
         private async Task UploadParkingLocationsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
+            var count = _parkingLocations.Count(pl => pl.GeoLocation != null);
+            var counter = 0;
             foreach (var parkingLocation in _parkingLocations.Where(pl => pl.GeoLocation != null))
             {
+                counter++;
+                NotifyProgress(CalculateProgress(counter, count));
+
                 try
                 {
                     Notify($"Uploading parking location: {parkingLocation.LocalId}...");
@@ -92,8 +106,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         /// <returns></returns>
         private async Task UploadSectionsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
+            var count = _sections.Count;
+            var counter = 0;
             foreach (var section in _sections)
             {
+                counter++;
+                NotifyProgress(CalculateProgress(counter, count));
                 ParkingLocation parkingLocation = null;
                 if (_parkingLocations != null)
                 {
@@ -128,9 +146,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private async Task UploadObservationsAsync(Veiligstallen.BikeCounter.ApiClient.Service apiClient)
         {
-            var counter = 1;
+            var count = _observations.Count;
+            var counter = 0;
             foreach (var observation in _observations)
             {
+                counter++;
+                NotifyProgress(CalculateProgress(counter, count));
                 try
                 {
                     Notify($"Uploading observation {counter} of {_observations.Count}...");
@@ -156,7 +177,6 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     }
                     
                     var _ = await apiClient.CreateObservationAsync(observation);
-                    counter++;
                 }
                 catch (System.Exception ex)
                 {
