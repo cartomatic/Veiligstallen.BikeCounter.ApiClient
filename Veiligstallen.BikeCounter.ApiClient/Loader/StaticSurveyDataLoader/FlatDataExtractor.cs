@@ -608,6 +608,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         colMap = PrepareColMap(line, separator);
                         VerifyRequiredFieldsPresence(colMap, _sectionColumns);
                         hdrRead = true;
+                        continue;
                     }
 
                     var data = ExtractDataRow(colMap, line, separator);

@@ -368,8 +368,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         {
             //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
             ResetCompleteDataCollections();
-            _sections = _shapeFileDataExtractor.ExtractSectionsShp(shpFile).
-                Merge(_flatDataExtractor.ExtractSections(flatFile, flatFileSeparator));
+            if (shpFile != null)
+            {
+                _sections = _shapeFileDataExtractor.ExtractSectionsShp(shpFile)
+                    .Merge(_flatDataExtractor.ExtractSections(flatFile, flatFileSeparator));
+            }
+            else
+            {
+                _sections = _flatDataExtractor.ExtractSections(flatFile, flatFileSeparator);
+            }
         }
 
         private async Task ExtractObservationsFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header)
