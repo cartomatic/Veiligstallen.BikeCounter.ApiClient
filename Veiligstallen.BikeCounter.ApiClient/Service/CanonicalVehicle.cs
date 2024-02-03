@@ -35,7 +35,15 @@ namespace Veiligstallen.BikeCounter.ApiClient
         public Task<CanonicalVehicle> CreateCanonicalVehicleAsync(string canonicalVehicleCategoryId, CanonicalVehicle canonicalVehicle)
             => CreateObjectAsync(new RequestConfig<CanonicalVehicle>(Configuration.Routes.CANONICAL_VEHICLES, parentId: canonicalVehicleCategoryId, @object: canonicalVehicle));
 
-        //update via delete create
+        /// <summary>
+        /// Updates canonical vehicle
+        /// </summary>
+        /// <param name="canonicalVehicleCategoryId"></param>
+        /// <param name="canonicalVehicle"></param>
+        /// <param name="canonicalVehicleId"></param>
+        /// <returns></returns>
+        public Task<CanonicalVehicle> UpdateCanonicalVehicleAsync(string canonicalVehicleCategoryId, CanonicalVehicle canonicalVehicle, string? canonicalVehicleId = null)
+            => UpdateObjectAsync(new RequestConfig<CanonicalVehicle>(Configuration.Routes.CANONICAL_VEHICLE, objectId: canonicalVehicleId ?? canonicalVehicle.Id, parentId: canonicalVehicleCategoryId, @object: canonicalVehicle));
 
         /// <summary>
         /// Deletes a canonical vehicle
