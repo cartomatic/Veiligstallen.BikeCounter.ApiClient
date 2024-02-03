@@ -10,6 +10,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         [JsonProperty("survey")]
         public string Survey { get; set; }
 
+        [JsonProperty("surveyAreaParent")]
+        public string SurveyAreaParent { get; set; }
+
+        [JsonProperty("surveyAreaChild")]
+        public string SurveyAreaChild { get; set; }
+
         [JsonProperty("observedProperty")]
         public string ObservedProperty { get; set; }
 

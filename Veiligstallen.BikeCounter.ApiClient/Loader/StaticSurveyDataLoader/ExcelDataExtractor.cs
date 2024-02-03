@@ -265,9 +265,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             }
 
             var vehicleColMap = new Dictionary<int, string>();
-            if(tbl.Columns.Count > 24)
+            if(tbl.Columns.Count > 28)
             {
-                for (var i = 24; i < tbl.Columns.Count; i++)
+                for (var i = 28; i < tbl.Columns.Count; i++)
                 {
                     vehicleColMap.Add(i, colMap[i]);
                 }
@@ -278,16 +278,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationCapacity = new Observation
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
-                    Contractor = ExtractFieldValue<string>(r, colMap[13]),
+                    SurveyAreaParent = ExtractFieldValue<string>(r, colMap[13]),
+                    SurveyAreaChild = ExtractFieldValue<string>(r, colMap[15]),
+                    Contractor = ExtractFieldValue<string>(r, colMap[17]),
                     ObservedProperty = "capacity",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
-                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[15]),
-                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[16]),
-                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[18]) },
+                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[19]),
+                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[20]),
+                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[22])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[22]) },
                     Measurement = new Measurement
                     {
-                        ParkingCapacity = (int)ExtractFieldValue<double>(r, colMap[17])
+                        ParkingCapacity = (int)ExtractFieldValue<double>(r, colMap[21])
                     }
                 };
                 if (observationCapacity.TimestampStart.HasValue)
@@ -296,16 +298,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationOccupation = new Observation
                 {
                     Survey = ExtractFieldValue<string>(r, colMap[12]),
-                    Contractor = ExtractFieldValue<string>(r, colMap[13]),
+                    SurveyAreaParent = ExtractFieldValue<string>(r, colMap[13]),
+                    SurveyAreaChild = ExtractFieldValue<string>(r, colMap[15]),
+                    Contractor = ExtractFieldValue<string>(r, colMap[17]),
                     ObservedProperty = "occupation",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
-                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[20]),
-                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[21]),
-                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[23])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[23]) },
+                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[24]),
+                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[25]),
+                    Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[27])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[27]) },
                     Measurement = new Measurement
                     {
-                        TotalParked = (int)ExtractFieldValue<double>(r, colMap[22]),
+                        TotalParked = (int)ExtractFieldValue<double>(r, colMap[26]),
                         VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
                         {
                             CanonicalVehicleCode = kv.Value,

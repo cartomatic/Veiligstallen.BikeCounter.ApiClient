@@ -256,19 +256,23 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //11 L "section_validThrough"
             //
             //12 M "survey_id",
-            //13 N "contractor",
-            //14 O "observation_capacity_id",
-            //15 P "observation_capacity_timestamp_start",
-            //16 Q "observation_capacity_timestamp_end",
-            //17 R "observation_capacity_parkingCapacity",
-            //18 S "observation_capacity_note",
-            //19 T "observation_occupation_id",
-            //20 U "observation_occupation_timestamp_start",
-            //21 V "observation_occupation_timestamp_end",
-            //22 W "occupation_totalParked",
-            //23 X "observation_occupation_note"
+            //13 N "survey_surveyAreaParent"
+            //14 O "survey_surveyAreaParentLocalId"
+            //15 P "survey_surveyAreaChild"
+            //16 Q "survey_surveyAreaChildLocalId"
+            //17 R "contractor",
+            //18 S "observation_capacity_id",
+            //19 T "observation_capacity_timestamp_start",
+            //20 U "observation_capacity_timestamp_end",
+            //21 V "observation_capacity_parkingCapacity",
+            //22 W "observation_capacity_note",
+            //23 X "observation_occupation_id",
+            //24 Y "observation_occupation_timestamp_start",
+            //25 Z "observation_occupation_timestamp_end",
+            //26 AA "occupation_totalParked",
+            //27 AB "observation_occupation_note"
             //
-            //24 Y - here start vehicle counts! header needs to have a value!
+            //28 AC - here start vehicle counts! header needs to have a value!
 
 
             var output = new List<Observation>();
@@ -289,9 +293,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     fldCount = hdrData.Length;
 
-                    if (hdrData.Length > 24)
+                    if (hdrData.Length > 28)
                     {
-                        for (var i = 24; i < hdrData.Length; i++)
+                        for (var i = 28; i < hdrData.Length; i++)
                         {
                             vehicleColMap.Add(i, hdrData[i]);
                         }
@@ -307,16 +311,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationCapacity = new Observation
                 {
                     Survey = data[12],
-                    Contractor = data[13],
+                    SurveyAreaParent = data[13],
+                    SurveyAreaChild = data[15],
+                    Contractor = data[17],
                     ObservedProperty = "capacity",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
-                    TimestampStart = Parsers.ParseDate(data[15]),
-                    TimestampEnd = Parsers.ParseDate(data[16]),
-                    Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[18] },
+                    TimestampStart = Parsers.ParseDate(data[19]),
+                    TimestampEnd = Parsers.ParseDate(data[20]),
+                    Note = string.IsNullOrWhiteSpace(data[22]) ? null : new Note { Remark = data[22] },
                     Measurement = new Measurement
                     {
-                        ParkingCapacity = int.TryParse(data[17], out var parkingCapacity) ? parkingCapacity : 0
+                        ParkingCapacity = int.TryParse(data[21], out var parkingCapacity) ? parkingCapacity : 0
                     }
                 };
 
@@ -328,16 +334,18 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 var observationOccupation = new Observation
                 {
                     Survey = data[12],
-                    Contractor = data[13],
+                    SurveyAreaParent = data[13],
+                    SurveyAreaChild = data[15],
+                    Contractor = data[17],
                     ObservedProperty = "occupation",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
-                    TimestampStart = Parsers.ParseDate(data[20]),
-                    TimestampEnd = Parsers.ParseDate(data[21]),
-                    Note = string.IsNullOrWhiteSpace(data[23]) ? null : new Note { Remark = data[23] },
+                    TimestampStart = Parsers.ParseDate(data[24]),
+                    TimestampEnd = Parsers.ParseDate(data[25]),
+                    Note = string.IsNullOrWhiteSpace(data[27]) ? null : new Note { Remark = data[27] },
                     Measurement = new Measurement
                     {
-                        TotalParked = int.TryParse(data[22], out var totalParked) ? totalParked : 0,
+                        TotalParked = int.TryParse(data[26], out var totalParked) ? totalParked : 0,
                         VehicleTypeCounts = vehicleColMap.Select(kv => new VehicleTypeCount
                         {
                             CanonicalVehicleCode = kv.Value,
