@@ -89,7 +89,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "section_name",
             "section_layout",
             "section_url_geolocation",
-            "section_parkingSystemType",
+            "section_parkingSpaceType",
             "section_vehicleOwnerType",
             "section_level",
             "section_validFrom",
