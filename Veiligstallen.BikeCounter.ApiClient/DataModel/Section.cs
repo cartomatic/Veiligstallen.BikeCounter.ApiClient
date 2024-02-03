@@ -15,6 +15,30 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         public string LocalId { get; set; }
 
         /// <summary>
+        /// Id of a parent survey area
+        /// </summary>
+        [JsonProperty("surveyAreaParent")]
+        public string SurveyAreaParent { get; set; }
+
+        /// <summary>
+        /// Local id of a parent survey area
+        /// </summary>
+        [JsonProperty("surveyAreaParentLocalId")]
+        public string SurveyAreaParentLocalId { get; set; }
+
+        /// <summary>
+        /// Id of a child survey area
+        /// </summary>
+        [JsonProperty("surveyAreaChild")]
+        public string SurveyAreaChild { get; set; }
+
+        /// <summary>
+        /// Local id of a child survey area
+        /// </summary>
+        [JsonProperty("surveyAreaChildLocalId")]
+        public string SurveyAreaChildLocalId { get; set; }
+
+        /// <summary>
         /// Parking location's local id
         /// </summary>
         [JsonProperty("parkingLocationLocalId")]

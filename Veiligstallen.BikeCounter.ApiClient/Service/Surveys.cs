@@ -99,6 +99,10 @@ namespace Veiligstallen.BikeCounter.ApiClient
         private string[] _surveyDynamicDataHeaders =
         {
             "survey_id",
+            "survey_surveyAreaParent",
+            "survey_surveyAreaParentLocalId",
+            "survey_surveyAreaChild",
+            "survey_surveyAreaChildLocalId",
             "contractors",
             "observation_capacity_id",
             "observation_capacity_timestamp_start",
@@ -189,6 +193,13 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         section.ValidFrom?.ToString("yyyy-MM-dd"),
                         section.ValidThrough?.ToString("yyyy-MM-dd")
                     };
+
+                    //some data is per section...
+                    dynamicDataEmptyData[1] = section.SurveyAreaParent;
+                    dynamicDataEmptyData[2] = section.SurveyAreaParentLocalId;
+                    dynamicDataEmptyData[3] = section.SurveyAreaChild;
+                    dynamicDataEmptyData[4] = section.SurveyAreaChildLocalId;
+
                     recData.AddRange(dynamicDataEmptyData);
                     recData.AddRange(canonicalVehiclesEmptyData);
 
