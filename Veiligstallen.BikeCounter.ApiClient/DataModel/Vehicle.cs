@@ -17,7 +17,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Vehicle propulsion
         /// </summary>
         [JsonProperty("propulsion")]
-        public VehiclePropulsion[] Propulsion { get; set; }
+        public VehiclePropulsionType[] Propulsion { get; set; }
 
         /// <summary>
         /// Vehicle appearance
@@ -29,7 +29,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Vehicle state
         /// </summary>
         [JsonProperty("state")]
-        public VehicleState[] State { get; set; }
+        public VehicleStateType[] State { get; set; }
 
         /// <summary>
         /// Vehicle accessories
