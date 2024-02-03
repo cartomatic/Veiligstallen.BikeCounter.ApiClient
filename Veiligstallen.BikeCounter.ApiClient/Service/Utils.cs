@@ -184,7 +184,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             EnsureValidResponse(apiOut.Response);
 
             var data = apiOut.Output ?? new List<T>();
-            var total = -1;
+            var total = data.Count;
             var totalHdr = apiOut.Response.Headers.FirstOrDefault(x => x.Name == "X-Total-Count");
             if (totalHdr != null && int.TryParse(totalHdr.Value.ToString(), out var parsedTotal))
                 total = parsedTotal;
