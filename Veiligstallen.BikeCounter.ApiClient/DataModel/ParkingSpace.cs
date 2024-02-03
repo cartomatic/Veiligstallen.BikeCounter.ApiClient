@@ -11,7 +11,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel
         /// Type of a parking space
         /// </summary>
         [JsonProperty("type")]
-        public ParkingSpaceType Type { get; set; }
+        public string Type { get; set; }
+        //public ParkingSpaceType Type { get; set; } //not strongly typed anymore!
 
         /// <summary>
         /// Vehicles

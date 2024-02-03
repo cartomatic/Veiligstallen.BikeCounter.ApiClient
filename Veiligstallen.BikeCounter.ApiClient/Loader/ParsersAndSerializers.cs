@@ -63,10 +63,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<VehicleType>(s, true, out vehicleType);
         }
 
-        public static bool TryParseParkingSpaceType(string s, out ParkingSpaceType parkingSpaceType)
+        public static bool TryParseParkingSpaceTypeOld(string s, out ParkingSpaceType parkingSpaceType)
         {
             parkingSpaceType = ParkingSpaceType.unknown;
             return !string.IsNullOrWhiteSpace(s) && Enum.TryParse<ParkingSpaceType>(s, true, out parkingSpaceType);
+        }
+        public static bool TryParseParkingSpaceType(string s, out string parkingSpaceType)
+        {
+            parkingSpaceType = s;
+            return true;
         }
 
         public static bool TryParseVehicleOwnerType(string s, out VehicleOwner ownerType)
