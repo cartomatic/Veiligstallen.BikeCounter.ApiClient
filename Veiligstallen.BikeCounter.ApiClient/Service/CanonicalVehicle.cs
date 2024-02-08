@@ -40,10 +40,10 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// </summary>
         /// <param name="canonicalVehicleCategoryId"></param>
         /// <param name="canonicalVehicle"></param>
-        /// <param name="canonicalVehicleId"></param>
+        /// <param name="canonicalVehicleCode"></param>
         /// <returns></returns>
-        public Task<CanonicalVehicle> UpdateCanonicalVehicleAsync(string canonicalVehicleCategoryId, CanonicalVehicle canonicalVehicle, string? canonicalVehicleId = null)
-            => UpdateObjectAsync(new RequestConfig<CanonicalVehicle>(Configuration.Routes.CANONICAL_VEHICLE, objectId: canonicalVehicleId ?? canonicalVehicle.Id, parentId: canonicalVehicleCategoryId, @object: canonicalVehicle));
+        public Task<CanonicalVehicle> UpdateCanonicalVehicleAsync(string canonicalVehicleCategoryId, string canonicalVehicleCode, CanonicalVehicle canonicalVehicle)
+            => UpdateObjectAsync(new RequestConfig<CanonicalVehicle>(Configuration.Routes.CANONICAL_VEHICLE, objectId: canonicalVehicleCode, parentId: canonicalVehicleCategoryId, @object: canonicalVehicle));
 
         /// <summary>
         /// Deletes a canonical vehicle
