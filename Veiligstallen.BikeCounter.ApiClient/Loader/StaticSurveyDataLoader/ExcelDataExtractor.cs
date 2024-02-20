@@ -284,16 +284,17 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ObservedProperty = "capacity",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
-                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[19]),
-                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[20]),
+                    //TimestampStart = ExtractFieldValue<DateTime>(r, colMap[19]),
+                    //TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[20]),
                     Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[22])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[22]) },
                     Measurement = new Measurement
                     {
                         ParkingCapacity = (int)ExtractFieldValue<double>(r, colMap[21])
                     }
                 };
-                if (observationCapacity.TimestampStart.HasValue)
-                    output.Add(observationCapacity);
+                observationCapacity.ApplyTimeStamps(r, colMap[19], colMap[20]);
+
+                output.Add(observationCapacity);
 
                 var observationOccupation = new Observation
                 {
@@ -304,8 +305,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ObservedProperty = "occupation",
                     FeatureOfInterest = ExtractFieldValue<string>(r, colMap[0]), //this is supposed to be section id
                     SectionLocalId = ExtractFieldValue<string>(r, colMap[1]),
-                    TimestampStart = ExtractFieldValue<DateTime>(r, colMap[24]),
-                    TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[25]),
+                    //TimestampStart = ExtractFieldValue<DateTime>(r, colMap[24]),
+                    //TimestampEnd = ExtractFieldValue<DateTime>(r, colMap[25]),
                     Note = string.IsNullOrWhiteSpace(ExtractFieldValue<string>(r, colMap[27])) ? null : new Note { Remark = ExtractFieldValue<string>(r, colMap[27]) },
                     Measurement = new Measurement
                     {
@@ -317,8 +318,10 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         }).ToArray()
                     }
                 };
-                if (observationOccupation.TimestampStart.HasValue)
-                    output.Add(observationOccupation);
+                observationOccupation.ApplyTimeStamps(r, colMap[24], colMap[25]);
+
+                
+                output.Add(observationOccupation);
             }
 
             return output;
@@ -384,7 +387,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             if (o == DBNull.Value)
                 return default;
 
-            return (T)o;
+            try
+            {
+                return (T)o;
+            }
+            catch
+            {
+                //ignore
+            }
+            return default;
         }
 
         /// <inheritdoc />

@@ -156,9 +156,24 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                 {
                     Notify($"Uploading observation {counter} of {_observations.Count}...");
 
-                    if ((!observation.TimestampStart.HasValue || observation.TimestampStart == default(DateTime)) && (!observation.TimestampEnd.HasValue || observation.TimestampEnd == default(DateTime)))
+                    if (observation.HasInvalidTimeStampStart() || observation.HasInvalidTimeStampStartFormat() || observation.HasInvalidTimeStampEndFormat())
                     {
-                        Notify($"Empty dates detected in '{observation.ObservedProperty}' observation for section {observation.SectionLocalId}; skipping...");
+                        var notification =
+                            $"Empty start date detected in '{observation.ObservedProperty}.{nameof(Observation.TimestampStart)}' observation for section {observation.SectionLocalId}; skipping...";
+
+                        if (observation.HasInvalidTimeStampStartFormat())
+                        {
+                            notification =
+                                $"Invalid date format for {nameof(Observation.TimestampStart)}: '{observation.GetTimeStartStr()}'";
+                        }
+                        else if (observation.HasInvalidTimeStampEndFormat())
+                        {
+                            notification =
+                                $"Invalid date format for {nameof(Observation.TimestampEnd)}: '{observation.GetTimeEndStr()}'";
+                        }
+
+                        Notify(notification);
+
                         counter++;
                         continue;
                     }

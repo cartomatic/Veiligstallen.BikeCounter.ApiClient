@@ -317,14 +317,15 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ObservedProperty = "capacity",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
-                    TimestampStart = Parsers.ParseDate(data[19]),
-                    TimestampEnd = Parsers.ParseDate(data[20]),
+                    //TimestampStart = Parsers.ParseDate(data[19]),
+                    //TimestampEnd = Parsers.ParseDate(data[20]),
                     Note = string.IsNullOrWhiteSpace(data[22]) ? null : new Note { Remark = data[22] },
                     Measurement = new Measurement
                     {
                         ParkingCapacity = int.TryParse(data[21], out var parkingCapacity) ? parkingCapacity : 0
                     }
                 };
+                observationCapacity.ApplyTimeStamps(data[19], data[20]);
 
                 //always add an observation now, date presence test moved to the uploader, so can give better feedback
                 //if (observationCapacity.TimestampStart.HasValue)
@@ -340,8 +341,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ObservedProperty = "occupation",
                     FeatureOfInterest = data[0], //this is supposed to be section id
                     SectionLocalId = data[1],
-                    TimestampStart = Parsers.ParseDate(data[24]),
-                    TimestampEnd = Parsers.ParseDate(data[25]),
+                    //TimestampStart = Parsers.ParseDate(data[24]),
+                    //TimestampEnd = Parsers.ParseDate(data[25]),
                     Note = string.IsNullOrWhiteSpace(data[27]) ? null : new Note { Remark = data[27] },
                     Measurement = new Measurement
                     {
@@ -353,6 +354,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         }).ToArray()
                     }
                 };
+                observationCapacity.ApplyTimeStamps(data[24], data[25]);
 
                 //always add an observation now, date presence test moved to the uploader, so can give better feedback
                 //if (observationOccupation.TimestampStart.HasValue)
