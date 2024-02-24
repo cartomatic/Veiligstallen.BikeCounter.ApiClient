@@ -354,7 +354,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                         }).ToArray()
                     }
                 };
-                observationCapacity.ApplyTimeStamps(data[24], data[25]);
+                observationOccupation.ApplyTimeStamps(data[24], data[25]);
 
                 //always add an observation now, date presence test moved to the uploader, so can give better feedback
                 //if (observationOccupation.TimestampStart.HasValue)
