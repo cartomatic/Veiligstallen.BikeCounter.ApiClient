@@ -39,6 +39,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string SECTION_COL_VALIDFROM = "section_validFrom";
         private const string SECTION_COL_VALIDTHROUGH = "section_validThrough";
         private const string SECTION_COL_LEVEL = "section_level";
+        private const string SECTION_COL_LEVEL_SUB = "section_level_sub";
         private const string SECTION_COL_PARKINGSYSTEMTYPE = "section_parkingSystemType";
         private const string SECTION_COL_PARKINGLOCATIONLOCALID = "parkinglocation_localId";
 
@@ -179,6 +180,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidFrom = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDFROM),
                     ValidThrough = ExtractFieldValue<DateTime?>(r, SECTION_COL_VALIDTHROUGH),
                     Level = (int) ExtractFieldValue<double>(r, SECTION_COL_LEVEL),
+                    LevelSub = ExtractFieldValue<string>(r, SECTION_COL_LEVEL_SUB),
                     ParkingSpaceOf =
                         Parsers.TryParseParkingSpaceType(ExtractFieldValue<string>(r, SECTION_COL_PARKINGSYSTEMTYPE),
                             out var parkingSpaceType)

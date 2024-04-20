@@ -190,6 +190,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
                             )
                             : null,
                         section.Level.ToString(),
+                        section.LevelSub,
                         section.ValidFrom?.ToString("yyyy-MM-dd"),
                         section.ValidThrough?.ToString("yyyy-MM-dd")
                     };
@@ -245,6 +246,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             "section_parkingSystemType", //section.
             "section_vehicleOwnerType", //section.
             "section_level", //section.level
+            "section_level_sub", //section.levelSub
 
             "observation_capacity_id", //capacityObservation.id
             "observation_capacity_timestamp_start", //capacityObservation.timestampStart
@@ -421,6 +423,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
 
                 emitCell(section?.Level.ToString());
+                emitCell(section?.LevelSub);
 
 
 

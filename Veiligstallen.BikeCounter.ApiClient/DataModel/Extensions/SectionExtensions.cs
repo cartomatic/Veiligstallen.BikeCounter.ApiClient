@@ -49,6 +49,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.DataModel.Extensions
                 ValidThrough = obj1.ValidThrough ?? obj2.ValidThrough,
                 Layout = obj1.Layout ?? obj2.Layout,
                 Level = obj1.Level ?? obj2.Level,
+                LevelSub = obj1.LevelSub ?? obj2.LevelSub,
                 ParkingLocation = obj1.ParkingLocation ?? obj2.ParkingLocation,
                 ParkingLocationLocalId = obj1.ParkingLocationLocalId ?? obj2.ParkingLocationLocalId,
                 ParkingSpaceOf = obj1.ParkingSpaceOf ?? obj2.ParkingSpaceOf

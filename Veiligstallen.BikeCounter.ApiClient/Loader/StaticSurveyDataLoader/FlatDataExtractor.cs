@@ -195,7 +195,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     Level = int.TryParse(data[6], out var parsedLevel)
                         ? parsedLevel
                         : 0,
-                    ParkingSpaceOf = Parsers.TryParseParkingSpaceType(data[7], out var parkingSpaceType)
+                    LevelSub = data[7],
+                    ParkingSpaceOf = Parsers.TryParseParkingSpaceType(data[8], out var parkingSpaceType)
                         ? new[]
                         {
                             new ParkingSpace
@@ -573,6 +574,8 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         private const string SECTION_PARKING_SYSTEM_TYPE = "section_parkingSystemType";
         private const string SECTION_VEHICLE_OWNER_TYPE = "section_vehicleOwnerType";
         private const string SECTION_LEVEL = "section_level";
+        private const string SECTION_LEVEL_SUB = "section_level_sub";
+        
         private const string SECTION_VALID_FROM = "section_validFrom";
         private const string SECTION_VALID_THROUGH = "section_validThrough";
         private const string SECTION_NR = "section_nr";
@@ -585,7 +588,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             //SECTION_PARKING_LOCATION_ID - WTF??? this should not be here!
             SECTION_PARKING_LOCATION_LOCAL_ID,
             SECTION_NAME, SECTION_LAYOUT, SECTION_PARKING_SYSTEM_TYPE, SECTION_VEHICLE_OWNER_TYPE,
-            SECTION_LEVEL, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR,
+            SECTION_LEVEL, SECTION_LEVEL_SUB, SECTION_VALID_FROM, SECTION_VALID_THROUGH, SECTION_NR,
             SECTION_AUTHORITY
         };
 
@@ -649,6 +652,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                             Level = int.TryParse(data[SECTION_LEVEL], out var parsedLevel)
                                 ? parsedLevel
                                 : 0,
+                            LevelSub = data[SECTION_LEVEL_SUB],
                             ParkingSpaceOf = CreateParkingSpaceArr(data[SECTION_PARKING_SYSTEM_TYPE], data[SECTION_VEHICLE_OWNER_TYPE]),
                             Layout = data[SECTION_LAYOUT]
                         };

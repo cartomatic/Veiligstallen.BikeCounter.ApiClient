@@ -245,6 +245,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
         private const string SHP_PARKING_LOCATION_LOCAL_ID = "PLcnLocId";
         private const string SHP_LEVEL = "Level";
+        private const string SHP_LEVEL_SUB = "LevelSub";
         private const string SHP_PARKING_SYSTEM_TYPE = "SystemType";
 
         private static string[] _sectionRequiredShpColumns =
@@ -314,6 +315,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     ValidThrough = ParseDateTimeShpOnly(ExtractString(shpReader, colMap[SHP_ONLY_THROUGH])),
                     Authority = ExtractString(shpReader, colMap[SHP_ONLY_AUTHORITY]),
                     Level = shpReader.GetInt32(colMap[SHP_LEVEL]),
+                    LevelSub = shpReader.GetString(colMap[SHP_LEVEL_SUB]),
                     ParkingSpaceOf = Parsers.TryParseParkingSpaceType(ExtractString(shpReader, colMap[SHP_PARKING_SYSTEM_TYPE]),
                         out var parkingSpaceType)
                         ? new[]
