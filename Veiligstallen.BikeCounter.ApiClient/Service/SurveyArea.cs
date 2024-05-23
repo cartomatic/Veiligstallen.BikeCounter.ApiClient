@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO.Esri;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg.Sig;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using RestSharp;
+using RestSharp.Serializers;
 using Veiligstallen.BikeCounter.ApiClient.DataModel;
 using Veiligstallen.BikeCounter.ApiClient.Loader;
 
@@ -95,15 +102,30 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             //reset paging
             queryParams["start"] = "0";
-            queryParams["limit"] = "100000";
 
+            //set by the client, but in a case, this is not provided, enforce something large...
+            if(!queryParams.ContainsKey("limit") || string.IsNullOrWhiteSpace(queryParams["limit"]) || !int.TryParse(queryParams["limit"], out _))
+                queryParams["limit"] = "100000";
+            
             var (data, _) = await GetObjectsAsync<SurveyArea>(new RequestConfig(Configuration.Routes.SURVEY_AREAS) { QueryParams = queryParams });
 
             var downloadId = Guid.NewGuid();
+            var fileName = "survey-areas";
 
-            //serialize
-            using var fs = System.IO.File.OpenWrite(Path.Combine(outDir, $"{downloadId}"));
+            //tmp working dir
+            var tmpDir = Path.Combine(outDir, downloadId.ToString());
+            Directory.CreateDirectory(tmpDir);
+
+            //required for the proper dbf output
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var geoJsonSerializer = NetTopologySuite.IO.GeoJsonSerializer.Create();
+
+            //flat file
+            using var fs = System.IO.File.OpenWrite(Path.Combine(tmpDir, $"{fileName}.csv"));
             using var sw = new StreamWriter(fs);
+
+            //shp featureset
+            var features = new List<Feature>();
 
             //hdr
             await sw.WriteAsync(
@@ -144,10 +166,48 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         Environment.NewLine
                     })
                 );
+
+                try
+                {
+                    using var stringReader = new StringReader(JsonConvert.SerializeObject(surveyArea.GeoLocation));
+                    using var jsonReader = new JsonTextReader(stringReader);
+                    var geom = geoJsonSerializer.Deserialize<NetTopologySuite.Geometries.Geometry>(jsonReader);
+
+                    var attributes = new AttributesTable
+                    {
+                        {ToShpColName(nameof(SurveyArea.Id)), surveyArea.Id ?? string.Empty},
+                        {ToShpColName(nameof(SurveyArea.LocalId)), surveyArea.LocalId ?? string.Empty},
+                        //{ToShpColName(nameof(SurveyArea.ParentLocalId)), surveyArea.ParentLocalId},
+                        {ToShpColName(nameof(SurveyArea.Name)), surveyArea.Name ?? string.Empty},
+                        {ToShpColName(nameof(SurveyArea.Parent)), surveyArea.Parent ?? string.Empty},
+                        {ToShpColName(nameof(SurveyArea.ValidFrom)), surveyArea.ValidFrom ?? default(DateTime)},
+                        {ToShpColName(nameof(SurveyArea.ValidThrough)), surveyArea.ValidThrough ?? default(DateTime)},
+                        {ToShpColName(nameof(SurveyArea.Authority)), surveyArea.Authority ?? string.Empty},
+                        {ToShpColName(nameof(SurveyArea.XtraInfo)), surveyArea.XtraInfo ?? string.Empty},
+                        {ToShpColName(nameof(SurveyArea.SurveyAreaType)), surveyArea.SurveyAreaType ?? string.Empty}
+                    };
+
+                    var feature = new Feature(geom, attributes);
+                    features.Add(feature);
+                }
+                catch
+                {
+                    //ignore
+                }
             }
 
             await sw.FlushAsync();
             sw.Close();
+
+            //shp...
+            Shapefile.WriteAllFeatures(features, Path.Combine(tmpDir, $"{fileName}.shp"));
+
+            //wrap all...
+            System.IO.Compression.ZipFile.CreateFromDirectory(tmpDir, Path.Combine(outDir, $"{downloadId}.zip"),CompressionLevel.Fastest, false);
+
+
+            //cleanup
+            Directory.Delete(tmpDir, true);
 
             return downloadId;
         }

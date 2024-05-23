@@ -18,6 +18,8 @@
     <PackageReference Include="ClosedXML" Version="0.100.3" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="NetTopologySuite.IO.Esri.Shapefile" Version="1.0.0" />
+    <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
     <PackageReference Include="NetTopologySuite.IO.ShapeFile" Version="2.1.0" />
     <PackageReference Include="newtonsoft.json" Version="13.0.1" />
     <PackageReference Include="restsharp" Version="106.10.0" />

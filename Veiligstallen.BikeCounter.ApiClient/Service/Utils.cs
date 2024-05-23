@@ -346,5 +346,14 @@ namespace Veiligstallen.BikeCounter.ApiClient
 
             EnsureValidResponse(apiOut);
         }
+
+        private string ToShpColName(string colName)
+        {
+            if (colName.Length > 10)
+            {
+                colName = colName.Substring(0, 10);
+            }
+            return colName;
+        }
     }
 }
