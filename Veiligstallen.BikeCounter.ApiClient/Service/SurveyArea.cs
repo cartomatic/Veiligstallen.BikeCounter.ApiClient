@@ -180,8 +180,8 @@ namespace Veiligstallen.BikeCounter.ApiClient
                         //{ToShpColName(nameof(SurveyArea.ParentLocalId)), surveyArea.ParentLocalId},
                         {ToShpColName(nameof(SurveyArea.Name)), surveyArea.Name ?? string.Empty},
                         {ToShpColName(nameof(SurveyArea.Parent)), surveyArea.Parent ?? string.Empty},
-                        {ToShpColName(nameof(SurveyArea.ValidFrom)), surveyArea.ValidFrom ?? default(DateTime)},
-                        {ToShpColName(nameof(SurveyArea.ValidThrough)), surveyArea.ValidThrough ?? default(DateTime)},
+                        {ToShpColName(nameof(SurveyArea.ValidFrom)), surveyArea.ValidFrom ?? default},
+                        {ToShpColName(nameof(SurveyArea.ValidThrough)), surveyArea.ValidThrough ?? default},
                         {ToShpColName(nameof(SurveyArea.Authority)), surveyArea.Authority ?? string.Empty},
                         {ToShpColName(nameof(SurveyArea.XtraInfo)), surveyArea.XtraInfo ?? string.Empty},
                         {ToShpColName(nameof(SurveyArea.SurveyAreaType)), surveyArea.SurveyAreaType ?? string.Empty}
