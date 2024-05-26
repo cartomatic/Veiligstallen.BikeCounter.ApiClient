@@ -408,9 +408,9 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
             return sectionAreaIds;
         }
-        
 
 
+        private const string SURVEY_AREA_ID = "surveyarea_";
         private const string SURVEY_AREA_LOCAL_ID = "surveyarea_localId";
         private const string SURVEY_AREA_PARENT_ID = "surveyarea_parentId";
         private const string SURVEY_AREA_PARENT_LOCAL_ID = "surveyarea_parentLocalId";
@@ -463,6 +463,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     var surveyArea = new SurveyArea
                     {
+                        Id = colMap.ContainsKey(SURVEY_AREA_ID) ? data[SURVEY_AREA_ID] : null,
                         LocalId = data[SURVEY_AREA_LOCAL_ID],
                         ParentLocalId = data[SURVEY_AREA_PARENT_LOCAL_ID],
                         Name = data[SURVEY_AREA_NAME],
@@ -484,6 +485,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             return output;
         }
 
+        private const string PARKING_LOCATION_ID = "parkinglocation_id";
         private const string PARKING_LOCATION_LOCAL_ID = "parkinglocation_localId";
         private const string PARKING_LOCATION_NAME = "parkinglocation_name";
         private const string PARKING_LOCATION_FEATURE_TYPE = "parkinglocation_locationFeatureType";
@@ -537,6 +539,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                     var parkingLocation = new ParkingLocation
                     {
+                        Id = colMap.ContainsKey(PARKING_LOCATION_ID) ? data[PARKING_LOCATION_ID] : null,
                         LocalId = data[PARKING_LOCATION_LOCAL_ID],
                         Name = data[PARKING_LOCATION_NAME],
                         ValidFrom = Parsers.ParseDate(data[PARKING_LOCATION_VALID_FROM]),
@@ -566,6 +569,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
+        private const string SECTION_ID = "section_id";
         private const string SECTION_LOCAL_ID = "section_localId";
         private const string SECTION_PARKING_LOCATION_ID = "parkinglocation_id";
         private const string SECTION_PARKING_LOCATION_LOCAL_ID = "parkinglocation_localId";
@@ -643,6 +647,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
                     {
                         var section = new Section
                         {
+                            Id = colMap.ContainsKey(SECTION_ID) ? data[SECTION_ID] : null,
                             LocalId = data[SECTION_LOCAL_ID],
                             ParkingLocationLocalId = data[SECTION_PARKING_LOCATION_LOCAL_ID],
                             Name = data[SECTION_NAME],

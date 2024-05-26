@@ -63,22 +63,22 @@ namespace Veiligstallen.BikeCounter.ApiClient
             await staticDataLoader.ExtractAndUploadSectionsShpOnlyAsync(this, fName, msngr);
         }
 
-        public async Task ExtractAndUploadSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode = false, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadSurveyAreasAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+            await staticDataLoader.ExtractAndUploadSurveyAreasAsync(this, shpFile, flatFile, flatFileSeparator, updateMode, msngr);
         }
 
-        public async Task ExtractAndUploadParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode = false, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadParkingLocationsAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+            await staticDataLoader.ExtractAndUploadParkingLocationsAsync(this, shpFile, flatFile, flatFileSeparator, updateMode, msngr);
         }
 
-        public async Task ExtractAndUploadSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr = null)
+        public async Task ExtractAndUploadSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode = false, EventHandler<string> msngr = null)
         {
             using var staticDataLoader = new Veiligstallen.BikeCounter.ApiClient.Loader.StaticSurveyDataLoader();
-            await staticDataLoader.ExtractAndUploadSectionsAsync(this, shpFile, flatFile, flatFileSeparator, msngr);
+            await staticDataLoader.ExtractAndUploadSectionsAsync(this, shpFile, flatFile, flatFileSeparator, updateMode, msngr);
         }
 
         public async Task LinkSurveyAreasToSurveysFlatAsync(string fName, FlatFileUtils.FlatFileSeparator separator, bool header, string surveyId, bool appendData, EventHandler<string> msngr = null)

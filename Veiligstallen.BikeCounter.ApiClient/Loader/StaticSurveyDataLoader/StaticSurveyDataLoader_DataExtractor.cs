@@ -133,11 +133,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        public async Task ExtractAndUploadSurveyAreasAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        public async Task ExtractAndUploadSurveyAreasAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode, EventHandler<string> msngr)
         {
             _msngr = msngr;
             Notify("Extracting survey areas...");
-            await ExtractSurveyAreasAsync(shpFile, flatFile, flatFileSeparator);
+            await ExtractSurveyAreasAsync(shpFile, flatFile, flatFileSeparator, updateMode);
             Notify("Survey areas extracted!");
 
             Notify("Uploading survey areas...");
@@ -145,12 +145,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Survey areas uploaded!");
         }
 
-        public async Task ExtractAndUploadParkingLocationsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        public async Task ExtractAndUploadParkingLocationsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
             Notify("Extracting parking locations...");
-            await ExtractParkingLocationsAsync(shpFile, flatFile, flatFileSeparator);
+            await ExtractParkingLocationsAsync(shpFile, flatFile, flatFileSeparator, updateMode);
             Notify("Parking locations extracted!");
 
             Notify("Uploading parking locations...");
@@ -158,12 +158,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             Notify("Parking locations uploaded!");
         }
 
-        public async Task ExtractAndUploadSectionsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, EventHandler<string> msngr)
+        public async Task ExtractAndUploadSectionsAsync(Service service, string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode, EventHandler<string> msngr)
         {
             _msngr = msngr;
 
             Notify("Extracting sections...");
-            await ExtractSectionsAsync(shpFile, flatFile, flatFileSeparator);
+            await ExtractSectionsAsync(shpFile, flatFile, flatFileSeparator, updateMode);
             Notify("Sections extracted!");
 
             Notify("Uploading sections...");
@@ -301,12 +301,22 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShpOnlyAsync(fName);
         }
 
-        private async Task ExtractSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        private async Task ExtractSurveyAreasAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode)
         {
             //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
             ResetCompleteDataCollections();
-            _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShp(shpFile)
-                .Merge(_flatDataExtractor.ExtractSurveyAreas(flatFile, flatFileSeparator));
+
+            //in general surveys require geoms. when no shp then it's update mode and
+
+            if (shpFile != null)
+            {
+                _surveyAreas = _shapeFileDataExtractor.ExtractSurveyAreasShp(shpFile)
+                    .Merge(_flatDataExtractor.ExtractSurveyAreas(flatFile, flatFileSeparator));
+            }
+            else if(updateMode)
+            {
+                _surveyAreas = _flatDataExtractor.ExtractSurveyAreas(flatFile, flatFileSeparator);
+            }
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -326,12 +336,20 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShpOnlyAsync(fName);
         }
 
-        private async Task ExtractParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        private async Task ExtractParkingLocationsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode)
         {
             //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
             ResetCompleteDataCollections();
-            _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShp(shpFile).
-                Merge(_flatDataExtractor.ExtractParkingLocations(flatFile, flatFileSeparator));
+
+            if (shpFile != null)
+            {
+                _parkingLocations = _shapeFileDataExtractor.ExtractParkingLocationsShp(shpFile).
+                    Merge(_flatDataExtractor.ExtractParkingLocations(flatFile, flatFileSeparator));
+            }
+            else if(updateMode) //parking location with no geoms only in update mode!
+            {
+                _parkingLocations = _flatDataExtractor.ExtractParkingLocations(flatFile, flatFileSeparator);
+            }
         }
 
         [Obsolete("Format abandoned and not officially supported anymore")]
@@ -364,7 +382,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             _sections = _shapeFileDataExtractor.ExtractSectionsShpOnlyAsync(fName);
         }
 
-        private async Task ExtractSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator)
+        private async Task ExtractSectionsAsync(string shpFile, string flatFile, FlatFileUtils.FlatFileSeparator flatFileSeparator, bool updateMode = false)
         {
             //flat objects always uploaded 1 by 1, so need to reset collections in order to enforce remote referenced ids retrieval!
             ResetCompleteDataCollections();

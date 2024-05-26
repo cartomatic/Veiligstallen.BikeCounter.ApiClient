@@ -27,8 +27,11 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 try
                 {
-                    Notify($"Uploading parent survey area: {rawParent.LocalId}...");
-                    var parent = await apiClient.CreateSurveyAreaAsync(rawParent);
+                    Notify($"{(string.IsNullOrWhiteSpace(rawParent.Id) ? "Uploading" : "Updating")} parent survey area: {rawParent.LocalId}...");
+                    var parent = string.IsNullOrWhiteSpace(rawParent.Id)
+                        ? await apiClient.CreateSurveyAreaAsync(rawParent)
+                        : await apiClient.UpdateSurveyAreaAsync(rawParent, rawParent.Id);
+
                     rawParent.Id = parent.Id;
                 }
                 catch (System.Exception ex)
@@ -59,10 +62,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 try
                 {
-                    Notify($"Uploading child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
+                    Notify($"{(string.IsNullOrWhiteSpace(rawChild.Id) ? "Uploading" : "Updating")} child survey area: {rawChild.LocalId} for parent: {rawChild.ParentLocalId}...");
 
                     rawChild.Parent = parent.Id;
-                    var child = await apiClient.CreateSurveyAreaAsync(rawChild);
+                    var child = string.IsNullOrWhiteSpace(rawChild.Id) 
+                        ? await apiClient.CreateSurveyAreaAsync(rawChild)
+                        : await apiClient.UpdateSurveyAreaAsync(rawChild, rawChild.Id);
                 }
                 catch (System.Exception ex)
                 {
@@ -87,9 +92,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 try
                 {
-                    Notify($"Uploading parking location: {parkingLocation.LocalId}...");
+                    Notify($"{(string.IsNullOrWhiteSpace(parkingLocation.Id) ? "Uploading" : "Updating")} parking location: {parkingLocation.LocalId}...");
 
-                    var pl = await apiClient.CreateParkingLocationAsync(parkingLocation);
+                    var pl = string.IsNullOrWhiteSpace(parkingLocation.Id)
+                        ? await apiClient.CreateParkingLocationAsync(parkingLocation)
+                        : await apiClient.UpdateParkingLocationAsync(parkingLocation, parkingLocation.Id);
+
                     parkingLocation.Id = pl.Id;
                 }
                 catch (System.Exception ex)
@@ -132,10 +140,12 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
 
                 try
                 {
-                    Notify($"Uploading section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
+                    Notify($"{(string.IsNullOrWhiteSpace(section.Id) ? "Uploading" : "Updating")} section: {section.LocalId} for parking location: {parkingLocation.LocalId}...");
 
                     section.ParkingLocation = parkingLocation.Id;
-                    var s = await apiClient.CreateSectionAsync(section);
+                    var s = string.IsNullOrWhiteSpace(section.Id)
+                        ? await apiClient.CreateSectionAsync(section)
+                        : await apiClient.UpdateSectionAsync(section, section.Id);
                 }
                 catch (System.Exception ex)
                 {
