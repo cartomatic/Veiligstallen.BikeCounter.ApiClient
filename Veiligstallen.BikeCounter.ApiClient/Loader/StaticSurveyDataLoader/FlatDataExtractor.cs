@@ -732,7 +732,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
             foreach (var fieldName in requiredFieldNames)
             {
                 if (!colMap.ContainsKey(fieldName))
-                    throw new System.Exception($"Could nit find a required field: {fieldName}");
+                    throw new System.Exception($"Could not find a required field: {fieldName}");
             }
         }
 
