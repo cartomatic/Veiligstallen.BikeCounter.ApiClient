@@ -46,7 +46,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="parkingLocationId"></param>
         /// <returns></returns>
         public Task<ParkingLocation> UpdateParkingLocationAsync(ParkingLocation parkingLocation, string parkingLocationId = null)
-            => CreateObjectAsync(new RequestConfig<ParkingLocation>(Configuration.Routes.PARKING_LOCATION, parkingLocationId ?? parkingLocation.Id, @object: parkingLocation));
+            => UpdateObjectAsync(new RequestConfig<ParkingLocation>(Configuration.Routes.PARKING_LOCATION, parkingLocationId ?? parkingLocation.Id, @object: parkingLocation));
 
         /// <summary>
         /// Deletes a parking location

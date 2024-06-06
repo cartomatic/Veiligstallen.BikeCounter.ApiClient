@@ -50,7 +50,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="surveyAreaId"></param>
         /// <returns></returns>
         public Task<SurveyArea> UpdateSurveyAreaAsync(SurveyArea surveyArea, string surveyAreaId = null)
-            => CreateObjectAsync(new RequestConfig<SurveyArea>(Configuration.Routes.SURVEY_AREA, surveyAreaId ?? surveyArea.Id, @object: surveyArea));
+            => UpdateObjectAsync(new RequestConfig<SurveyArea>(Configuration.Routes.SURVEY_AREA, surveyAreaId ?? surveyArea.Id, @object: surveyArea));
 
         /// <summary>
         /// Deletes a survey area

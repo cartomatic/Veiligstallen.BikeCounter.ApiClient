@@ -54,7 +54,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
         /// <param name="sectionId"></param>
         /// <returns></returns>
         public Task<Section> UpdateSectionAsync(Section section, string sectionId = null)
-            => CreateObjectAsync(new RequestConfig<Section>(Configuration.Routes.SECTION, sectionId ?? section.Id, @object: section));
+            => UpdateObjectAsync(new RequestConfig<Section>(Configuration.Routes.SECTION, sectionId ?? section.Id, @object: section));
 
         /// <summary>
         /// Deletes a section

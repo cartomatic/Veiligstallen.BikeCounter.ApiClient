@@ -410,7 +410,7 @@ namespace Veiligstallen.BikeCounter.ApiClient.Loader
         }
 
 
-        private const string SURVEY_AREA_ID = "surveyarea_";
+        private const string SURVEY_AREA_ID = "surveyarea_id";
         private const string SURVEY_AREA_LOCAL_ID = "surveyarea_localId";
         private const string SURVEY_AREA_PARENT_ID = "surveyarea_parentId";
         private const string SURVEY_AREA_PARENT_LOCAL_ID = "surveyarea_parentLocalId";
