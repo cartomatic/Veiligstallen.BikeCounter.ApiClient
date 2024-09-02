@@ -185,7 +185,7 @@ namespace Veiligstallen.BikeCounter.ApiClient
             Shapefile.WriteAllFeatures(features, Path.Combine(tmpDir, $"{fileName}.shp"));
 
             //wrap all...
-            System.IO.Compression.ZipFile.CreateFromDirectory(tmpDir, Path.Combine(outDir, $"{downloadId}.zip"), CompressionLevel.Fastest, false);
+            System.IO.Compression.ZipFile.CreateFromDirectory(tmpDir, Path.Combine(outDir, $"{downloadId}_{features.Count}.zip"), CompressionLevel.Fastest, false);
 
 
             //cleanup
